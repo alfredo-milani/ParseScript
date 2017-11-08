@@ -24,8 +24,7 @@ def askopenfilename():
         print filename
 
 
-if __name__ == '__main__':
-
+def laucher():
     # Make the root window
     root = Tk()
 
@@ -60,3 +59,7 @@ if __name__ == '__main__':
     print "hello"
     # Start the application mainloop
     root.mainloop()
+
+
+if __name__ == '__main__':
+    laucher()

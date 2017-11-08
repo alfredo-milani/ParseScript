@@ -38,6 +38,4 @@ if __name__ == '__main__':
     t1 = threading.Thread(target=process_of_unknown_duration, args=(root, ))
     t1.start()
     task(root)  # This will block while the mainloop runs
-    print "after task(root) finished"
     t1.join()
-    print "finished"

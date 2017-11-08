@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# coding=utf-8
 # ============================================================================
 # Titolo:           dataRetrieval.py
 # Descrizione:      Script per estrapolare dati da un file *.txt ed inserirli in un file *.xlsx
@@ -10,19 +9,18 @@
 # Note:             --/--
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
-
-# TODO: IMPLEMENTARLO CON CLASSI
-
 import getopt
 import os
 import platform
 import sys
 
 from openpyxl import Workbook
-from openpyxl.worksheet.table import TableStyleInfo
+from openpyxl.worksheet.table import TableStyleInfo, Table
 from pathlib import Path
 
-import gui_form
+import GetFileDialog
+import constants
+import entity
 import support
 
 EXIT_SUCCESS = 0
@@ -31,54 +29,24 @@ EXIT_ERR_FILE = 2
 EXIT_ERR_BAD_CONTENT = 3
 EXIT_ERR_PACKAGE_MISSING = 4
 
-LINK_TOOL_CONVERTER_DOCX_TXT = "https://document.online-convert.com/convert-to-txt"
-DEFAULT_TMP_WIN = "R:\\"
-DEFAULT_TMP_LINUX = "/dev/shm/"
-INIT_SCRIPT_NAME = "./utils/scripts/linux/inst_xlsxwriter.sh"
-OS_WIN = "Windows"
-OS_LINUX = "Linux"
-DEFAULT_EXT = ".xlsx"
-
-NEW_USER = "Scoring Summary"
-CREDENTIALS_NUM = 4
-SCORES_NUM = 6
-SCORES_LIST = [
-    "1. Hai meno di 18 anni o più di 68?",
-    "2. Sei allergico a frutta secca (noci macadamia, anacardi, noci, mandorle, noci pecan), "
-    "soia, avena, sesamo, o sedano)?",
-    "3. Ti è stato diagnosticato qualche disturbo cronico o assumi farmaci per un qualsiasi "
-    "disturbo o patologia, come il Diabete (tipo 1 o tipo 2), patologie cardiovascolari, "
-    "renali, epatiche o ha mai avuto episodi di svenimento?",
-    "4. Hai frequentemente febbre, tosse, diarrea o segni di infezione attiva?",
-    "5. Sei incinta o stai allattando?",
-    "6. Hai un indice di massa corporea inferiore (IMC) a 18 o maggiore di 40? "
-    "Se non conosci il tuo IMC, che è basato su peso e altezza, clicca qui per trovarlo - clicca qui."
-]
-CREDENTIALS_LIST = [
-    "Nome: *",
-    "Cognome: *",
-    "Email: *",
-    "Telefono: *"
-]
-HEADER_ROW = [
-    "nome",
-    "cognome",
-    "telefono",
-    "email",
-    "scores",
-    "note"
-]
-
 
 def usage():
     print "\n# Utilizzo\n"
     print "\t./" + os.path.basename(__file__) + " [Options]\n"
     print "# Options\n"
     print "\t-i | --I= | --ifile= )\t\tSetting input file"
-    print ("\t-o | --O= | --ofile= )\t\tSetting output file. If not specified, a file (*%s) "
-           "will be created in the default temp directory ('%s' -> '%s' | '%s' -> '%s')" %
-           (DEFAULT_EXT, OS_WIN, DEFAULT_TMP_WIN, OS_LINUX, DEFAULT_TMP_LINUX))
+    print (
+        "\t-o | --O= | --ofile= )\t\tSetting output file. If not specified, a file (*%s) "
+        "will be created in the default temp directory ('%s' -> '%s' | '%s' -> '%s')" % (
+            constants.DEFAULT_EXCEL_EXT,
+            constants.OS_WIN,
+            constants.DEFAULT_TMP_WIN,
+            constants.OS_LINUX,
+            constants.DEFAULT_TMP_LINUX
+        )
+    )
     print "\t-t | --T= )\t\t\tSetting sheet title. Default behaviour: based on input filename"
+    print "\t--gui | --GUI )\tLaunch script in graphical mode"
     print "\t-h | -H | --help | --HELP )\tShow this help\n"
 
 
@@ -93,7 +61,7 @@ def set_up_sys():
         print str(err)
 
         os_type = platform.system()
-        if os_type == OS_WIN:
+        if os_type == constants.OS_WIN:
             print "TODO: batch script to autosetup package"
             # Required with old library
             # print "Unzip file 'XlsxWriter-RELEASE_1.0.2.zip'"
@@ -101,7 +69,7 @@ def set_up_sys():
             # print "OR"
             # print "Try with 'pip install packagename' with admin's privileges"
             print "Perform command: 'pip install openpyxl'"
-        elif os_type == OS_LINUX:
+        elif os_type == constants.OS_LINUX:
             print "Perform command: 'sudo pip install openpyxl'"
             # Required with old library
             # subprocess.call([INIT_SCRIPT_NAME])
@@ -143,7 +111,7 @@ def parse_arg(argv):
         elif opt in ("-t", "--T"):
             sheet_title = arg
         elif opt in ("--gui", "--GUI"):
-            gui_form.init()
+            gui_laucher()
 
     print "\nNOTA: Probabilmente a causa di un problema di codifica/decodicifa, i files che mi hai " \
           "dato direttamente in formato *.txt non vengono eleaborati. Per elaborare i dati io ho " \
@@ -154,7 +122,7 @@ def parse_arg(argv):
         "NOTA: su %s --> utilizza il link '%s' per convertire il file *docx in *txt. "
         "Una volta convertito esegui il comando: "
         "'python X:\script_dir\script.py --I Y:\\file_to_parse.txt --O Z:\create_new_file.xlsx'\n" %
-        (OS_WIN, LINK_TOOL_CONVERTER_DOCX_TXT)
+        (constants.OS_WIN, constants.LINK_TOOL_CONVERTER_DOCX_TXT)
     )
 
     print "Current directory: ", os.getcwd()
@@ -175,6 +143,10 @@ def parse_arg(argv):
     else:
         print "Exiting..."
         sys.exit(EXIT_SUCCESS)
+
+
+def gui_laucher():
+    GetFileDialog.laucher()
 
 
 def replace_unsupported_char(string, chars_to_check, selected_char):
@@ -208,13 +180,20 @@ def perform_operation(input_file, output_file="", sheet_title=""):
 
     data_list = content.split("\n")
 
-    raw_data_num_users = count_users(data_list, NEW_USER)
+    raw_data_num_users = count_users(data_list, constants.NEW_USER)
 
-    data_to_write = parse_list(data_list)
+    list_of_users = get_users_list(data_list)
+
+    if raw_data_num_users != len(list_of_users):
+        print "WARNING:\nUser raw data: %d\nUser parsed: %d\nCheck if some user missing" % (
+            raw_data_num_users,
+            len(list_of_users)
+        )
 
     wb = Workbook()
     ws = wb.active
 
+    # create name for new sheet
     if len(sheet_title) == 0:
         text_to_split = os.path.splitext(input_file)[0]
         text_to_split = replace_unsupported_char(text_to_split, ['-', ' '], '_')
@@ -223,12 +202,12 @@ def perform_operation(input_file, output_file="", sheet_title=""):
     ws.title = sheet_title
 
     # add column headings. NB. these must be strings
-    ws.append(HEADER_ROW)
-    for row in data_to_write:
-        ws.append(row)
+    ws.append(constants.HEADER_ROW)
+    for user in list_of_users:
+        ws.append(user.get_list_from_instance())
 
-    # tab = Table(displayName="Table1", ref="A1:E200")
-
+    # adding table to sheet
+    tab = Table(displayName="Table1", ref="A1:E" + str(len(list_of_users) + 1))
     # Add a default style with striped rows and banded columns
     style = TableStyleInfo(
         name="TableStyleMedium9",
@@ -237,63 +216,98 @@ def perform_operation(input_file, output_file="", sheet_title=""):
         showRowStripes=True,
         showColumnStripes=True
     )
-    # tab.tableStyleInfo = style
-    # ws.add_table(tab)
+    tab.tableStyleInfo = style
+    ws.add_table(tab)
 
     file_to_save = output_file
     default_out = os.path.basename(input_file)
-    default_out = os.path.splitext(default_out)[0] + DEFAULT_EXT
+    default_out = os.path.splitext(default_out)[0] + constants.DEFAULT_EXCEL_EXT
     if len(file_to_save) != 0:
-        if DEFAULT_EXT not in file_to_save:
-            file_to_save += DEFAULT_EXT
+        if constants.DEFAULT_EXCEL_EXT not in file_to_save:
+            file_to_save += constants.DEFAULT_EXCEL_EXT
     else:
         os_type = platform.system()
-        if os_type == OS_WIN:
-            file_to_save = DEFAULT_TMP_WIN
-        elif os_type == OS_LINUX:
-            file_to_save = DEFAULT_TMP_LINUX
+        if os_type == constants.OS_WIN:
+            file_to_save = constants.DEFAULT_TMP_WIN
+        elif os_type == constants.OS_LINUX:
+            file_to_save = constants.DEFAULT_TMP_LINUX
         file_to_save += default_out
 
     wb.save(file_to_save)
 
 
-def parse_list(content):
+def get_users_list(content):
+    users_list = []
     i = 0
-    data = []
-    # print content;
-    # TODO: implementa ricorsione
-    content_len = len(content)
-    while i < content_len:
-        if content[i] == NEW_USER:
+    while i < len(content):
+        # new user found
+        if content[i].find(constants.NEW_USER) != -1:
+            name = ""
+            surname = ""
+            email = ""
+            ntel = ""
             scores = []
-            credentials = []
 
-            # TODO incapsulare SCORE_LIST e CREDENTIALA_LIST nell'entità USer
-            for itemScore in SCORES_LIST:
-                while content[i] != itemScore:
+            i += 1
+
+            # parsing scores
+            s = 0
+            for itemScore in constants.SCORES_LIST:
+                while content[i].find(itemScore[0]) == -1 and content[i].find(constants.NEW_USER) == -1:
                     i += 1
+                if content[i].find(constants.NEW_USER) != -1:
+                    break
+
                 i += 1
+                if content[i] != constants.SCORE_VAL_NEGATIVE:
+                    if content[i] == constants.SCORE_VAL_POSITIVE:
+                        scores.append(itemScore[1])
+                    else:
+                        print (
+                            "Error parsing value of line: %s.\nValue: %s.\nLine: %d." % (
+                                content[i - 1],
+                                content[i],
+                                i
+                            )
+                        )
+                        continue
 
-                if content[i] != "0" and content[i] != "1":
-                    print ("Error in line %s" % (content[i - 1]))
-                    sys.exit(EXIT_ERR_BAD_CONTENT)
+                s += 1
 
-                if content[i] != "0":
-                    scores.append(itemScore[0:1])
+            if content[i].find(constants.NEW_USER) != -1:
+                continue
 
-            for itemCredential in CREDENTIALS_LIST:
-                while content[i] != itemCredential:
+            # parsing credentials
+            c = 0
+            for itemCredential in constants.CREDENTIALS_LIST:
+                while content[i].find(itemCredential) == -1 and content[i].find(constants.NEW_USER) == -1:
                     i += 1
+                if content[i].find(constants.NEW_USER) != -1:
+                    break
+
                 i += 1
+                if itemCredential == constants.CREDENTIAL_NAME:
+                    name = content[i]
+                elif itemCredential == constants.CREDENTIALS_SURNAME:
+                    surname = content[i]
+                elif itemCredential == constants.CREDENTIAL_EMAIL:
+                    email = content[i]
+                elif itemCredential == constants.CREDENTIAL_NTEL:
+                    ntel = content[i]
 
-                credentials.append(content[i])
+                c += 1
 
-            credentials.append(scores)
-            data.append(credentials)
+            if content[i].find(constants.NEW_USER) != -1:
+                continue
+
+            user = entity.User(name, surname, email, ntel, scores)
+            users_list.append(user)
+            if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
+                print "Warning: Wrong parsed: User: " + user
 
         i += 1
 
-    return data
+    return users_list
 
 
 def test_autoconvert():
@@ -331,22 +345,22 @@ def test_autoconvert():
     ws.title = sheet_title
 
     # add column headings. NB. these must be strings
-    ws.append(HEADER_ROW)
+    ws.append(constants.HEADER_ROW)
     for row in f:
         ws.append(list(row))
 
     file_to_save = output_file
     default_out = os.path.basename(input_file)
-    default_out = os.path.splitext(default_out)[0] + DEFAULT_EXT
+    default_out = os.path.splitext(default_out)[0] + constants.DEFAULT_EXCEL_EXT
     if len(file_to_save) != 0:
-        if DEFAULT_EXT not in file_to_save:
-            file_to_save += DEFAULT_EXT
+        if constants.DEFAULT_EXCEL_EXT not in file_to_save:
+            file_to_save += constants.DEFAULT_EXCEL_EXT
     else:
         os_type = platform.system()
-        if os_type == OS_WIN:
-            file_to_save = DEFAULT_TMP_WIN
-        elif os_type == OS_LINUX:
-            file_to_save = DEFAULT_TMP_LINUX
+        if os_type == constants.OS_WIN:
+            file_to_save = constants.DEFAULT_TMP_WIN
+        elif os_type == constants.OS_LINUX:
+            file_to_save = constants.DEFAULT_TMP_LINUX
         file_to_save += default_out
 
     wb.save(file_to_save)
