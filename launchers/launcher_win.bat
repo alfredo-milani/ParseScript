@@ -25,4 +25,4 @@ ECHO Files to convert:
 :: TODO imposta variabile di debug (come in script *.sh)
 :: Testa operatore & per eseguire comandi multipli su una singola linea
 for %%file in (%dir_to_convert%\*) do echo %tab%%%file
-for %%file in (%dir_to_convert%\*) do %tool% --I="%%file"
+for %%file in (%dir_to_convert%\*) do %tool% --I="%%file" --O=%dir_converted% --not-ask

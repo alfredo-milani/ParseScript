@@ -100,7 +100,7 @@ def parse_arg(argv):
         opts, args = getopt.getopt(
             argv,
             "hHt:i:o:",
-            ["not-ask", "auto-convert", "gui", "GUI", "help", "HELP", "T=", "I=", "O=", "ifile=", "odir="]
+            ["not-ask", "gui", "GUI", "help", "HELP", "T=", "I=", "O=", "ifile=", "odir="]
         )
     except getopt.GetoptError as err:
         print str(err)
