@@ -5,7 +5,6 @@ DEFAULT_TMP_LINUX = "/dev/shm/"
 INIT_SCRIPT_NAME = "./utils/scripts/linux/inst_xlsxwriter.sh"
 OS_WIN = "Windows"
 OS_LINUX = "Linux"
-DEFAULT_EXCEL_EXT = ".xlsx"
 
 HEADER_ROW = [
     "nome",

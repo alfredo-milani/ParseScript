@@ -5,7 +5,7 @@
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             sab 21 ott 2017, 15.52.00, CEST
 # Licenza:          MIT License
-# Versione:         0.0.1
+# Versione:         0.5.0
 # Note:             xlsxwriter: package per manipolare file Exel
 # Versione bash:    4.4.12(1)-release
 # ============================================================================

@@ -5,13 +5,14 @@
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             ven 20 ott 2017, 19.36.00, CEST
 # Licenza:          MIT License
-# Versione:         0.4.0
+# Versione:         0.7.0
 # Note:             --/--
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
 import getopt
 import os
 import platform
+import random
 import sys
 
 from openpyxl import Workbook
@@ -21,13 +22,16 @@ from pathlib import Path
 import GetFileDialog
 import constants
 import entity
-import support
+from support import document_to_text
+from support.Converter import EXT_TXT, EXT_XLSX
 
 EXIT_SUCCESS = 0
 EXIT_ERR_ARG = 1
 EXIT_ERR_FILE = 2
 EXIT_ERR_BAD_CONTENT = 3
 EXIT_ERR_PACKAGE_MISSING = 4
+
+FILE_SPLIT_CHAR = '/'
 
 
 def usage():
@@ -38,7 +42,7 @@ def usage():
     print (
         "\t-o | --O= | --ofile= )\t\tSetting output file. If not specified, a file (*%s) "
         "will be created in the default temp directory ('%s' -> '%s' | '%s' -> '%s')" % (
-            constants.DEFAULT_EXCEL_EXT,
+            EXT_XLSX,
             constants.OS_WIN,
             constants.DEFAULT_TMP_WIN,
             constants.OS_LINUX,
@@ -46,6 +50,7 @@ def usage():
         )
     )
     print "\t-t | --T= )\t\t\tSetting sheet title. Default behaviour: based on input filename"
+    print "\t--auto-convert )\tAutoconvert file *docx insted of using file *.txt"
     print "\t--gui | --GUI )\tLaunch script in graphical mode"
     print "\t-h | -H | --help | --HELP )\tShow this help\n"
 
@@ -86,15 +91,12 @@ def parse_arg(argv):
         opts, args = getopt.getopt(
             argv,
             "hHt:i:o:",
-            ["gui", "GUI", "help", "HELP", "T=", "I=", "O=", "ifile=", "ofile="]
+            ["auto-convert", "gui", "GUI", "help", "HELP", "T=", "I=", "O=", "ifile=", "ofile="]
         )
     except getopt.GetoptError as err:
         print str(err)
         usage()
         sys.exit(EXIT_ERR_ARG)
-
-    # print opts;
-    # print args;
 
     if len(opts) == 0 and len(args) == 0:
         usage()
@@ -171,14 +173,18 @@ def perform_operation(input_file, output_file="", sheet_title=""):
         print ("File '%s' not found" % file_to_parse)
         sys.exit(EXIT_ERR_FILE)
 
-    # with open(input, "r") as file_to_parse:
-    #    content = file_to_parse.readlines();
+    # conversione in base al formato del file di input
+    filename_list = input_file.rsplit(FILE_SPLIT_CHAR, 1)
+    filename = filename_list[len(filename_list) - 1]
+    if filename[-4:] == EXT_TXT:
+        with open(input_file, "r") as file_to_parse:
+            content = file_to_parse.read()
+    else:
+        content = document_to_text(input_file)
 
-    with open(input_file, "r") as file_to_parse:
-        content = file_to_parse.read()
-    # content = [x.strip() for x in content];
-
-    data_list = content.split("\n")
+    # NOTE: filter returns a list in Python 2 and a generator in Python 3
+    # False-ish value include: False, None, 0, '', [], () and all others empty containers
+    data_list = filter(None, content.split("\n"))
 
     raw_data_num_users = count_users(data_list, constants.NEW_USER)
 
@@ -221,10 +227,10 @@ def perform_operation(input_file, output_file="", sheet_title=""):
 
     file_to_save = output_file
     default_out = os.path.basename(input_file)
-    default_out = os.path.splitext(default_out)[0] + constants.DEFAULT_EXCEL_EXT
+    default_out = os.path.splitext(default_out)[0] + EXT_XLSX
     if len(file_to_save) != 0:
-        if constants.DEFAULT_EXCEL_EXT not in file_to_save:
-            file_to_save += constants.DEFAULT_EXCEL_EXT
+        if EXT_XLSX not in file_to_save:
+            file_to_save += EXT_XLSX
     else:
         os_type = platform.system()
         if os_type == constants.OS_WIN:
@@ -232,6 +238,16 @@ def perform_operation(input_file, output_file="", sheet_title=""):
         elif os_type == constants.OS_LINUX:
             file_to_save = constants.DEFAULT_TMP_LINUX
         file_to_save += default_out
+
+    if Path(file_to_save).exists():
+        user_cmd = "File: %s already exist. Do you want to override it? [Yes / No]\n" % file_to_save
+        py3 = sys.version_info[0] > 2
+        if py3:
+            response = input(user_cmd)
+        else:
+            response = raw_input(user_cmd)
+        if response != "Yes":
+            file_to_save = file_to_save.split(".")[0] + str(random.randint(0, 100000)) + EXT_XLSX
 
     wb.save(file_to_save)
 
@@ -310,63 +326,6 @@ def get_users_list(content):
     return users_list
 
 
-def test_autoconvert():
-    # TODO convertitore docx to txt... errore di codifica
-    data_to_write = support.document_to_text("/dev/shm/Formsite 20 ottobre.docx")
-    f = data_to_write.split("\n")
-
-    # TODO iterator per eliminare elementi in una lista mentre si itera su di essa
-    i = 0
-    iterator = iter(f)
-    while True:
-        try:
-            if next(iterator) == '':
-                del f[i]
-            else:
-                i += 1
-        except StopIteration:
-            break
-
-    for el in iterator:
-        print el
-
-    input_file = "/dev/shm/Formsite 20 ottobre.docx"
-    sheet_title = ""
-    output_file = ""
-
-    wb = Workbook()
-    ws = wb.active
-
-    if len(sheet_title) == 0:
-        text_to_split = os.path.splitext(input_file)[0]
-        text_to_split = replace_unsupported_char(text_to_split, ['-', ' '], '_')
-        month_list = text_to_split.split("_")
-        sheet_title = month_list[1] + "-" + month_list[2][0:3]
-    ws.title = sheet_title
-
-    # add column headings. NB. these must be strings
-    ws.append(constants.HEADER_ROW)
-    for row in f:
-        ws.append(list(row))
-
-    file_to_save = output_file
-    default_out = os.path.basename(input_file)
-    default_out = os.path.splitext(default_out)[0] + constants.DEFAULT_EXCEL_EXT
-    if len(file_to_save) != 0:
-        if constants.DEFAULT_EXCEL_EXT not in file_to_save:
-            file_to_save += constants.DEFAULT_EXCEL_EXT
-    else:
-        os_type = platform.system()
-        if os_type == constants.OS_WIN:
-            file_to_save = constants.DEFAULT_TMP_WIN
-        elif os_type == constants.OS_LINUX:
-            file_to_save = constants.DEFAULT_TMP_LINUX
-        file_to_save += default_out
-
-    wb.save(file_to_save)
-
-
 if __name__ == "__main__":
     set_up_sys()
     parse_arg(sys.argv[1:])
-    # test_autoconvert()

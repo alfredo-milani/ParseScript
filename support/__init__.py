@@ -1,2 +1,1 @@
-from Converter import convert_pdf_to_txt
 from Converter import document_to_text
