@@ -23,7 +23,7 @@ import GetFileDialog
 import constants
 import entity
 from support import document_to_text
-from support.Converter import EXT_TXT, EXT_XLSX
+from support.Converter import EXT_XLSX
 
 EXIT_SUCCESS = 0
 EXIT_ERR_ARG = 1
@@ -32,6 +32,9 @@ EXIT_ERR_BAD_CONTENT = 3
 EXIT_ERR_PACKAGE_MISSING = 4
 
 FILE_SPLIT_CHAR = '/'
+OS_TYPE = ""
+TMP_PATH = ""
+REDUCE_ASK = False
 
 
 def usage():
@@ -50,12 +53,19 @@ def usage():
         )
     )
     print "\t-t | --T= )\t\t\tSetting sheet title. Default behaviour: based on input filename"
-    print "\t--auto-convert )\tAutoconvert file *docx insted of using file *.txt"
+    print "\t--not-ask )\t\t\tRiduces user interaction"
     print "\t--gui | --GUI )\tLaunch script in graphical mode"
     print "\t-h | -H | --help | --HELP )\tShow this help\n"
 
 
 def set_up_sys():
+    global OS_TYPE, TMP_PATH
+    OS_TYPE = platform.system()
+    if OS_TYPE == constants.OS_WIN:
+        TMP_PATH = constants.DEFAULT_TMP_WIN
+    elif OS_TYPE == constants.OS_LINUX:
+        TMP_PATH = constants.DEFAULT_TMP_LINUX
+
     try:
         # import xlsxwriter;
         from openpyxl import Workbook
@@ -65,8 +75,7 @@ def set_up_sys():
     except ImportError as err:
         print str(err)
 
-        os_type = platform.system()
-        if os_type == constants.OS_WIN:
+        if OS_TYPE == constants.OS_WIN:
             print "TODO: batch script to autosetup package"
             # Required with old library
             # print "Unzip file 'XlsxWriter-RELEASE_1.0.2.zip'"
@@ -74,7 +83,7 @@ def set_up_sys():
             # print "OR"
             # print "Try with 'pip install packagename' with admin's privileges"
             print "Perform command: 'pip install openpyxl'"
-        elif os_type == constants.OS_LINUX:
+        elif OS_TYPE == constants.OS_LINUX:
             print "Perform command: 'sudo pip install openpyxl'"
             # Required with old library
             # subprocess.call([INIT_SCRIPT_NAME])
@@ -84,14 +93,14 @@ def set_up_sys():
 
 def parse_arg(argv):
     input_file = ""
-    output_file = ""
+    output_dir = ""
     sheet_title = ""
 
     try:
         opts, args = getopt.getopt(
             argv,
             "hHt:i:o:",
-            ["auto-convert", "gui", "GUI", "help", "HELP", "T=", "I=", "O=", "ifile=", "ofile="]
+            ["not-ask", "auto-convert", "gui", "GUI", "help", "HELP", "T=", "I=", "O=", "ifile=", "odir="]
         )
     except getopt.GetoptError as err:
         print str(err)
@@ -108,43 +117,45 @@ def parse_arg(argv):
             sys.exit(EXIT_SUCCESS)
         elif opt in ("-i", "--I", "--ifile"):
             input_file = arg
-        elif opt in ("-o", "--O", "--ofile"):
-            output_file = arg
+        elif opt in ("-o", "--O", "--odir"):
+            output_dir = arg
+        elif opt in "--not-ask":
+            global REDUCE_ASK
+            REDUCE_ASK = True
         elif opt in ("-t", "--T"):
             sheet_title = arg
         elif opt in ("--gui", "--GUI"):
             gui_laucher()
 
-    print "\nNOTA: Probabilmente a causa di un problema di codifica/decodicifa, i files che mi hai " \
-          "dato direttamente in formato *.txt non vengono eleaborati. Per elaborare i dati io ho " \
-          "aperto un file in formato *.docx e ho utilizzato la funzione 'salva con nome' e ho " \
-          "salvato il file in formato 'Testo (.txt)' (senza codifica)\n"
-
-    print (
-        "NOTA: su %s --> utilizza il link '%s' per convertire il file *docx in *txt. "
-        "Una volta convertito esegui il comando: "
-        "'python X:\script_dir\script.py --I Y:\\file_to_parse.txt --O Z:\create_new_file.xlsx'\n" %
-        (constants.OS_WIN, constants.LINK_TOOL_CONVERTER_DOCX_TXT)
-    )
-
-    print "Current directory: ", os.getcwd()
+    # print "Current directory: ", os.getcwd()
 
     if len(input_file) != 0:
         print "Input file: ", os.path.abspath(input_file)
-    if len(output_file) != 0:
-        print "Output file: ", os.path.abspath(output_file)
-    continue_str = "Do you want to continue? Type [Yes] / [No]\n"
-    py3 = sys.version_info[0] > 2
-    if py3:
-        response = input(continue_str)
+    if len(output_dir) != 0:
+        if not Path(output_dir).is_dir():
+            print "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, TMP_PATH)
+            output_dir = TMP_PATH
     else:
-        response = raw_input(continue_str)
+        output_dir = TMP_PATH
+    print "Output directory: ", os.path.abspath(output_dir)
+    sys.stdout.flush()
+    if not REDUCE_ASK:
+        print "Do you want to continue? Type [Yes] / [No]\n"
+        sys.stdout.flush()
 
-    if response == "Yes":
-        perform_operation(input_file, output_file, sheet_title)
+        py3 = sys.version_info[0] > 2
+        if py3:
+            response = input()
+        else:
+            response = raw_input()
+
+        if response == "Yes":
+            perform_operation(input_file, output_dir, sheet_title)
+        else:
+            print "Exiting..."
+            sys.exit(EXIT_SUCCESS)
     else:
-        print "Exiting..."
-        sys.exit(EXIT_SUCCESS)
+        perform_operation(input_file, output_dir, sheet_title)
 
 
 def gui_laucher():
@@ -167,20 +178,23 @@ def count_users(data, user_delim):
     return n
 
 
-def perform_operation(input_file, output_file="", sheet_title=""):
+def perform_operation(input_file, output_dir="", sheet_title=""):
     file_to_parse = Path(input_file)
     if not file_to_parse.is_file():
         print ("File '%s' not found" % file_to_parse)
         sys.exit(EXIT_ERR_FILE)
 
     # conversione in base al formato del file di input
-    filename_list = input_file.rsplit(FILE_SPLIT_CHAR, 1)
-    filename = filename_list[len(filename_list) - 1]
-    if filename[-4:] == EXT_TXT:
-        with open(input_file, "r") as file_to_parse:
-            content = file_to_parse.read()
-    else:
-        content = document_to_text(input_file)
+    content = document_to_text(input_file)
+
+    if content is None:
+        print "Unknown format for file: %s. Exiting..." % input_file
+        sys.stdout.flush()
+        sys.exit(EXIT_ERR_FILE)
+    elif len(content) == 0:
+        print "File: %s already parsed. Exiting..." % input_file
+        sys.stdout.flush()
+        sys.exit(EXIT_SUCCESS)
 
     # NOTE: filter returns a list in Python 2 and a generator in Python 3
     # False-ish value include: False, None, 0, '', [], () and all others empty containers
@@ -225,27 +239,24 @@ def perform_operation(input_file, output_file="", sheet_title=""):
     tab.tableStyleInfo = style
     ws.add_table(tab)
 
-    file_to_save = output_file
     default_out = os.path.basename(input_file)
     default_out = os.path.splitext(default_out)[0] + EXT_XLSX
-    if len(file_to_save) != 0:
-        if EXT_XLSX not in file_to_save:
-            file_to_save += EXT_XLSX
-    else:
-        os_type = platform.system()
-        if os_type == constants.OS_WIN:
-            file_to_save = constants.DEFAULT_TMP_WIN
-        elif os_type == constants.OS_LINUX:
-            file_to_save = constants.DEFAULT_TMP_LINUX
-        file_to_save += default_out
+    if output_dir[len(output_dir) - 1] != '/' or output_dir[len(output_dir) - 1] != '\\':
+        if OS_TYPE == constants.OS_WIN:
+            output_dir += '\\'
+        elif OS_TYPE == constants.OS_LINUX:
+            output_dir += '/'
+    file_to_save = output_dir + default_out
 
     if Path(file_to_save).exists():
-        user_cmd = "File: %s already exist. Do you want to override it? [Yes / No]\n" % file_to_save
+        print "File: %s already exist. Do you want to override it? [Yes / No]\n" % file_to_save
+        sys.stdout.flush()
         py3 = sys.version_info[0] > 2
         if py3:
-            response = input(user_cmd)
+            response = input()
         else:
-            response = raw_input(user_cmd)
+            response = raw_input()
+
         if response != "Yes":
             file_to_save = file_to_save.split(".")[0] + str(random.randint(0, 100000)) + EXT_XLSX
 

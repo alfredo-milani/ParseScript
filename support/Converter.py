@@ -53,7 +53,12 @@ def document_to_text(file_path):
     filename_list = file_path.rsplit(FILE_SPLIT_CHAR, 1)
     filename = filename_list[len(filename_list) - 1]
 
-    if filename[-4:] == EXT_DOC:
+    if filename[-5:] == EXT_XLSX:
+        return ""
+    elif filename[-4:] == EXT_TXT:
+        with open(file_path, "r") as file_to_parse:
+            return file_to_parse.read()
+    elif filename[-4:] == EXT_DOC:
         cmd = [CMD_DOC, file_path]
         p = Popen(cmd, stdout=PIPE)
         stdout, stderr = p.communicate()
@@ -72,6 +77,8 @@ def document_to_text(file_path):
         return stdout.decode(DECODE_FORMAT, 'ignore')
     elif filename[-4:] == EXT_PDF:
         return convert_pdf_to_txt(file_path)
+    else:
+        return None
 
 
 if __name__ == "__main__":
