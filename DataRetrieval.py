@@ -43,9 +43,8 @@ def usage():
     print "# Options\n"
     print "\t-i | --I= | --ifile= )\t\tSetting input file"
     print (
-        "\t-o | --O= | --ofile= )\t\tSetting output file. If not specified, a file (*%s) "
+        "\t-o | --O= | --odir= )\t\tSetting output directory. If not specified the files "
         "will be created in the default temp directory ('%s' -> '%s' | '%s' -> '%s')" % (
-            EXT_XLSX,
             constants.OS_WIN,
             constants.DEFAULT_TMP_WIN,
             constants.OS_LINUX,
@@ -54,7 +53,7 @@ def usage():
     )
     print "\t-t | --T= )\t\t\tSetting sheet title. Default behaviour: based on input filename"
     print "\t--not-ask )\t\t\tRiduces user interaction"
-    print "\t--gui | --GUI )\tLaunch script in graphical mode"
+    print "\t--gui | --GUI )\t\t\tLaunch script in graphical mode"
     print "\t-h | -H | --help | --HELP )\tShow this help\n"
 
 
