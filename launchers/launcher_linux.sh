@@ -32,7 +32,7 @@ else
     echo -e "Procedere con l'elaborazione? [Yes / No]\t";
     read choise
     echo "";
-    if [ ${choise} == "Yes" ]; then
+    if [ "${choise}" == "Yes" ]; then
         for file in ${dir_to_convert}/*; do
             python ${tool} --I="${file}" --O="$dir_converted" --not-ask;
             echo -e "\n\n";
