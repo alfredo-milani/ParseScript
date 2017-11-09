@@ -19,11 +19,11 @@ from openpyxl import Workbook
 from openpyxl.worksheet.table import TableStyleInfo, Table
 from pathlib import Path
 
-import GetFileDialog
 import constants
 import entity
-from support import document_to_text
-from support.Converter import EXT_XLSX
+from building_gui import GetFileDialog
+from utils import document_to_text
+from utils.Converter import EXT_XLSX
 
 EXIT_SUCCESS = 0
 EXIT_ERR_ARG = 1
@@ -258,7 +258,7 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
             response = raw_input()
 
         if response != "Yes":
-            file_to_save = file_to_save.split(".")[0] + str(random.randint(0, 100000)) + EXT_XLSX
+            file_to_save = file_to_save[:-len(EXT_XLSX)] + "_" + str(random.randint(0, 100000)) + EXT_XLSX
 
     wb.save(file_to_save)
 
