@@ -14,6 +14,7 @@ import os
 import platform
 import random
 import sys
+from os.path import isfile
 
 from openpyxl import Workbook
 from openpyxl.worksheet.table import TableStyleInfo, Table
@@ -129,7 +130,7 @@ def parse_arg(argv):
     # print "Current directory: ", os.getcwd()
 
     if len(input_file) != 0:
-        print "Input file: ", os.path.abspath(input_file)
+        print "Input: ", os.path.abspath(input_file)
     if len(output_dir) != 0:
         if not Path(output_dir).is_dir():
             print "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, TMP_PATH)
@@ -138,23 +139,41 @@ def parse_arg(argv):
         output_dir = TMP_PATH
     print "Output directory: ", os.path.abspath(output_dir)
     sys.stdout.flush()
-    if not REDUCE_ASK:
-        print "Do you want to continue? Type [Yes] / [No]\n"
-        sys.stdout.flush()
 
-        py3 = sys.version_info[0] > 2
-        if py3:
-            response = input()
-        else:
-            response = raw_input()
-
-        if response == "Yes":
-            perform_operation(input_file, output_dir, sheet_title)
-        else:
-            print "Exiting..."
-            sys.exit(EXIT_SUCCESS)
+    if Path(input_file).is_dir():
+        list_of_files = [input_file + "/" + f for f in os.listdir(input_file) if isfile(input_file + "/" + f)]
+    elif Path(input_file).is_file():
+        list_of_files = [input_file]
     else:
-        perform_operation(input_file, output_dir, sheet_title)
+        print "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file
+        sys.exit(EXIT_ERR_ARG)
+
+    print "File that will be converted:"
+    for el in list_of_files:
+        print "\t> %s" % el
+    print "\n"
+    sys.stdout.flush()
+
+    for el in list_of_files:
+        print "\n\n>>> Parsing file: %s" % el
+        if not REDUCE_ASK:
+            print "Do you want to continue? Type [Yes] / [No]\t"
+            sys.stdout.flush()
+
+            py3 = sys.version_info[0] > 2
+            if py3:
+                response = input()
+            else:
+                response = raw_input()
+
+            if response == "Yes":
+                perform_operation(el, output_dir, sheet_title)
+            else:
+                print "Skipping..."
+                sys.stdout.flush()
+                continue
+        else:
+            perform_operation(el, output_dir, sheet_title)
 
 
 def gui_laucher():
@@ -181,19 +200,22 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     file_to_parse = Path(input_file)
     if not file_to_parse.is_file():
         print ("File '%s' not found" % file_to_parse)
-        sys.exit(EXIT_ERR_FILE)
+        return
+        # sys.exit(EXIT_ERR_FILE)
 
     # conversione in base al formato del file di input
     content = document_to_text(input_file)
 
     if content is None:
-        print "Unknown format for file: %s. Exiting..." % input_file
+        print "!!! Unknown format for file: %s. Skipping... !!!" % input_file
         sys.stdout.flush()
-        sys.exit(EXIT_ERR_FILE)
+        return
+        # sys.exit(EXIT_ERR_FILE)
     elif len(content) == 0:
-        print "File: %s already parsed. Exiting..." % input_file
+        print "! File: %s already parsed. Skipping... !" % input_file
         sys.stdout.flush()
-        sys.exit(EXIT_SUCCESS)
+        return
+        # sys.exit(EXIT_SUCCESS)
 
     # NOTE: filter returns a list in Python 2 and a generator in Python 3
     # False-ish value include: False, None, 0, '', [], () and all others empty containers
@@ -257,9 +279,11 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
             response = raw_input()
 
         if response != "Yes":
+            # TODO potrebbe ancora esistere un file con lo stesso nome -> genera codice da funzione hash
             file_to_save = file_to_save[:-len(EXT_XLSX)] + "_" + str(random.randint(0, 100000)) + EXT_XLSX
 
     wb.save(file_to_save)
+    print "<<< File correctly parsed >>>"
 
 
 def get_users_list(content):

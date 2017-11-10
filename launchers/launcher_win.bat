@@ -8,21 +8,18 @@
 :: Note:             --/--
 :: Versione bash:    4.4.12(1)-release
 :: ============================================================================
-@ECHO OFF
-SET tab=
-SET tool=..\DataRetrieval.py
-SET dir_to_convert=..\DATA_TO_CONVERT
-SET dir_converted=..\DATA_CONVERTED
+@echo off
+set tab=
+set tool=..\DataRetrieval.py
+set dir_to_convert=..\DATA_TO_CONVERT
+set dir_converted=..\DATA_CONVERTED
 
-ECHO Starting %tool% with GUI
-ECHO Current directory: %cd%
-ECHO Directory where check file: %dir_to_convert%
-:: ECHO Directory where will be send converted files: %dir_converted%
-ECHO Directory where will be send converted files: R:\\
+echo Starting %tool% with GUI
+echo Current directory: %cd%
 
-ECHO.
-ECHO Files to convert:
+echo.
 :: TODO imposta variabile di debug (come in script *.sh)
 :: Testa operatore & per eseguire comandi multipli su una singola linea
-for %%file in (%dir_to_convert%\*) do echo %tab%%%file
-for %%file in (%dir_to_convert%\*) do %tool% --I="%%file" --O=%dir_converted% --not-ask
+%tool% --I="%dir_to_convert%" --O=%dir_converted% --not-ask
+
+pause
