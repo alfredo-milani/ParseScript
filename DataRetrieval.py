@@ -22,7 +22,6 @@ from pathlib import Path
 
 import constants
 import entity
-from building_gui import GetFileDialog
 from utils import document_to_text
 from utils.Converter import EXT_XLSX
 
@@ -92,6 +91,8 @@ def set_up_sys():
 
 
 def parse_arg(argv):
+    global REDUCE_ASK
+    gui = False
     input_file = ""
     output_dir = ""
     sheet_title = ""
@@ -125,10 +126,19 @@ def parse_arg(argv):
         elif opt in ("-t", "--T"):
             sheet_title = arg
         elif opt in ("--gui", "--GUI"):
-            gui_laucher()
+            REDUCE_ASK = True
+            gui = True
 
     # print "Current directory: ", os.getcwd()
 
+    if gui:
+        from gui import GraphicUserInterface
+        GraphicUserInterface.init()
+    else:
+        launch_ui(input_file, output_dir, sheet_title)
+
+
+def launch_ui(input_file="", output_dir="", sheet_title=""):
     if len(input_file) != 0:
         print "Input: ", os.path.abspath(input_file)
     if len(output_dir) != 0:
@@ -139,6 +149,10 @@ def parse_arg(argv):
         output_dir = TMP_PATH
     print "Output directory: ", os.path.abspath(output_dir)
     sys.stdout.flush()
+
+    if not Path(input_file).exists():
+        print "ERROR: %s not exist!" % input_file
+        sys.exit(EXIT_ERR_ARG)
 
     if Path(input_file).is_dir():
         list_of_files = [input_file + "/" + f for f in os.listdir(input_file) if isfile(input_file + "/" + f)]
@@ -174,10 +188,6 @@ def parse_arg(argv):
                 continue
         else:
             perform_operation(el, output_dir, sheet_title)
-
-
-def gui_laucher():
-    GetFileDialog.laucher()
 
 
 def replace_unsupported_char(string, chars_to_check, selected_char):

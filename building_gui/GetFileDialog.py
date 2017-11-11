@@ -34,7 +34,7 @@ def laucher():
     # to the function, then the button calls the function.
     button = Button(root, text='GetFileName', command=askopenfilename)
     # this puts the button at the top in the middle
-    button.grid(row=1, column=1)
+    button.grid(row=1, column=0)
 
     # Make a scroll bar so we can follow the text if it goes off a single box
     scrollbar = Scrollbar(root, orient=VERTICAL)
