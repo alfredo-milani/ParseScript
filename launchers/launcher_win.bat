@@ -14,12 +14,12 @@ set tool=..\DataRetrieval.py
 set dir_to_convert=..\DATA_TO_CONVERT
 set dir_converted=..\DATA_CONVERTED
 
-echo Starting %tool% with GUI
+echo Starting %tool% in CLI
 echo Current directory: %cd%
 
 echo.
 :: TODO imposta variabile di debug (come in script *.sh)
 :: Testa operatore & per eseguire comandi multipli su una singola linea
-%tool% --I="%dir_to_convert%" --O=%dir_converted% --not-ask
+%tool% --I="%dir_to_convert%" --O="%dir_converted%" --not-ask
 
 pause
