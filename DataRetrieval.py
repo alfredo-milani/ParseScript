@@ -22,8 +22,9 @@ from pathlib import Path
 
 import constants
 import entity
+from entity.InputData import InputData
 from utils import document_to_text
-from utils.Converter import EXT_XLSX
+from utils.Converter import EXT_XLSX, split_char
 
 EXIT_SUCCESS = 0
 EXIT_ERR_ARG = 1
@@ -31,10 +32,8 @@ EXIT_ERR_FILE = 2
 EXIT_ERR_BAD_CONTENT = 3
 EXIT_ERR_PACKAGE_MISSING = 4
 
-FILE_SPLIT_CHAR = '/'
 OS_TYPE = ""
 TMP_PATH = ""
-REDUCE_ASK = False
 
 
 def usage():
@@ -91,11 +90,7 @@ def set_up_sys():
 
 
 def parse_arg(argv):
-    global REDUCE_ASK
-    gui = False
-    input_file = ""
-    output_dir = ""
-    sheet_title = ""
+    input_data = InputData()
 
     try:
         opts, args = getopt.getopt(
@@ -117,37 +112,48 @@ def parse_arg(argv):
             usage()
             sys.exit(EXIT_SUCCESS)
         elif opt in ("-i", "--I", "--ifile"):
-            input_file = arg
+            input_data.__setattr__("input_file", arg)
         elif opt in ("-o", "--O", "--odir"):
-            output_dir = arg
+            input_data.__setattr__("output_dir", arg)
         elif opt in "--not-ask":
-            global REDUCE_ASK
-            REDUCE_ASK = True
+            input_data.__setattr__("reduce_ask", True)
         elif opt in ("-t", "--T"):
-            sheet_title = arg
+            input_data.__setattr__("sheet_title", arg)
         elif opt in ("--gui", "--GUI"):
-            REDUCE_ASK = True
-            gui = True
+            input_data.__setattr__("reduce_ask", True)
+            input_data.__setattr__("gui", True)
 
     # print "Current directory: ", os.getcwd()
 
-    if gui:
+    return input_data
+
+
+def choose_ui(input_data):
+    if input_data.__getattribute__("gui"):
         from gui import GraphicUserInterface
         GraphicUserInterface.init()
     else:
-        launch_ui(input_file, output_dir, sheet_title)
+        launch_ui(input_data)
 
 
-def launch_ui(input_file="", output_dir="", sheet_title=""):
+def launch_ui(input_data):
+    input_file = input_data.__getattribute__("input_file")
+    output_dir = input_data.__getattribute__("output_dir")
+    sheet_title = input_data.__getattribute__("sheet_title")
+    reduce_ask = input_data.__getattribute__("reduce_ask")
+
     if len(input_file) != 0:
         print "Input: ", os.path.abspath(input_file)
     if len(output_dir) != 0:
         if not Path(output_dir).is_dir():
             print "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, TMP_PATH)
-            output_dir = TMP_PATH
+            input_data.__setattr__("output_dir", TMP_PATH)
+            output_dir = input_data.__getattribute__("output_dir")
     else:
-        output_dir = TMP_PATH
+        input_data.__setattr__("output_dir", TMP_PATH)
+        output_dir = input_data.__getattribute__("output_dir")
     print "Output directory: ", os.path.abspath(output_dir)
+    # TODO al posto di controllare l'attributo 'gui' creare 2 classi (CLI, GUI) ed usa il polimorfismo
     sys.stdout.flush()
 
     if not Path(input_file).exists():
@@ -155,7 +161,11 @@ def launch_ui(input_file="", output_dir="", sheet_title=""):
         sys.exit(EXIT_ERR_ARG)
 
     if Path(input_file).is_dir():
-        list_of_files = [input_file + "/" + f for f in os.listdir(input_file) if isfile(input_file + "/" + f)]
+        list_of_files = [
+            input_file + split_char() + f
+            for f in os.listdir(input_file)
+            if isfile(input_file + split_char() + f)
+        ]
     elif Path(input_file).is_file():
         list_of_files = [input_file]
     else:
@@ -170,7 +180,7 @@ def launch_ui(input_file="", output_dir="", sheet_title=""):
 
     for el in list_of_files:
         print "\n\n>>> Parsing file: %s" % el
-        if not REDUCE_ASK:
+        if not reduce_ask:
             print "Do you want to continue? Type [Yes] / [No]\t"
             sys.stdout.flush()
 
@@ -273,10 +283,7 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     default_out = os.path.basename(input_file)
     default_out = os.path.splitext(default_out)[0] + EXT_XLSX
     if output_dir[len(output_dir) - 1] != '/' or output_dir[len(output_dir) - 1] != '\\':
-        if OS_TYPE == constants.OS_WIN:
-            output_dir += '\\'
-        elif OS_TYPE == constants.OS_LINUX:
-            output_dir += '/'
+        output_dir += split_char()
     file_to_save = output_dir + default_out
 
     if Path(file_to_save).exists():
@@ -324,11 +331,8 @@ def get_users_list(content):
                         scores.append(itemScore[1])
                     else:
                         print (
-                            "Error parsing value of line: %s.\nValue: %s.\nLine: %d." % (
-                                content[i - 1],
-                                content[i],
-                                i
-                            )
+                            "Error parsing value of line: %s.\nValue: %s.\nLine: %d." %
+                            (content[i - 1], content[i], i)
                         )
                         continue
 
@@ -372,4 +376,5 @@ def get_users_list(content):
 
 if __name__ == "__main__":
     set_up_sys()
-    parse_arg(sys.argv[1:])
+    input_data = parse_arg(sys.argv[1:])
+    choose_ui(input_data)

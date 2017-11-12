@@ -11,7 +11,7 @@
 # ============================================================================
 debug=1;
 dir_to_convert=../DATA_TO_CONVERT;
-dir_converted=../DATA_CONVERTED;
+dir_converted=../DATA_CONVERTEDo;
 tool=../DataRetrieval.py;
 
 if [ ${debug} == 0 ]; then

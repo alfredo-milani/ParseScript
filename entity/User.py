@@ -9,7 +9,7 @@ class User(object):
             email: String che rappresenta l'indirizzo email dell'utente corrente
             scores: List che contiene le risposte che hanno avuto un esito positivo (cioè 1)
     '''
-    def __init__(self, name, surname, email, ntel, scores):
+    def __init__(self, name, email, surname="", ntel="", scores=""):
         self.name = name
         self.surname = surname
         self.email = email

@@ -1,3 +1,4 @@
+import platform
 from cStringIO import StringIO
 from subprocess import Popen, PIPE
 
@@ -8,10 +9,11 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 
+import constants
+
 EXT_XLSX = ".xlsx"
 EXT_TXT = ".txt"
 CODEC_UTF_8 = "utf-8"
-FILE_SPLIT_CHAR = '/'
 CMD_DOC = "antiword"
 EXT_DOC = ".doc"
 EXT_DOCX = ".docx"
@@ -19,6 +21,14 @@ CMD_ODT = "odt2txt"
 EXT_ODT = ".odt"
 EXT_PDF = ".pdf"
 DECODE_FORMAT = "ascii"
+
+
+def split_char():
+    os = platform.system()
+    if os == constants.OS_WIN:
+        return '\\'
+    elif os == constants.OS_LINUX:
+        return '/'
 
 
 def convert_pdf_to_txt(path):
@@ -50,7 +60,7 @@ def convert_pdf_to_txt(path):
 
 
 def document_to_text(file_path):
-    filename_list = file_path.rsplit(FILE_SPLIT_CHAR, 1)
+    filename_list = file_path.rsplit(split_char(), 1)
     filename = filename_list[len(filename_list) - 1]
 
     if filename[-5:] == EXT_XLSX:
