@@ -133,10 +133,10 @@ def choose_ui(input_data):
         from gui import GraphicUserInterface
         GraphicUserInterface.init()
     else:
-        launch_ui(input_data)
+        start_operation(input_data)
 
 
-def launch_ui(input_data):
+def start_operation(input_data):
     input_file = input_data.__getattribute__("input_file")
     output_dir = input_data.__getattribute__("output_dir")
     sheet_title = input_data.__getattribute__("sheet_title")
@@ -376,5 +376,4 @@ def get_users_list(content):
 
 if __name__ == "__main__":
     set_up_sys()
-    input_data = parse_arg(sys.argv[1:])
-    choose_ui(input_data)
+    choose_ui(parse_arg(sys.argv[1:]))
