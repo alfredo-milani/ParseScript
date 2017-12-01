@@ -11,7 +11,7 @@
 # ============================================================================
 debug=-1;
 dir_to_convert=../DATA_TO_CONVERT;
-dir_converted=../DATA_CONVERTED;
+dir_converted=../DATA_CONVERTE;
 tool=../DataRetrieval.py;
 
 case ${debug} in
@@ -27,29 +27,5 @@ case ${debug} in
         # debug level: gui test
         echo "Starting $tool with GUI";
         python ${tool} --gui;
-        ;;
-
-    2 )
-        # debug level: general test
-        echo "Current directory: `pwd`";
-
-        echo "";
-        test_dir_out=/dev/shm/ParseScriptTestOut;
-        test_dir_in=/dev/shm/ParseScriptTestIn;
-
-        # creazione cartella file input
-        ! [ -e "${test_dir_in}" ] && mkdir ${test_dir_in} && echo "Creazione cartella input. Riavviare script" && exit 0;
-        # pulizia file output precedenti
-        if [ -e "${test_dir_out}" ]; then
-            for el in ${test_dir_out}/*; do
-                [ -e "${el}" ] && rm "${el}";
-            done
-        else
-            mkdir ${test_dir_out};
-        fi
-
-        dir_converted=${test_dir_out};
-        dir_to_convert=${test_dir_in};
-        python ${tool} --I="${dir_to_convert}" --O="$dir_converted" --not-ask;
         ;;
 esac

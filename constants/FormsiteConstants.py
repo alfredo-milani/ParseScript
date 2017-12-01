@@ -26,6 +26,9 @@ SCORES_LIST = [
 ]
 SCORES_NUM = len(SCORES_LIST)
 
+# Ridotta la lunghezza del match necessario a soddisfare l'uguaglianza
+# a causa di problemi di decodifica con da formato *.docx
+# before: "Nome: *"; now: "Nome:"
 CREDENTIAL_NAME = "Nome:"
 CREDENTIALS_SURNAME = "Cognome:"
 CREDENTIAL_EMAIL = "Email:"
