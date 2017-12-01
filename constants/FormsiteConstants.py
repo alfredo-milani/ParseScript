@@ -1,6 +1,6 @@
 # coding=utf-8
 '''
-    Informazioni circa il formato del file da cui esrtapolare i dati
+    Informazioni circa il modello del file da cui estrapolare i dati
 '''
 NEW_USER = "Scoring Summary"
 
@@ -26,10 +26,10 @@ SCORES_LIST = [
 ]
 SCORES_NUM = len(SCORES_LIST)
 
-CREDENTIAL_NAME = "Nome: *"
-CREDENTIALS_SURNAME = "Cognome: *"
-CREDENTIAL_EMAIL = "Email: *"
-CREDENTIAL_NTEL = "Telefono: *"
+CREDENTIAL_NAME = "Nome:"
+CREDENTIALS_SURNAME = "Cognome:"
+CREDENTIAL_EMAIL = "Email:"
+CREDENTIAL_NTEL = "Telefono:"
 CREDENTIALS_LIST = [
     CREDENTIAL_NAME,
     CREDENTIALS_SURNAME,

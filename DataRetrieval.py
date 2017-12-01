@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding=utf-8
 # ============================================================================
 # Titolo:           dataRetrieval.py
 # Descrizione:      Script per estrapolare dati da un file *.txt ed inserirli in un file *.xlsx
@@ -243,6 +244,9 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
 
     raw_data_num_users = count_users(data_list, constants.NEW_USER)
 
+    for i in range(len(data_list)):
+        print "i: %d; %s" % (i, data_list[i])
+
     list_of_users = get_users_list(data_list)
 
     if raw_data_num_users != len(list_of_users):
@@ -303,12 +307,26 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     print "<<< File correctly parsed >>>"
 
 
+def check_match(to_match, list_to_check):
+    '''
+    Controlla se to_match è presente, almeno in parte, in list_to_check
+    :param to_match: stringa da cercare
+    :param list_to_check: lista di elementi in cui cercare
+    :return: boolean
+    '''
+    for item in list_to_check:
+        if item in to_match:
+            return True
+
+    return False
+
+
 def get_users_list(content):
     users_list = []
     i = 0
     while i < len(content):
         # new user found
-        if content[i].find(constants.NEW_USER) != -1:
+        if constants.NEW_USER in content[i]:
             name = ""
             surname = ""
             email = ""
@@ -319,52 +337,66 @@ def get_users_list(content):
 
             # parsing scores
             s = 0
-            for itemScore in constants.SCORES_LIST:
-                while content[i].find(itemScore[0]) == -1 and content[i].find(constants.NEW_USER) == -1:
+            score_list = [x[0] for x in constants.SCORES_LIST]
+            for score in range(constants.SCORES_NUM):
+                while not check_match(content[i], score_list) and constants.NEW_USER not in content[i]:
                     i += 1
-                if content[i].find(constants.NEW_USER) != -1:
+                if content[i] in constants.NEW_USER:
                     break
 
                 i += 1
                 if content[i] != constants.SCORE_VAL_NEGATIVE:
                     if content[i] == constants.SCORE_VAL_POSITIVE:
-                        scores.append(itemScore[1])
+                        scores.append(constants.SCORES_LIST[score][1])
                     else:
                         print (
                             "Error parsing value of line: %s.\nValue: %s.\nLine: %d." %
                             (content[i - 1], content[i], i)
                         )
+                        i += 1
                         continue
 
                 s += 1
 
-            if content[i].find(constants.NEW_USER) != -1:
+            if content[i] in constants.NEW_USER:
+                i += 1
                 continue
 
             # parsing credentials
             c = 0
-            for itemCredential in constants.CREDENTIALS_LIST:
-                while content[i].find(itemCredential) == -1 and content[i].find(constants.NEW_USER) == -1:
+            for credential in range(constants.CREDENTIALS_NUM):
+                if i > 1765 and i < 1780:
+                    print "Source: $$$%s$$$; D: %d" % (constants.CREDENTIAL_NAME, len(constants.CREDENTIAL_NAME))
+                    print "C: $$$%s$$$; D: %d" % (content[1780], len(content[1780]))
+
+                    for char in content[1780]:
+                        print "char: $%s$" % char
+
+                while not check_match(content[i], constants.CREDENTIALS_LIST) and constants.NEW_USER not in content[i]:
                     i += 1
-                if content[i].find(constants.NEW_USER) != -1:
+                if content[i] in constants.NEW_USER:
                     break
 
+                print "S: %s; K: %s" % (content[i], constants.CREDENTIALS_LIST)
+
+                current_item = content[i]
                 i += 1
-                if itemCredential == constants.CREDENTIAL_NAME:
+                if constants.CREDENTIAL_NAME in current_item:
                     name = content[i]
-                elif itemCredential == constants.CREDENTIALS_SURNAME:
+                elif constants.CREDENTIALS_SURNAME in current_item:
                     surname = content[i]
-                elif itemCredential == constants.CREDENTIAL_EMAIL:
+                elif constants.CREDENTIAL_EMAIL in current_item:
                     email = content[i]
-                elif itemCredential == constants.CREDENTIAL_NTEL:
+                elif constants.CREDENTIAL_NTEL in current_item:
                     ntel = content[i]
 
                 c += 1
 
-            if content[i].find(constants.NEW_USER) != -1:
+            if content[i] in constants.NEW_USER:
+                i += 1
                 continue
 
-            user = entity.User(name, surname, email, ntel, scores)
+            user = entity.User(name, email, surname, ntel, scores)
             users_list.append(user)
             if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                 print "Warning: Wrong parsed: User: " + user
@@ -376,4 +408,5 @@ def get_users_list(content):
 
 if __name__ == "__main__":
     set_up_sys()
-    choose_ui(parse_arg(sys.argv[1:]))
+    # choose_ui(parse_arg(sys.argv[1:]))
+    choose_ui(InputData("/dev/shm/ParseScriptTestIn", "/dev/shm/ParseScriptTestOut", reduce_ask=True))

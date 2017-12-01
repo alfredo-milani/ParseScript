@@ -38,5 +38,4 @@ class User(object):
     Per convertire l'istanza di User in lista contenente i dati in formato stringa
     '''
     def get_list_from_instance(self):
-        data_list = [self.name, self.surname, self.email, self.ntel, self.__score_from_list_to_string()]
-        return data_list
+        return [self.name, self.surname, self.ntel, self.email, self.__score_from_list_to_string()]
