@@ -318,6 +318,11 @@ def check_match(to_match, list_to_check):
 
 
 def get_users_list(content):
+    '''
+    Estrae una lista di User da content
+    :param content: testo da elaborare
+    :return: lista di User
+    '''
     users_list = []
     i = 0
     while i < len(content):
@@ -353,13 +358,12 @@ def get_users_list(content):
                             "Error parsing value of line: %s.\nValue: %s.\nLine: %d." %
                             (content[i - 1], content[i], i)
                         )
-                        i += 1
                         continue
 
+                i += 1
                 s += 1
 
             if constants.NEW_USER in content[i]:
-                i += 1
                 continue
 
             # parsing credentials
@@ -384,10 +388,10 @@ def get_users_list(content):
                 elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NTEL:
                     ntel = content[i]
 
+                i += 1
                 c += 1
 
             if constants.NEW_USER in content[i]:
-                i += 1
                 continue
 
             user = entity.User(name, email, surname, ntel, scores)
