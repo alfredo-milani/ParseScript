@@ -256,10 +256,15 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
 
     # create name for new sheet
     if len(sheet_title) == 0:
-        text_to_split = os.path.splitext(input_file)[0]
+        text_to_split = os.path.basename(input_file).split('.')[0]
         text_to_split = replace_unsupported_char(text_to_split, ['-', ' '], '_')
         month_list = text_to_split.split("_")
-        sheet_title = month_list[1] + "-" + month_list[2][0:3]
+        try:
+            if len(month_list) < 3:
+                raise IndexError('Filename non in formato standard: Formsite giorno mese')
+            sheet_title = month_list[len(month_list) - 2] + "-" + month_list[len(month_list) - 1][0:3]
+        except IndexError:
+            sheet_title = text_to_split
     ws.title = sheet_title
 
     # add column headings. NB. these must be strings
