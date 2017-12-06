@@ -19,6 +19,7 @@ read choise;
 
 case ${choise} in
     [oO][kK] )
+        ### OLD PACKAGE ###
         cd ${TMP};
         curl -O -L http://github.com/jmcnamara/XlsxWriter/archive/master.tar.gz;
         tar -zxvf master.tar.gz;
@@ -26,6 +27,7 @@ case ${choise} in
         sudo python setup.py install;
         exit 0;
         ;;
+        ######
 
     * )
         echo "Comando non riconosciuto: "${choise};
