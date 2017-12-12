@@ -10,9 +10,10 @@
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
 debug=-1;
-dir_to_convert=../DATA_TO_CONVERT;
-dir_converted=../DATA_CONVERTED;
-tool=../DataRetrieval.py;
+abs_path=`pwd`;
+dir_to_convert=${abs_path}/DATA_TO_CONVERT;
+dir_converted=${abs_path}/DATA_CONVERTE;
+tool=${abs_path}/DataRetrieval.py;
 
 case ${debug} in
     -1 )
