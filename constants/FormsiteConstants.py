@@ -40,3 +40,12 @@ CREDENTIALS_LIST = [
     CREDENTIAL_NTEL
 ]
 CREDENTIALS_NUM = len(CREDENTIALS_LIST)
+
+HEADER_ROW = [
+    "nome",
+    "cognome",
+    "telefono",
+    "email",
+    "scores",
+    "note"
+]

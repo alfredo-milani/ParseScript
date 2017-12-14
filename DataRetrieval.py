@@ -5,7 +5,7 @@
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             ven 20 ott 2017, 19.36.00, CEST
 # Licenza:          MIT License
-# Versione:         0.9.5
+# Versione:         1.5.0
 # Note:             --/--
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
@@ -22,7 +22,9 @@ from pathlib import Path
 
 import constants
 import entity
+from constants import APP_NAME, SystemConstants
 from entity.InputData import InputData
+from ui.ParseScriptCLI import ParseScriptCLI
 from utils import document_to_text
 from utils.Converter import EXT_XLSX, split_char
 
@@ -42,22 +44,31 @@ def usage():
     print "# Options\n"
     print "\t-i | --I= | --ifile= )\t\tSetting input file"
     print (
-        "\t-o | --O= | --odir= )\t\tSetting output directory. If not specified the files "
-        "will be created in the default temp directory ('%s' -> '%s' | '%s' -> '%s')" % (
-            constants.OS_WIN,
-            constants.DEFAULT_TMP_WIN,
-            constants.OS_LINUX,
-            constants.DEFAULT_TMP_LINUX
-        )
+            "\t-o | --O= | --odir= )\t\tSetting output directory. If not specified the files "
+            "will be created in the default temp directory ('%s' -> '%s' | '%s' -> '%s')" % (
+                constants.OS_WIN,
+                constants.DEFAULT_TMP_WIN,
+                constants.OS_LINUX,
+                constants.DEFAULT_TMP_LINUX
+            )
     )
     print "\t-t | --T= )\t\t\tSetting sheet title. Default behaviour: based on input filename"
     print "\t--not-ask )\t\t\tRiduces user interaction"
-    print "\t--gui | --GUI )\t\t\tLaunch script in graphical mode"
+    print "\t--ui | --GUI )\t\t\tLaunch script in graphical mode"
     print "\t-h | -H | --help | --HELP )\tShow this help\n"
+
+
+# To get absolute path of the program (path which contain the function's file)
+def get_program_folder():
+    module_file = __file__
+    module_dir = os.path.split(os.path.abspath(module_file))[0]
+    program_folder = os.path.abspath(module_dir)
+    return program_folder
 
 
 def set_up_sys():
     global OS_TYPE, TMP_PATH
+    SystemConstants.APP_ABS_PATH = get_program_folder()
     OS_TYPE = platform.system()
     if OS_TYPE == constants.OS_WIN:
         TMP_PATH = constants.DEFAULT_TMP_WIN
@@ -116,48 +127,51 @@ def parse_arg(argv):
         elif opt in ("-o", "--O", "--odir"):
             input_data.__setattr__("output_dir", arg)
         elif opt in "--not-ask":
-            input_data.__setattr__("reduce_ask", True)
+            input_data.__setattr__("verbose", False)
         elif opt in ("-t", "--T"):
             input_data.__setattr__("sheet_title", arg)
         elif opt in ("--gui", "--GUI"):
-            input_data.__setattr__("reduce_ask", True)
             input_data.__setattr__("gui", True)
-
-    # print "Current directory: ", os.getcwd()
 
     return input_data
 
 
-def choose_ui(input_data):
+def launch_ui(input_data):
     if input_data.__getattribute__("gui"):
-        from gui import GraphicUserInterface
-        GraphicUserInterface.init()
+        import wx
+        from ui import ParseScriptGUI
+
+        graphic_interface = wx.App(False)
+        SystemConstants.UI_CONSOLE = ParseScriptGUI(None, APP_NAME)
+        SystemConstants.UI_CONSOLE.Show(True)
+        graphic_interface.MainLoop()
     else:
-        start_operation(input_data)
+        SystemConstants.UI_CONSOLE = ParseScriptCLI()
+        init_operation(input_data)
 
 
-def start_operation(input_data):
+def init_operation(input_data):
     input_file = input_data.__getattribute__("input_file")
     output_dir = input_data.__getattribute__("output_dir")
     sheet_title = input_data.__getattribute__("sheet_title")
-    reduce_ask = input_data.__getattribute__("reduce_ask")
+    verbose = input_data.__getattribute__("verbose")
 
     if len(input_file) != 0:
-        print "Input: ", os.path.abspath(input_file)
+        SystemConstants.UI_CONSOLE.print_to_user("Input: " + os.path.abspath(input_file))
     if len(output_dir) != 0:
         if not Path(output_dir).is_dir():
-            print "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, TMP_PATH)
+            SystemConstants.UI_CONSOLE.print_to_user(
+                "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, TMP_PATH)
+            )
             input_data.__setattr__("output_dir", TMP_PATH)
             output_dir = input_data.__getattribute__("output_dir")
     else:
         input_data.__setattr__("output_dir", TMP_PATH)
         output_dir = input_data.__getattribute__("output_dir")
-    print "Output directory: ", os.path.abspath(output_dir)
-    # TODO al posto di controllare l'attributo 'gui' creare 2 classi (CLI, GUI) ed usa il polimorfismo
-    sys.stdout.flush()
+    SystemConstants.UI_CONSOLE.print_to_user("Output directory: " + os.path.abspath(output_dir))
 
     if not Path(input_file).exists():
-        print "ERROR: %s not exist!" % input_file
+        SystemConstants.UI_CONSOLE.print_to_user("ERROR: %s not exist!" % input_file)
         sys.exit(EXIT_ERR_ARG)
 
     if Path(input_file).is_dir():
@@ -169,32 +183,25 @@ def start_operation(input_data):
     elif Path(input_file).is_file():
         list_of_files = [input_file]
     else:
-        print "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file
+        SystemConstants.UI_CONSOLE.print_to_user(
+            "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file
+        )
         sys.exit(EXIT_ERR_ARG)
 
-    print "File that will be converted:"
+    SystemConstants.UI_CONSOLE.print_to_user("File that will be converted:")
     for el in list_of_files:
-        print "\t> %s" % el
-    print "\n"
-    sys.stdout.flush()
+        SystemConstants.UI_CONSOLE.print_to_user("\t> %s" % el)
+    SystemConstants.UI_CONSOLE.print_to_user("\n")
 
     for el in list_of_files:
-        print "\n\n>>> Parsing file: %s" % el
-        if not reduce_ask:
-            print "Do you want to continue? Type [Yes] / [No]\t"
-            sys.stdout.flush()
+        SystemConstants.UI_CONSOLE.print_to_user("\n\n>>> Parsing file: %s" % el)
+        if verbose:
+            response = SystemConstants.UI_CONSOLE.get_user_input("Do you want to continue?", "Type [Yes] / [No]")
 
-            py3 = sys.version_info[0] > 2
-            if py3:
-                response = input()
-            else:
-                response = raw_input()
-
-            if response == "Yes":
+            if response:
                 perform_operation(el, output_dir, sheet_title)
             else:
-                print "Skipping..."
-                sys.stdout.flush()
+                SystemConstants.UI_CONSOLE.print_to_user("Skipping...")
                 continue
         else:
             perform_operation(el, output_dir, sheet_title)
@@ -219,7 +226,7 @@ def count_users(data, user_delim):
 def perform_operation(input_file, output_dir="", sheet_title=""):
     file_to_parse = Path(input_file)
     if not file_to_parse.is_file():
-        print ("File '%s' not found" % file_to_parse)
+        SystemConstants.UI_CONSOLE.print_to_user("File '%s' not found" % file_to_parse)
         return
         # sys.exit(EXIT_ERR_FILE)
 
@@ -227,13 +234,11 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     content = document_to_text(input_file)
 
     if content is None:
-        print "!!! Unknown format for file: %s. Skipping... !!!" % input_file
-        sys.stdout.flush()
+        SystemConstants.UI_CONSOLE.print_to_user("!!! Unknown format for file: %s. Skipping... !!!" % input_file)
         return
         # sys.exit(EXIT_ERR_FILE)
     elif len(content) == 0:
-        print "! File: %s already parsed. Skipping... !" % input_file
-        sys.stdout.flush()
+        SystemConstants.UI_CONSOLE.print_to_user("! File: %s already parsed. Skipping... !" % input_file)
         return
         # sys.exit(EXIT_SUCCESS)
 
@@ -246,16 +251,18 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     list_of_users = get_users_list(data_list)
 
     if raw_data_num_users != len(list_of_users):
-        print "WARNING:\nUser raw data: %d\nUser parsed: %d\nCheck if some user missing" % (
-            raw_data_num_users,
-            len(list_of_users)
+        SystemConstants.UI_CONSOLE.print_to_user(
+            "WARNING:\nUser raw data: %d\nUser parsed: %d\nCheck if some user missing" % (
+                raw_data_num_users,
+                len(list_of_users)
+            )
         )
 
     wb = Workbook()
     ws = wb.active
 
     # create name for new sheet
-    if len(sheet_title) == 0:
+    if sheet_title is None or len(sheet_title) == 0:
         text_to_split = os.path.basename(input_file).split('.')[0]
         text_to_split = replace_unsupported_char(text_to_split, ['-', ' '], '_')
         month_list = text_to_split.split("_")
@@ -292,29 +299,26 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     file_to_save = output_dir + default_out
 
     if Path(file_to_save).exists():
-        print "File: %s already exist. Do you want to override it? [Yes / No]\n" % file_to_save
-        sys.stdout.flush()
-        py3 = sys.version_info[0] > 2
-        if py3:
-            response = input()
-        else:
-            response = raw_input()
+        response = SystemConstants.UI_CONSOLE.get_user_input(
+            "File: %s already exist.\nDo you want to override it?\n" % file_to_save,
+            "Type [Yes] / [No]"
+        )
 
-        if response != "Yes":
+        if not response:
             # TODO potrebbe ancora esistere un file con lo stesso nome -> genera codice da funzione hash
             file_to_save = file_to_save[:-len(EXT_XLSX)] + "_" + str(random.randint(0, 100000)) + EXT_XLSX
 
     wb.save(file_to_save)
-    print "<<< File parsed >>>"
+    SystemConstants.UI_CONSOLE.print_to_user("<<< File parsed >>>")
 
 
 def check_match(to_match, list_to_check):
-    '''
+    """
     Verifica, anche parziale, matching tra to_match e gli elementi di list_to_check
     :param to_match: stringa da cercare
     :param list_to_check: lista di elementi in cui cercare
     :return: boolean
-    '''
+    """
     for i in range(len(list_to_check)):
         if list_to_check[i] in to_match:
             return i
@@ -323,11 +327,11 @@ def check_match(to_match, list_to_check):
 
 
 def get_users_list(content):
-    '''
+    """
     Estrae una lista di User da content
     :param content: testo da elaborare
     :return: lista di User
-    '''
+    """
     users_list = []
     i = 0
     while i < len(content):
@@ -359,7 +363,7 @@ def get_users_list(content):
                     if content[i] == constants.SCORE_VAL_POSITIVE:
                         scores.append(constants.SCORES_LIST[item_position][1])
                     else:
-                        print (
+                        SystemConstants.UI_CONSOLE.print_to_user(
                             "Error parsing value of line: %s.\nValue: %s.\nLine: %d." %
                             (content[i - 1], content[i], i)
                         )
@@ -402,7 +406,7 @@ def get_users_list(content):
             user = entity.User(name, email, surname, ntel, scores)
             users_list.append(user)
             if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
-                print "WARNING: Error parsing User: " + user
+                SystemConstants.UI_CONSOLE.print_to_user("WARNING: Error parsing User: " + user)
 
         i += 1
 
@@ -411,4 +415,4 @@ def get_users_list(content):
 
 if __name__ == "__main__":
     set_up_sys()
-    choose_ui(parse_arg(sys.argv[1:]))
+    launch_ui(parse_arg(sys.argv[1:]))

@@ -6,11 +6,7 @@ INIT_SCRIPT_NAME = "./support/setup_scripts/linux/inst_xlsxwriter.sh"
 OS_WIN = "Windows"
 OS_LINUX = "Linux"
 
-HEADER_ROW = [
-    "nome",
-    "cognome",
-    "telefono",
-    "email",
-    "scores",
-    "note"
-]
+APP_ABS_PATH = ""
+UI_CONSOLE = None
+
+APP_NAME = "Parsing script"

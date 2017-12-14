@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Parse Script
+Comment=Parsing files
+Exec=python /opt/ParseScript/DataRetrieval.py --gui %f
+Path=/opt/ParseScript
+Terminal=false
+Icon=/opt/ParseScript/resources/images/icon.png
+Type=Application
+Categories=Office;
+MimeType=application/pdf;application/x-bzpdf;application/x-gzpdf;

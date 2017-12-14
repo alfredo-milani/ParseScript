@@ -5,28 +5,55 @@
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             sab 21 ott 2017, 15.52.00, CEST
 # Licenza:          MIT License
-# Versione:         1.0.0
+# Versione:         1.5.0
 # Note:             Per eseguire questo script aprire una shell bash (Ctrl + Alt + T), portarsi nella directory contenente questo file (/dir/../ParseScript/launchers/) con il comando "cd" e digitare: "./launcher_linux.sh"
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
-debug=-1;
-abs_path=`dirname $0`;
-dir_to_convert=${abs_path}/../DATA_TO_CONVERT;
-dir_converted=${abs_path}/../DATA_CONVERTE;
-tool=${abs_path}/../DataRetrieval.py;
+debug=-1
+ui_type=1
+abs_path=`dirname $0`
+dir_to_convert=${abs_path}/../DATA_TO_CONVERT
+dir_converted=${abs_path}/../DATA_CONVERTED
+tool=${abs_path}/../DataRetrieval.py
+null=/dev/null
 
 case ${debug} in
     -1 )
         # debug level: off
-        echo "Current directory: `pwd`";
+        case ${ui_type} in
+            0 )
+                # CLI
+                echo "Current directory: `pwd`"
 
-        echo "";
-        python ${tool} --I="${dir_to_convert}" --O="$dir_converted" --not-ask;
+                echo "";
+                python ${tool} --I="${dir_to_convert}" --O="${dir_converted}" --not-ask
+                ;;
+
+            1 )
+                # GUI
+                echo "Starting $tool with GUI"
+                python ${tool} --gui 2> ${null}
+                ;;
+        esac
         ;;
 
     1 )
-        # debug level: gui test
-        echo "Starting $tool with GUI";
-        python ${tool} --gui;
+        # debug level: ui test
+        case ${ui_type} in
+            0 )
+                # CLI
+                echo "Current directory: `pwd`"
+                dir_converted=/dev/shm
+
+                echo "";
+                python ${tool} --I="${dir_to_convert}" --O="${dir_converted}" --not-ask
+                ;;
+
+            1 )
+                # GUI
+                echo "Starting $tool with GUI"
+                python ${tool} --gui
+                ;;
+        esac
         ;;
 esac
