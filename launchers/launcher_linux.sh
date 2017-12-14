@@ -36,24 +36,4 @@ case ${debug} in
                 ;;
         esac
         ;;
-
-    1 )
-        # debug level: ui test
-        case ${ui_type} in
-            0 )
-                # CLI
-                echo "Current directory: `pwd`"
-                dir_converted=/dev/shm
-
-                echo "";
-                python ${tool} --I="${dir_to_convert}" --O="${dir_converted}" --not-ask
-                ;;
-
-            1 )
-                # GUI
-                echo "Starting $tool with GUI"
-                python ${tool} --gui
-                ;;
-        esac
-        ;;
 esac
