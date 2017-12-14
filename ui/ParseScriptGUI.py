@@ -53,7 +53,14 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         panel = wx.Panel(self)
 
         # SET ICON
-        icon = wx.Icon("resources" + split_char() + "images" + split_char() + "icon.png", wx.BITMAP_TYPE_PNG, 512, 512)
+        icon = wx.Icon(
+            os.path.join(
+                SystemConstants.APP_ABS_PATH,
+                "resources" + split_char() + "images" + split_char() + "icon.png"
+            ),
+            wx.BITMAP_TYPE_PNG,
+            512,512
+        )
         self.SetIcon(icon)
 
         # MENU ITEMS
