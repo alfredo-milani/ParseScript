@@ -189,8 +189,12 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         self.Bind(wx.EVT_MENU, self.on_help, id=APP_HELP_HINT)
         self.Bind(wx.EVT_BUTTON, self.on_quit, id=APP_EXIT)
         self.Bind(wx.EVT_BUTTON, self.clean_console, id=APP_CLEAN_CONSOLE)
-        self.Bind(wx.EVT_BUTTON, lambda event: self.on_start(event, edittextfile, edittextdirinput, edittextdiroutput, checkboxverbose),
-                  buttonstart, id=APP_START)
+        self.Bind(
+            wx.EVT_BUTTON,
+            lambda event: self.on_start(event, edittextfile, edittextdirinput, edittextdiroutput, checkboxverbose),
+            buttonstart,
+            id=APP_START
+        )
         self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_input_file(event, edittextfile), buttonfileinput,
                   id=APP_SELECT_INPUT_FILE)
         self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_output_dir(event, edittextdiroutput), buttondiroutput,
