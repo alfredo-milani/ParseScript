@@ -5,9 +5,11 @@ import wx
 # constants to bind functions
 from pathlib import Path
 
-from DataRetrieval import init_operation
+from DataRetrieval import manage_operation
 from constants import SystemConstants
 from entity.InputData import InputData
+from ui.ParseScriptCLI import TEXT_COLOR_DEFAULT, TEXT_COLOR_WARNING, TEXT_COLOR_ERROR, TEXT_COLOR_SUCCESS, \
+    TEXT_COLOR_START_OPERATION
 from ui.ParseScriptUI import ParseScriptUI
 from utils import split_char
 
@@ -18,6 +20,19 @@ APP_SELECT_INPUT_FILE = 4
 APP_SELECT_OUTPUT_DIR = 5
 APP_SELECT_INPUT_DIR = 6
 APP_CLEAN_CONSOLE = 7
+
+CONSOLE_DEFAULT_COLOR = (TEXT_COLOR_DEFAULT, wx.WHITE)
+CONSOLE_WARNING_COLOR = (TEXT_COLOR_WARNING, wx.YELLOW)
+CONSOLE_ERROR_COLOR = (TEXT_COLOR_ERROR, wx.RED)
+CONSOLE_SUCCESS_COLOR = (TEXT_COLOR_SUCCESS, wx.GREEN)
+CONSOLE_START_OPERATION_COLOR = (TEXT_COLOR_START_OPERATION, wx.CYAN)
+CONSOLE_COLORS = [
+    CONSOLE_DEFAULT_COLOR,
+    CONSOLE_ERROR_COLOR,
+    CONSOLE_SUCCESS_COLOR,
+    CONSOLE_START_OPERATION_COLOR,
+    CONSOLE_WARNING_COLOR
+]
 
 HELP_MSG = "Con questo tool è possibile fare il parsing di file in formato: *.pdf, *.txt o *.docx.\n" \
            "Si può scegliere di parsare un solo file o di parsare i files" \
@@ -192,15 +207,25 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_start(event, edittextfile, edittextdirinput, edittextdiroutput, checkboxverbose),
+            # button e id si possono anche usare in mutua esclusione
             buttonstart,
             id=APP_START
         )
-        self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_input_file(event, edittextfile), buttonfileinput,
-                  id=APP_SELECT_INPUT_FILE)
-        self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_output_dir(event, edittextdiroutput), buttondiroutput,
-                  id=APP_SELECT_OUTPUT_DIR)
-        self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_output_dir(event, edittextdirinput),
-                  id=APP_SELECT_INPUT_DIR)
+        self.Bind(
+            wx.EVT_BUTTON,
+            lambda event: self.on_selected_input_file(event, edittextfile),
+            id=APP_SELECT_INPUT_FILE
+        )
+        self.Bind(
+            wx.EVT_BUTTON,
+            lambda event: self.on_selected_output_dir(event, edittextdiroutput),
+            id=APP_SELECT_OUTPUT_DIR
+        )
+        self.Bind(
+            wx.EVT_BUTTON,
+            lambda event: self.on_selected_output_dir(event, edittextdirinput),
+            id=APP_SELECT_INPUT_DIR
+        )
 
     @staticmethod
     def on_help(event):
@@ -245,7 +270,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         # START OPERATION
         input_data = InputData(input_file, ouput_dir, None, verbose, True)
-        init_operation(input_data)
+        manage_operation(input_data)
 
     @staticmethod
     def __alert_on_error__(message, windows_name):
@@ -280,9 +305,24 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         if USER_CONSOLE is not None:
             USER_CONSOLE.SetValue("")
 
-    def print_to_user(self, message=""):
+    def print_to_user(self, message="", message_type=0):
         if USER_CONSOLE is not None and message is not None:
+            USER_CONSOLE.SetForegroundColour(self.__get_console_color_from_code__(message_type))
             USER_CONSOLE.AppendText(message + "\n")
+            USER_CONSOLE.SetForegroundColour(CONSOLE_DEFAULT_COLOR[1])
+
+    @staticmethod
+    def __get_console_color_from_code__(type_code):
+        """
+        Get correct color from CONSOLE_COLORS based on @type_code. In case of errors return CONSOLE_DEFAULT_COLOR
+        :param type_code: int
+        :return: int
+        """
+        for color in CONSOLE_COLORS:
+            if color[0] == type_code:
+                return color[1]
+
+        return CONSOLE_DEFAULT_COLOR
 
     def get_user_input(self, question="", format_answere=""):
         dlg = wx.MessageDialog(None, question, style=wx.YES_NO | wx.ICON_QUESTION)

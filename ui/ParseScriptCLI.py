@@ -2,9 +2,15 @@ import sys
 
 from ui.ParseScriptUI import ParseScriptUI
 
+TEXT_COLOR_DEFAULT = 0
+TEXT_COLOR_WARNING = -2
+TEXT_COLOR_ERROR = -1
+TEXT_COLOR_SUCCESS = 1
+TEXT_COLOR_START_OPERATION = 2
+
 
 class ParseScriptCLI(ParseScriptUI):
-    def print_to_user(self, message=""):
+    def print_to_user(self, message="", message_type=0):
         if message is not None:
             print message
             self.__flush_stdout_buffer__()

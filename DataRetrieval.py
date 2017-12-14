@@ -24,7 +24,8 @@ import constants
 import entity
 from constants import APP_NAME, SystemConstants
 from entity.InputData import InputData
-from ui.ParseScriptCLI import ParseScriptCLI
+from ui.ParseScriptCLI import ParseScriptCLI, TEXT_COLOR_START_OPERATION, TEXT_COLOR_WARNING, TEXT_COLOR_ERROR, \
+    TEXT_COLOR_SUCCESS
 from utils import document_to_text
 from utils.Converter import EXT_XLSX, split_char
 
@@ -168,10 +169,10 @@ def launch_ui(input_data):
         graphic_interface.MainLoop()
     else:
         SystemConstants.UI_CONSOLE = ParseScriptCLI()
-        init_operation(input_data)
+        manage_operation(input_data)
 
 
-def init_operation(input_data):
+def manage_operation(input_data):
     """
     Launch operation depending on user input
     :param input_data: InputData
@@ -182,12 +183,15 @@ def init_operation(input_data):
     sheet_title = input_data.__getattribute__("sheet_title")
     verbose = input_data.__getattribute__("verbose")
 
+    SystemConstants.UI_CONSOLE.print_to_user("<<<--- STARTING OPERATION --->>>", TEXT_COLOR_START_OPERATION)
+
     if len(input_file) != 0:
         SystemConstants.UI_CONSOLE.print_to_user("Input: " + os.path.abspath(input_file))
     if len(output_dir) != 0:
         if not Path(output_dir).is_dir():
             SystemConstants.UI_CONSOLE.print_to_user(
-                "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, TMP_PATH)
+                "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, TMP_PATH),
+                TEXT_COLOR_WARNING
             )
             input_data.__setattr__("output_dir", TMP_PATH)
             output_dir = input_data.__getattribute__("output_dir")
@@ -197,7 +201,7 @@ def init_operation(input_data):
     SystemConstants.UI_CONSOLE.print_to_user("Output directory: " + os.path.abspath(output_dir))
 
     if not Path(input_file).exists():
-        SystemConstants.UI_CONSOLE.print_to_user("ERROR: %s not exist!" % input_file)
+        SystemConstants.UI_CONSOLE.print_to_user("ERROR: %s not exist!" % input_file, TEXT_COLOR_ERROR)
         sys.exit(EXIT_ERR_ARG)
 
     if Path(input_file).is_dir():
@@ -210,17 +214,17 @@ def init_operation(input_data):
         list_of_files = [input_file]
     else:
         SystemConstants.UI_CONSOLE.print_to_user(
-            "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file
+            "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file,
+            TEXT_COLOR_ERROR
         )
         sys.exit(EXIT_ERR_ARG)
 
     SystemConstants.UI_CONSOLE.print_to_user("File that will be converted:")
     for el in list_of_files:
         SystemConstants.UI_CONSOLE.print_to_user("\t> %s" % el)
-    SystemConstants.UI_CONSOLE.print_to_user("\n")
 
     for el in list_of_files:
-        SystemConstants.UI_CONSOLE.print_to_user("\n\n>>> Parsing file: %s" % el)
+        SystemConstants.UI_CONSOLE.print_to_user("\n>>> Parsing file: %s" % el)
         if verbose:
             response = SystemConstants.UI_CONSOLE.get_user_input("Do you want to continue?", "Type [Yes] / [No]")
 
@@ -231,6 +235,8 @@ def init_operation(input_data):
                 continue
         else:
             perform_operation(el, output_dir, sheet_title)
+
+    SystemConstants.UI_CONSOLE.print_to_user("\n<<<--- OPERATION COMPLETED --->>>\n", TEXT_COLOR_SUCCESS)
 
 
 def replace_unsupported_char(string, chars_to_check, selected_char):
@@ -273,7 +279,7 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     """
     file_to_parse = Path(input_file)
     if not file_to_parse.is_file():
-        SystemConstants.UI_CONSOLE.print_to_user("File '%s' not found" % file_to_parse)
+        SystemConstants.UI_CONSOLE.print_to_user("File '%s' not found" % file_to_parse, TEXT_COLOR_ERROR)
         return
         # sys.exit(EXIT_ERR_FILE)
 
@@ -302,7 +308,8 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
             "WARNING:\nUser raw data: %d\nUser parsed: %d\nCheck if some user missing" % (
                 raw_data_num_users,
                 len(list_of_users)
-            )
+            ),
+            TEXT_COLOR_WARNING
         )
 
     wb = Workbook()
@@ -411,8 +418,8 @@ def get_users_list(content):
                         scores.append(constants.SCORES_LIST[item_position][1])
                     else:
                         SystemConstants.UI_CONSOLE.print_to_user(
-                            "Error parsing value of line: %s.\nValue: %s.\nLine: %d." %
-                            (content[i - 1], content[i], i)
+                            "Error parsing value of line: %s.\nValue: %s.\nLine: %d." % (content[i - 1], content[i], i),
+                            TEXT_COLOR_WARNING
                         )
                         continue
 
@@ -453,7 +460,7 @@ def get_users_list(content):
             user = entity.User(name, email, surname, ntel, scores)
             users_list.append(user)
             if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
-                SystemConstants.UI_CONSOLE.print_to_user("WARNING: Error parsing User: " + user)
+                SystemConstants.UI_CONSOLE.print_to_user("WARNING: Error parsing User: " + user, TEXT_COLOR_WARNING)
 
         i += 1
 
