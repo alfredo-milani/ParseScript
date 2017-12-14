@@ -20,6 +20,8 @@ class ParseScriptUI(object):
     def get_user_input(self, question="", format_answere=""):
         """
         Get input from user depending on @question message with @format_answere as options
-        :return: string
+        :param question: string
+        :param format_answere: string
+        :return: bool
         """
         raise NotImplementedError

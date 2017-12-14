@@ -2,7 +2,6 @@
 import os
 
 import wx
-# constants to bind functions
 from pathlib import Path
 
 from DataRetrieval import manage_operation
