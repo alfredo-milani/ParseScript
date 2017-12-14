@@ -1,0 +1,3 @@
+-Per fare il packaging di ParseScript in un file *.exe utilizzare il tool pyinstaller (pyinstaller --onefile --windowed --icon=\path\to\icon main.py). Prima di avviare il comando pyinstaller modificare i files ParseScript/DataRetrieval.py e ParseScript/ui/ParseScriptGUI.py seguendo le istruzioni contenute nei commenti contrassegnati con "ON WINDOWS"
+
+-Per creare una desktop entry per i sistemi UNIX copiare la cartella ParseSCript/ in /opt/ e copiare il file ParseScript/support/setup_scripts/linux/parsescript.desktop nella directory /usr/share/applications ed assicurarsi che il file parsescript.desktop abbia permessi (almeno) 0644 e il file launcher_linux.sh (contenuto in ParseScript/launchers/) abbia i permessi di esecuzione

@@ -466,3 +466,5 @@ def get_users_list(content):
 if __name__ == "__main__":
     set_up_sys()
     launch_ui(parse_arg(sys.argv[1:]))
+    # ON WINDOWS system uncomment this line
+    # launch_ui(parse_arg(["--gui"]))

@@ -25,14 +25,16 @@ case ${debug} in
                 # CLI
                 echo "Current directory: `pwd`"
 
-                echo "";
-                python ${tool} --I="${dir_to_convert}" --O="${dir_converted}" --not-ask
+                echo ""
+                ${tool} --I="${dir_to_convert}" --O="${dir_converted}" --not-ask
                 ;;
 
             1 )
                 # GUI
                 echo "Starting $tool with GUI"
-                python ${tool} --gui 2> ${null}
+
+                echo ""
+                ${tool} --gui 2> ${null}
                 ;;
         esac
         ;;

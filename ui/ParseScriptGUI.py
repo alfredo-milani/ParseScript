@@ -53,6 +53,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         panel = wx.Panel(self)
 
         # SET ICON
+        # ON WINDOWS system comment the following icon setting code
         icon = wx.Icon(
             os.path.join(
                 SystemConstants.APP_ABS_PATH,
@@ -69,10 +70,13 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         filemenu = wx.Menu()
         quitmenuitem = wx.MenuItem(filemenu, APP_EXIT, '&Quit\tCtrl+Q')
+        '''
+        # Non viene mostrata
         quitmenuitem.SetBitmap(wx.Bitmap(os.path.join(
             SystemConstants.APP_ABS_PATH,
             "resources" + split_char() + "images" + split_char() + "exit.png"
         )))
+        '''
 
         helpmenu = wx.Menu()
         helpmenuitem = wx.MenuItem(helpmenu, APP_HELP_HINT, "&Help\tCtrl+H")
@@ -190,7 +194,8 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         edittextconsole.SetEditable(False)
         font.SetPointSize(15)
         edittextconsole.SetFont(font)
-        # edittextconsole.SetBackgroundColour((226, 238, 255))
+        # ON WINDOWS system uncomment this line
+        # edittextconsole.SetBackgroundColour((148, 162, 183))
 
         global USER_CONSOLE
         USER_CONSOLE = edittextconsole
