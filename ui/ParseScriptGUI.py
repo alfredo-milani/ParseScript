@@ -34,6 +34,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         self.Centre()
 
     def InitGUI(self):
+        # CREATE PANEL
         panel = wx.Panel(self)
 
         # SET ICON
@@ -42,9 +43,10 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         # MENU ITEMS
         menubar = wx.MenuBar()
+
         filemenu = wx.Menu()
-        qmi = wx.MenuItem(filemenu, APP_EXIT, '&Quit\tCtrl+Q')
-        qmi.SetBitmap(wx.Bitmap(os.path.join(
+        quitmenuitem = wx.MenuItem(filemenu, APP_EXIT, '&Quit\tCtrl+Q')
+        quitmenuitem.SetBitmap(wx.Bitmap(os.path.join(
             SystemConstants.APP_ABS_PATH,
             "resources" + split_char() + "images" + split_char() + "exit.png"
         )))
@@ -52,7 +54,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         helpmenu = wx.Menu()
         helpmenuitem = wx.MenuItem(helpmenu, APP_HELP_HINT, "&Help\tCtrl+H")
 
-        filemenu.Append(qmi)
+        filemenu.Append(quitmenuitem)
         helpmenu.Append(helpmenuitem)
 
         menubar.Append(filemenu, '&File')
@@ -64,117 +66,137 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         font.SetPointSize(12)
 
         # BOX SIZER
-        vbox = wx.BoxSizer(wx.VERTICAL)
+        mainbox = wx.BoxSizer(wx.VERTICAL)
 
         # INPUT BOX
-        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
-        st1 = wx.StaticText(panel, label='Select input file or directory')
-        st1.SetFont(font)
-        hbox1.Add(st1, flag=wx.RIGHT, border=10)
+        inputbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        vbox1_1 = wx.BoxSizer(wx.VERTICAL)
-        hbox1_1 = wx.BoxSizer(wx.HORIZONTAL)
-        edittextfilein = wx.TextCtrl(panel)
-        hbox1_1.Add(edittextfilein, flag=wx.RIGHT, border=10, proportion=1)
-        selectfileinbutton = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_INPUT_FILE)
-        hbox1_1.Add(selectfileinbutton, flag=wx.EXPAND)
-        vbox1_1.Add(hbox1_1, flag=wx.EXPAND)
+        inputstatictext = wx.StaticText(panel, label='Select input file or directory')
+        inputstatictext.SetFont(font)
 
-        st4 = wx.StaticText(panel, label="OR")
-        st4.SetFont(font)
-        vbox1_1.Add(st4, flag=wx.CENTER)
+        inputboxpath = wx.BoxSizer(wx.VERTICAL)
 
-        hbox1_2 = wx.BoxSizer(wx.HORIZONTAL)
-        edittextdirin = wx.TextCtrl(panel)
-        hbox1_2.Add(edittextdirin, flag=wx.RIGHT, border=10, proportion=1)
-        selectdirinbutton = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_INPUT_DIR)
-        hbox1_2.Add(selectdirinbutton, flag=wx.EXPAND)
-        vbox1_1.Add(hbox1_2, flag=wx.EXPAND)
+        inputboxpathfileinput = wx.BoxSizer(wx.HORIZONTAL)
+        edittextfile = wx.TextCtrl(panel)
+        buttonfileinput = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_INPUT_FILE)
+        inputboxpathfileinput.Add(edittextfile, flag=wx.RIGHT, border=10, proportion=1)
+        inputboxpathfileinput.Add(buttonfileinput, flag=wx.EXPAND)
 
-        hbox1.Add(vbox1_1, proportion=1)
-        vbox.Add(hbox1, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
+        inputstatictextchoose = wx.StaticText(panel, label="OR")
+        inputstatictextchoose.SetFont(font)
+
+        inputboxpathdirinput = wx.BoxSizer(wx.HORIZONTAL)
+        edittextdirinput = wx.TextCtrl(panel)
+        buttondirinput = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_INPUT_DIR)
+        inputboxpathdirinput.Add(edittextdirinput, flag=wx.RIGHT, border=10, proportion=1)
+        inputboxpathdirinput.Add(buttondirinput, flag=wx.EXPAND)
+
+        inputboxpath.Add(inputboxpathfileinput, flag=wx.EXPAND)
+        inputboxpath.Add(inputstatictextchoose, flag=wx.CENTER)
+        inputboxpath.Add(inputboxpathdirinput, flag=wx.EXPAND)
+
+        inputbox.Add(inputstatictext, flag=wx.RIGHT, border=10)
+        inputbox.Add(inputboxpath, proportion=1)
+
+        mainbox.Add(inputbox, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
 
         # LINE SEPARATOR
         line = wx.StaticLine(panel, style=wx.HORIZONTAL)
-        vbox.Add(line, 0, wx.ALL | wx.EXPAND, 10)
-        # vbox.Add((-1, 10))
+        mainbox.Add(line, 0, wx.ALL | wx.EXPAND, 10)
+        # Per aggiungere spazio
+        # mainbox.Add((-1, 10))
 
         # OUTPUT BOX
-        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
-        st3 = wx.StaticText(panel, label='Select output directory')
-        st3.SetFont(font)
+        outputbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        hbox2.Add(st3, flag=wx.RIGHT, border=10)
-        edittextdirout = wx.TextCtrl(panel)
-        hbox2.Add(edittextdirout, flag=wx.RIGHT, border=10, proportion=1)
-        selectdiroutbutton = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_OUTPUT_DIR)
-        hbox2.Add(selectdiroutbutton, flag=wx.EXPAND)
+        outputstatictext = wx.StaticText(panel, label='Select output directory')
+        outputstatictext.SetFont(font)
+        edittextdiroutput = wx.TextCtrl(panel)
+        buttondiroutput = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_OUTPUT_DIR)
 
-        vbox.Add(hbox2, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
+        outputbox.Add(outputstatictext, flag=wx.RIGHT, border=10)
+        outputbox.Add(edittextdiroutput, flag=wx.RIGHT, border=10, proportion=1)
+        outputbox.Add(buttondiroutput, flag=wx.EXPAND)
+
+        mainbox.Add(outputbox, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
 
         # LINE SEPARATOR
         line = wx.StaticLine(panel, style=wx.HORIZONTAL)
-        vbox.Add(line, 0, wx.ALL | wx.EXPAND, 10)
-        # vbox.Add((-1, 10))
+        mainbox.Add(line, 0, wx.ALL | wx.EXPAND, 10)
+        # mainbox.Add((-1, 10))
 
         # START / STOP BUTTONS
-        hbox3 = wx.BoxSizer(wx.HORIZONTAL)
-        btn1 = wx.Button(panel, label='Start', size=(150, 30), id=APP_START)
-        hbox3.Add(btn1)
-        btn2 = wx.Button(panel, label='Close', size=(150, 30), id=APP_EXIT)
-        hbox3.Add(btn2, flag=wx.LEFT | wx.BOTTOM, border=5)
-        vbox.Add(hbox3, flag=wx.CENTER, border=30)
+        manageoperationbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        buttonstart = wx.Button(panel, label='Start', size=(150, 30), id=APP_START)
+        buttonstart.SetFont(font)
+        buttonclose = wx.Button(panel, label='Close', size=(150, 30), id=APP_EXIT)
+        buttonclose.SetFont(font)
+
+        manageoperationbox.Add(buttonstart)
+        manageoperationbox.Add(buttonclose, flag=wx.LEFT | wx.BOTTOM, border=5)
+
+        mainbox.Add(manageoperationbox, flag=wx.CENTER, border=30)
 
         # LINE SEPARATOR
         line = wx.StaticLine(panel, style=wx.HORIZONTAL)
-        vbox.Add(line, 0, wx.ALL | wx.EXPAND, 10)
-        # vbox.Add((-1, 10))
+        mainbox.Add(line, 0, wx.ALL | wx.EXPAND, 10)
+        # mainbox.Add((-1, 10))
 
-        # LOGS
-        hbox4 = wx.BoxSizer(wx.HORIZONTAL)
+        # LOG TOOLS
+        logbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        cleanconsolebutton = wx.Button(panel, label="Clear", id=APP_CLEAN_CONSOLE, size=(50, 30))
-        font.SetPointSize(10)
-        cleanconsolebutton.SetFont(font)
-        hbox4.Add(cleanconsolebutton)
-
-        cb = wx.CheckBox(panel, label="Verbose")
-        cb.SetFont(font)
-        hbox4.Add(cb, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
-
-        st2 = wx.StaticText(panel, label='Logs')
+        buttoncleanconsole = wx.Button(panel, label="Clear", id=APP_CLEAN_CONSOLE, size=(50, 30))
+        buttoncleanconsole.SetFont(font)
+        checkboxverbose = wx.CheckBox(panel, label="Verbose")
+        checkboxverbose.SetFont(font)
+        statictextlogs = wx.StaticText(panel, label='Logs')
         font.SetPointSize(12)
-        st2.SetFont(font)
-        hbox4.Add(st2, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
-        vbox.Add(hbox4, border=10, flag=wx.ALL | wx.EXPAND)
+        statictextlogs.SetFont(font)
 
-        hbox5 = wx.BoxSizer(wx.HORIZONTAL)
-        tc2 = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
-        tc2.SetEditable(False)
+        logbox.Add(buttoncleanconsole)
+        logbox.Add(checkboxverbose, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
+        logbox.Add(statictextlogs, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
+
+        mainbox.Add(logbox, border=10, flag=wx.ALL | wx.EXPAND)
+
+        # LOG CONSOLE
+        consolebox = wx.BoxSizer(wx.HORIZONTAL)
+
+        edittextconsole = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
+        edittextconsole.SetEditable(False)
         font.SetPointSize(15)
-        tc2.SetFont(font)
-        # tc2.SetBackgroundColour((226, 238, 255))
+        edittextconsole.SetFont(font)
+        # edittextconsole.SetBackgroundColour((226, 238, 255))
+
         global USER_CONSOLE
-        USER_CONSOLE = tc2
-        hbox5.Add(tc2, proportion=1, flag=wx.EXPAND | wx.BOTTOM, border=5)
-        vbox.Add(hbox5, proportion=1, flag=wx.LEFT | wx.RIGHT | wx.EXPAND,
-                 border=5)
+        USER_CONSOLE = edittextconsole
 
-        panel.SetSizer(vbox)
+        consolebox.Add(edittextconsole, proportion=1, flag=wx.EXPAND | wx.BOTTOM, border=5)
 
-        # BINDINGS
+        mainbox.Add(
+            consolebox,
+            proportion=1,
+            flag=wx.LEFT | wx.RIGHT | wx.EXPAND,
+            border=5
+        )
+
+        # SET BOX TO THE PANEL
+        panel.SetSizer(mainbox)
+
+        # BINDINGS WIDGETS
         self.Bind(wx.EVT_MENU, self.on_quit, id=APP_EXIT)
         self.Bind(wx.EVT_MENU, self.on_help, id=APP_HELP_HINT)
         self.Bind(wx.EVT_BUTTON, self.on_quit, id=APP_EXIT)
-        self.Bind(wx.EVT_BUTTON, lambda event: self.on_start(event, edittextfilein, edittextdirin, edittextdirout, cb),
-                  btn1, id=APP_START)
-        self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_input_file(event, edittextfilein), selectfileinbutton,
-                  id=APP_SELECT_INPUT_FILE)
-        self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_output_dir(event, edittextdirout), selectdiroutbutton,
-                  id=APP_SELECT_OUTPUT_DIR)
-        self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_output_dir(event, edittextdirin),
-                  id=APP_SELECT_INPUT_DIR)
         self.Bind(wx.EVT_BUTTON, self.clean_console, id=APP_CLEAN_CONSOLE)
+        self.Bind(wx.EVT_BUTTON, lambda event: self.on_start(event, edittextfile, edittextdirinput, edittextdiroutput, checkboxverbose),
+                  buttonstart, id=APP_START)
+        self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_input_file(event, edittextfile), buttonfileinput,
+                  id=APP_SELECT_INPUT_FILE)
+        self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_output_dir(event, edittextdiroutput), buttondiroutput,
+                  id=APP_SELECT_OUTPUT_DIR)
+        self.Bind(wx.EVT_BUTTON, lambda event: self.on_selected_output_dir(event, edittextdirinput),
+                  id=APP_SELECT_INPUT_DIR)
 
     @staticmethod
     def on_help(event):

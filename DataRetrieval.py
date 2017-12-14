@@ -39,6 +39,10 @@ TMP_PATH = ""
 
 
 def usage():
+    """
+    Show usage to user on CLI
+    :return: None
+    """
     print "\n# Utilizzo\n"
     print "\t./" + os.path.basename(__file__) + " [Options]\n"
     print "# Options\n"
@@ -58,8 +62,11 @@ def usage():
     print "\t-h | -H | --help | --HELP )\tShow this help\n"
 
 
-# To get absolute path of the program (path which contain the function's file)
 def get_program_folder():
+    """
+    To get absolute path of the program (path which contain the function's file)
+    :return: string
+    """
     module_file = __file__
     module_dir = os.path.split(os.path.abspath(module_file))[0]
     program_folder = os.path.abspath(module_dir)
@@ -67,6 +74,10 @@ def get_program_folder():
 
 
 def set_up_sys():
+    """
+    Setup system: init global variables, loads external modules, ecc...
+    :return: None
+    """
     global OS_TYPE, TMP_PATH
     SystemConstants.APP_ABS_PATH = get_program_folder()
     OS_TYPE = platform.system()
@@ -101,6 +112,11 @@ def set_up_sys():
 
 
 def parse_arg(argv):
+    """
+    Parsing list of user's input
+    :param argv: list
+    :return: InputData
+    """
     input_data = InputData()
 
     try:
@@ -137,6 +153,11 @@ def parse_arg(argv):
 
 
 def launch_ui(input_data):
+    """
+    Start user interface depending on user input
+    :param input_data: InputData
+    :return: None
+    """
     if input_data.__getattribute__("gui"):
         import wx
         from ui import ParseScriptGUI
@@ -151,6 +172,11 @@ def launch_ui(input_data):
 
 
 def init_operation(input_data):
+    """
+    Launch operation depending on user input
+    :param input_data: InputData
+    :return: None
+    """
     input_file = input_data.__getattribute__("input_file")
     output_dir = input_data.__getattribute__("output_dir")
     sheet_title = input_data.__getattribute__("sheet_title")
@@ -208,6 +234,13 @@ def init_operation(input_data):
 
 
 def replace_unsupported_char(string, chars_to_check, selected_char):
+    """
+    Replace @chars_to_check with @selected_char in @string
+    :param string: string
+    :param chars_to_check: string
+    :param selected_char: string
+    :return: string
+    """
     for char in chars_to_check:
         string = string.replace(char, selected_char)
 
@@ -215,6 +248,12 @@ def replace_unsupported_char(string, chars_to_check, selected_char):
 
 
 def count_users(data, user_delim):
+    """
+    Count occurences' number of @user_delim in @data
+    :param data: list
+    :param user_delim: string
+    :return: int
+    """
     n = 0
     for el in data:
         if el.find(user_delim) != -1:
@@ -224,6 +263,14 @@ def count_users(data, user_delim):
 
 
 def perform_operation(input_file, output_dir="", sheet_title=""):
+    """
+    Perform parsing operation of file @input_file setting sheet title as @sheet_title and
+    store the result in @output_dir directory
+    :param input_file: string
+    :param output_dir: string
+    :param sheet_title: string
+    :return: None
+    """
     file_to_parse = Path(input_file)
     if not file_to_parse.is_file():
         SystemConstants.UI_CONSOLE.print_to_user("File '%s' not found" % file_to_parse)
@@ -314,10 +361,10 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
 
 def check_match(to_match, list_to_check):
     """
-    Verifica, anche parziale, matching tra to_match e gli elementi di list_to_check
-    :param to_match: stringa da cercare
-    :param list_to_check: lista di elementi in cui cercare
-    :return: boolean
+    Verifica, anche parziale, del matching tra l'elemento @to_match e gli elementi di @list_to_check
+    :param to_match: string
+    :param list_to_check: list
+    :return: int
     """
     for i in range(len(list_to_check)):
         if list_to_check[i] in to_match:
@@ -328,9 +375,9 @@ def check_match(to_match, list_to_check):
 
 def get_users_list(content):
     """
-    Estrae una lista di User da content
-    :param content: testo da elaborare
-    :return: lista di User
+    Crea una lista di tipo User da @content
+    :param content: list
+    :return: list
     """
     users_list = []
     i = 0
