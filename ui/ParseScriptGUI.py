@@ -59,7 +59,8 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
                 "resources" + split_char() + "images" + split_char() + "icon.png"
             ),
             wx.BITMAP_TYPE_PNG,
-            512,512
+            512,
+            512
         )
         self.SetIcon(icon)
 

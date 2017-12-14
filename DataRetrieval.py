@@ -35,9 +35,6 @@ EXIT_ERR_FILE = 2
 EXIT_ERR_BAD_CONTENT = 3
 EXIT_ERR_PACKAGE_MISSING = 4
 
-OS_TYPE = ""
-TMP_PATH = ""
-
 
 def usage():
     """
@@ -79,13 +76,12 @@ def set_up_sys():
     Setup system: init global variables, loads external modules, ecc...
     :return: None
     """
-    global OS_TYPE, TMP_PATH
     SystemConstants.APP_ABS_PATH = get_program_folder()
-    OS_TYPE = platform.system()
-    if OS_TYPE == constants.OS_WIN:
-        TMP_PATH = constants.DEFAULT_TMP_WIN
-    elif OS_TYPE == constants.OS_LINUX:
-        TMP_PATH = constants.DEFAULT_TMP_LINUX
+    SystemConstants.OS_TYPE = platform.system()
+    if SystemConstants.OS_TYPE == constants.OS_WIN:
+        SystemConstants.TMP_PATH = constants.DEFAULT_TMP_WIN
+    elif SystemConstants.OS_TYPE == constants.OS_LINUX:
+        SystemConstants.TMP_PATH = constants.DEFAULT_TMP_LINUX
 
     try:
         # import xlsxwriter;
@@ -96,7 +92,7 @@ def set_up_sys():
     except ImportError as err:
         print str(err)
 
-        if OS_TYPE == constants.OS_WIN:
+        if SystemConstants.OS_TYPE == constants.OS_WIN:
             print "TODO: batch script to autosetup package"
             # Required with old library
             # print "Unzip file 'XlsxWriter-RELEASE_1.0.2.zip'"
@@ -104,7 +100,7 @@ def set_up_sys():
             # print "OR"
             # print "Try with 'pip install packagename' with admin's privileges"
             print "Perform command: 'pip install openpyxl'"
-        elif OS_TYPE == constants.OS_LINUX:
+        elif SystemConstants.OS_TYPE == constants.OS_LINUX:
             print "Perform command: 'sudo pip install openpyxl'"
             # Required with old library
             # subprocess.call([INIT_SCRIPT_NAME])
@@ -190,13 +186,13 @@ def manage_operation(input_data):
     if len(output_dir) != 0:
         if not Path(output_dir).is_dir():
             SystemConstants.UI_CONSOLE.print_to_user(
-                "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, TMP_PATH),
+                "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, SystemConstants.TMP_PATH),
                 TEXT_COLOR_WARNING
             )
-            input_data.__setattr__("output_dir", TMP_PATH)
+            input_data.__setattr__("output_dir", SystemConstants.TMP_PATH)
             output_dir = input_data.__getattribute__("output_dir")
     else:
-        input_data.__setattr__("output_dir", TMP_PATH)
+        input_data.__setattr__("output_dir", SystemConstants.TMP_PATH)
         output_dir = input_data.__getattribute__("output_dir")
     SystemConstants.UI_CONSOLE.print_to_user("Output directory: " + os.path.abspath(output_dir))
 

@@ -6,6 +6,9 @@ INIT_SCRIPT_NAME = "./support/setup_scripts/linux/inst_xlsxwriter.sh"
 OS_WIN = "Windows"
 OS_LINUX = "Linux"
 
+OS_TYPE = ""
+TMP_PATH = ""
+
 APP_ABS_PATH = ""
 UI_CONSOLE = None
 
