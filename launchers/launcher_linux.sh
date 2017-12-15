@@ -13,7 +13,7 @@ debug=-1
 ui_type=1
 abs_path=`dirname $0`
 dir_to_convert=${abs_path}/../DATA_TO_CONVERT
-dir_converted=${abs_path}/../DATA_CONVERTE
+dir_converted=${abs_path}/../DATA_CONVERTED
 tool=${abs_path}/../DataRetrieval.py
 null=/dev/null
 
