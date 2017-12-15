@@ -1,36 +1,33 @@
-#!/bin/bash
-# ============================================================================
-# Titolo:           setup.sh
-# Descrizione:      Installazione package xlsxwriter
-# Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
-# Data:             sab 21 ott 2017, 15.52.00, CEST
-# Licenza:          MIT License
-# Versione:         0.5.0
-# Note:             xlsxwriter: package per manipolare file Exel
-# Versione bash:    4.4.12(1)-release
-# ============================================================================
-declare -r TMP="/dev/shm";
-declare -r REL_PATH="support/packages";
+#!/usr/bin/env bash
 
-# TODO da completare con l'installazione degli altri packages
+declare -r remote_repo="https://github.com/alfredo-milani/ParseScript"
+declare -r tmp_path="/dev/shm"
+declare -r software_name="ParseScript"
+declare -r desktop_entry="ParseScript/support/setup_scripts/linux/parsescript.desktop"
+declare -r launcher_script="ParseScript/launchers/launcher_linux.sh"
+declare -r desktop_entry_sys_path="/usr/share/applications"
+declare -r software_sys_path="/opt"
 
-echo "Premi 'OK' per installare il package 'xlsxwriter' tramite internet";
-read choise;
+echo "Questo script scaricherà l'ultima versione del tool ${software_name} e la installerà nel sistema."
+echo -e "Continuare?\t[Yes / No]\n"
+read choise
 
-case ${choise} in
-    [oO][kK] )
-        ### OLD PACKAGE ###
-        cd ${TMP};
-        curl -O -L http://github.com/jmcnamara/XlsxWriter/archive/master.tar.gz;
-        tar -zxvf master.tar.gz;
-        cd XlsxWriter-master/;
-        sudo python setup.py install;
-        exit 0;
-        ;;
-        ######
+if [ "${choise}" == "Yes" ]; then
+    echo "Download tool in ${tmp_path}. Attendere..."
+    cd ${tmp_path}
+    git clone ${remote_repo}
 
-    * )
-        echo "Comando non riconosciuto: "${choise};
-esac
+    echo "Creazione desktop entry"
+    sudo chmod 0644 ${tmp_path}/${desktop_entry}
+    sudo mv ${tmp_path}/${desktop_entry} ${desktop_entry_sys_path}
 
-exit 1;
+    echo "Spostamento ${software_name} in ${software_sys_path}"
+    sudo chmod +x ${tmp_path}/${launcher_script}
+    sudo mv ${tmp_path}/${software_name} ${software_sys_path}
+
+    echo "Operazione completata. Riavviare il sistema o il Desktop Environment."
+else
+    echo "Nessuna operazione effettuata. Uscita."
+fi
+
+exit 0
