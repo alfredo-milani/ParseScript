@@ -78,7 +78,8 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         filemenu = wx.Menu()
         quitmenuitem = wx.MenuItem(filemenu, APP_EXIT, '&Quit\tCtrl+Q')
         '''
-        # Non viene mostrata
+        # ON WINDOWS viene mostrata non ridimensionata
+        # ON UNIX systems (Debian) non viene mostrata
         quitmenuitem.SetBitmap(wx.Bitmap(os.path.join(
             SystemConstants.APP_ABS_PATH,
             "resources" + split_char() + "images" + split_char() + "exit.png"
