@@ -1,6 +1,6 @@
 -Per fare il packaging di ParseScript in un file *.exe utilizzare il tool pyinstaller (pyinstaller --onefile --windowed --icon=\path\to\icon main.py). Prima di avviare il comando pyinstaller modificare i files ParseScript/DataRetrieval.py e ParseScript/ui/ParseScriptGUI.py seguendo le istruzioni contenute nei commenti contrassegnati con "ON WINDOWS".
  Visitare li sito https://wxpython.org/pages/downloads/index.html per installare il package wxpython.
 
--Per creare una desktop entry per i sistemi UNIX copiare la cartella ParseSCript/ in /opt/ e copiare il file ParseScript/support/setup_scripts/linux/parsescript.desktop nella directory /usr/share/applications ed assicurarsi che il file parsescript.desktop abbia permessi (almeno) 0644 e il file launcher_linux.sh (contenuto in ParseScript/launchers/) abbia i permessi di esecuzione.
+-Eseguire il file ParseScript/support/setup_scripts/linux (crea una desktop entry per i sistemi UNIX copiando la cartella ParseSCript/ in /opt/ e il file ParseScript/support/setup_scripts/linux/parsescript.desktop nella directory /usr/share/applications) 
  Cercare in ParseScript/support/libs/linux/ per librerie mancanti.
  Visitare li sito https://wxpython.org/pages/downloads/index.html per installare il package wxpython.
