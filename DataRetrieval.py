@@ -24,7 +24,7 @@ import constants
 import entity
 from constants import APP_NAME, SystemConstants
 from entity.InputData import InputData
-from ui.ParseScriptCLI import ParseScriptCLI, TEXT_COLOR_START_OPERATION, TEXT_COLOR_WARNING, TEXT_COLOR_ERROR, \
+from ui.ParseScriptUI import TEXT_COLOR_START_OPERATION, TEXT_COLOR_WARNING, TEXT_COLOR_ERROR, \
     TEXT_COLOR_SUCCESS
 from utils import document_to_text
 from utils.Converter import EXT_XLSX, split_char
@@ -164,6 +164,8 @@ def launch_ui(input_data):
         SystemConstants.UI_CONSOLE.Show(True)
         graphic_interface.MainLoop()
     else:
+        from ui.ParseScriptCLI import ParseScriptCLI
+
         SystemConstants.UI_CONSOLE = ParseScriptCLI()
         manage_operation(input_data)
 

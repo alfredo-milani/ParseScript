@@ -1,5 +1,7 @@
 # coding=utf-8
 import os
+import subprocess
+import sys
 
 import wx
 from pathlib import Path
@@ -7,10 +9,9 @@ from pathlib import Path
 from DataRetrieval import manage_operation
 from constants import SystemConstants
 from entity.InputData import InputData
-from ui.ParseScriptCLI import TEXT_COLOR_DEFAULT, TEXT_COLOR_WARNING, TEXT_COLOR_ERROR, TEXT_COLOR_SUCCESS, \
-    TEXT_COLOR_START_OPERATION
 from ui.ParseScriptUI import ParseScriptUI
-from utils import split_char
+from ui.ParseScriptUI import TEXT_COLOR_DEFAULT, TEXT_COLOR_WARNING, TEXT_COLOR_ERROR, TEXT_COLOR_SUCCESS, \
+    TEXT_COLOR_START_OPERATION
 
 APP_EXIT = 1
 APP_HELP_HINT = 2
@@ -18,6 +19,7 @@ APP_START = 3
 APP_SELECT_INPUT_FILE = 4
 APP_SELECT_OUTPUT_DIR = 5
 APP_SELECT_INPUT_DIR = 6
+APP_SHOW_PARSED_FILES = 8
 APP_CLEAN_CONSOLE = 7
 
 CONSOLE_DEFAULT_COLOR = (TEXT_COLOR_DEFAULT, wx.WHITE)
@@ -37,22 +39,29 @@ HELP_MSG = "Con questo tool è possibile fare il parsing di file in formato: *.p
            "Si può scegliere di parsare un solo file o di parsare i files" \
            "contenuti in una specifica directory utilizzando i box appositi."
 
-USER_CONSOLE = None
-
 
 class ParseScriptGUI(wx.Frame, ParseScriptUI):
     def __init__(self, parent, title):
         super(ParseScriptGUI, self).__init__(parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition, size=(900, 500))
 
-        self.InitGUI()
+        # Objects that will be used
+        self.user_console = None
+        self.edittextfile = None
+        self.edittextdirinput = None
+        self.edittextdiroutput = None
+        self.checkboxverbose = None
+        ###
+        self.InitView()
         self.Centre()
 
-    def InitGUI(self):
+    def InitView(self):
         # CREATE PANEL
         panel = wx.Panel(self)
 
         # SET ICON
-        # ON WINDOWS system comment the following icon setting code
+        # ON WINDOWS system comment the following icon setting code because we use pyinstaller to package this script
+        # On UNIX systems the icon is setted by ParseScript/support/setup_scripts/linux/parsescript.desktop file
+        '''
         icon = wx.Icon(
             os.path.join(
                 SystemConstants.APP_ABS_PATH,
@@ -63,6 +72,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             512
         )
         self.SetIcon(icon)
+        '''
 
         # MENU ITEMS
         menubar = wx.MenuBar()
@@ -103,18 +113,18 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         inputboxpath = wx.BoxSizer(wx.VERTICAL)
 
         inputboxpathfileinput = wx.BoxSizer(wx.HORIZONTAL)
-        edittextfile = wx.TextCtrl(panel)
+        self.edittextfile = wx.TextCtrl(panel)
         buttonfileinput = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_INPUT_FILE)
-        inputboxpathfileinput.Add(edittextfile, flag=wx.RIGHT, border=10, proportion=1)
+        inputboxpathfileinput.Add(self.edittextfile, flag=wx.RIGHT, border=10, proportion=1)
         inputboxpathfileinput.Add(buttonfileinput, flag=wx.EXPAND)
 
         inputstatictextchoose = wx.StaticText(panel, label="OR")
         inputstatictextchoose.SetFont(font)
 
         inputboxpathdirinput = wx.BoxSizer(wx.HORIZONTAL)
-        edittextdirinput = wx.TextCtrl(panel)
+        self.edittextdirinput = wx.TextCtrl(panel)
         buttondirinput = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_INPUT_DIR)
-        inputboxpathdirinput.Add(edittextdirinput, flag=wx.RIGHT, border=10, proportion=1)
+        inputboxpathdirinput.Add(self.edittextdirinput, flag=wx.RIGHT, border=10, proportion=1)
         inputboxpathdirinput.Add(buttondirinput, flag=wx.EXPAND)
 
         inputboxpath.Add(inputboxpathfileinput, flag=wx.EXPAND)
@@ -137,11 +147,11 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         outputstatictext = wx.StaticText(panel, label='Select output directory')
         outputstatictext.SetFont(font)
-        edittextdiroutput = wx.TextCtrl(panel)
+        self.edittextdiroutput = wx.TextCtrl(panel)
         buttondiroutput = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_OUTPUT_DIR)
 
         outputbox.Add(outputstatictext, flag=wx.RIGHT, border=10)
-        outputbox.Add(edittextdiroutput, flag=wx.RIGHT, border=10, proportion=1)
+        outputbox.Add(self.edittextdiroutput, flag=wx.RIGHT, border=10, proportion=1)
         outputbox.Add(buttondiroutput, flag=wx.EXPAND)
 
         mainbox.Add(outputbox, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
@@ -174,14 +184,17 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         buttoncleanconsole = wx.Button(panel, label="Clear", id=APP_CLEAN_CONSOLE, size=(50, 30))
         buttoncleanconsole.SetFont(font)
-        checkboxverbose = wx.CheckBox(panel, label="Verbose")
-        checkboxverbose.SetFont(font)
+        buttonshowfiles = wx.Button(panel, label="Files", id=APP_SHOW_PARSED_FILES, size=(50, 30))
+        buttonshowfiles.SetFont(font)
+        self.checkboxverbose = wx.CheckBox(panel, label="Verbose")
+        self.checkboxverbose.SetFont(font)
         statictextlogs = wx.StaticText(panel, label='Logs')
         font.SetPointSize(12)
         statictextlogs.SetFont(font)
 
-        logbox.Add(buttoncleanconsole)
-        logbox.Add(checkboxverbose, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
+        logbox.Add(buttoncleanconsole, flag=wx.ALIGN_CENTER_VERTICAL)
+        logbox.Add(buttonshowfiles, flag=wx.ALIGN_CENTER_VERTICAL)
+        logbox.Add(self.checkboxverbose, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
         logbox.Add(statictextlogs, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
 
         mainbox.Add(logbox, border=10, flag=wx.ALL | wx.EXPAND)
@@ -198,6 +211,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         global USER_CONSOLE
         USER_CONSOLE = edittextconsole
+        self.user_console = edittextconsole
 
         consolebox.Add(edittextconsole, proportion=1, flag=wx.EXPAND | wx.BOTTOM, border=5)
 
@@ -215,27 +229,37 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         self.Bind(wx.EVT_MENU, self.on_quit, id=APP_EXIT)
         self.Bind(wx.EVT_MENU, self.on_help, id=APP_HELP_HINT)
         self.Bind(wx.EVT_BUTTON, self.on_quit, id=APP_EXIT)
-        self.Bind(wx.EVT_BUTTON, self.clean_console, id=APP_CLEAN_CONSOLE)
+        self.Bind(wx.EVT_BUTTON, self.on_show_parsed_files, id=APP_SHOW_PARSED_FILES)
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_start(event, edittextfile, edittextdirinput, edittextdiroutput, checkboxverbose),
+            lambda event: self.clear_console(),
             # button e id si possono anche usare in mutua esclusione
-            buttonstart,
+            # buttoncleanconsole,
+            id=APP_CLEAN_CONSOLE
+        )
+        self.Bind(
+            wx.EVT_BUTTON,
+            lambda event: self.on_start(),
             id=APP_START
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_input_file(event, edittextfile),
+            lambda event: self.on_show_parsed_files(self.edittextdiroutput.GetValue()),
+            id=APP_SHOW_PARSED_FILES
+        )
+        self.Bind(
+            wx.EVT_BUTTON,
+            lambda event: self.on_selected_filename(self.edittextfile),
             id=APP_SELECT_INPUT_FILE
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_output_dir(event, edittextdiroutput),
+            lambda event: self.on_selected_directory(self.edittextdiroutput),
             id=APP_SELECT_OUTPUT_DIR
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_output_dir(event, edittextdirinput),
+            lambda event: self.on_selected_directory(self.edittextdirinput),
             id=APP_SELECT_INPUT_DIR
         )
 
@@ -249,13 +273,11 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         event.Skip()
         self.Close()
 
-    def on_start(self, event, edittextfilein, edittextdirin, edittextdirout, checkboxverbose):
-        event.Skip()
-
-        input_file = edittextfilein.GetValue()
-        input_dir = edittextdirin.GetValue()
-        ouput_dir = edittextdirout.GetValue()
-        verbose = checkboxverbose.GetValue()
+    def on_start(self):
+        input_file = self.edittextfile.GetValue()
+        input_dir = self.edittextdirinput.GetValue()
+        output_dir = self.edittextdiroutput.GetValue()
+        verbose = self.checkboxverbose.GetValue()
 
         # CHECK INPUT
         if input_file is None or len(input_file) == 0 or not Path(input_file).exists():
@@ -273,15 +295,15 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             input_file = input_dir
 
         # CHECK OUTPUT
-        if ouput_dir is None or len(ouput_dir) == 0 or not Path(ouput_dir).exists():
-            ouput_dir = None
+        if output_dir is None or len(output_dir) == 0 or not Path(output_dir).exists():
+            output_dir = None
 
-        if ouput_dir is None:
+        if output_dir is None:
             self.__alert_on_error__("Error: check if the output location exist!", "Wrong path")
             return
 
         # START OPERATION
-        input_data = InputData(input_file, ouput_dir, None, verbose, True)
+        input_data = InputData(input_file, output_dir, None, verbose, True)
         manage_operation(input_data)
 
     @staticmethod
@@ -290,51 +312,52 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         dial.ShowModal()
 
     @staticmethod
-    def on_selected_input_file(event, edittextfilein):
-        event.Skip()
+    def on_selected_filename(edittextfilename):
         path = wx.FileSelector(
             message="Select file or directory to parse",
             wildcard="File (*.txt,*.pdf,*.docx)|*.txt;*.pdf;*.docx",
             default_path=SystemConstants.APP_ABS_PATH
         )
         if path is not None:
-            edittextfilein.SetValue(path)
+            edittextfilename.SetValue(path)
 
     @staticmethod
-    def on_selected_output_dir(event, edittextdirout):
-        event.Skip()
+    def on_selected_directory(edittextdirectory):
         path = wx.DirSelector(
             message="Select output directory",
             default_path=SystemConstants.APP_ABS_PATH
         )
 
         if path is not None:
-            edittextdirout.SetValue(path)
+            edittextdirectory.SetValue(path)
+
+    def on_show_parsed_files(self, outputdirectory):
+        self.__open_file__(outputdirectory)
 
     @staticmethod
-    def clean_console(event):
-        event.Skip()
-        if USER_CONSOLE is not None:
-            USER_CONSOLE.SetValue("")
-
-    def print_to_user(self, message="", message_type=0):
-        if USER_CONSOLE is not None and message is not None:
-            USER_CONSOLE.SetForegroundColour(self.__get_console_color_from_code__(message_type))
-            USER_CONSOLE.AppendText(message + "\n")
-            USER_CONSOLE.SetForegroundColour(CONSOLE_DEFAULT_COLOR[1])
-
-    @staticmethod
-    def __get_console_color_from_code__(type_code):
+    def __open_file__(outputdirectory):
         """
-        Get correct color from CONSOLE_COLORS based on @type_code. In case of errors return CONSOLE_DEFAULT_COLOR
-        :param type_code: int
-        :return: int
+        Open file manager with root @filename for the correct OS
+        :param outputdirectory: string
+        :return: None
         """
-        for color in CONSOLE_COLORS:
-            if color[0] == type_code:
-                return color[1]
+        if sys.platform == "win32":
+            os.startfile(outputdirectory)
+        else:
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, outputdirectory])
 
-        return CONSOLE_DEFAULT_COLOR
+    def clear_console(self):
+        if self.user_console is not None:
+            self.user_console.SetValue("")
+
+    def print_to_user(self, message="", message_type=TEXT_COLOR_DEFAULT):
+        if self.user_console is not None and message is not None:
+            self.user_console.SetForegroundColour(
+                self.get_color_from_code(message_type, CONSOLE_COLORS, CONSOLE_DEFAULT_COLOR[1])
+            )
+            self.user_console.AppendText(message + "\n")
+            self.user_console.SetForegroundColour(CONSOLE_DEFAULT_COLOR[1])
 
     def get_user_input(self, question="", format_answere=""):
         dlg = wx.MessageDialog(None, question, style=wx.YES_NO | wx.ICON_QUESTION)

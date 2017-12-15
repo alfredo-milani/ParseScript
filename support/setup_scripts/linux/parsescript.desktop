@@ -6,5 +6,5 @@ Path=/opt/ParseScript
 Terminal=false
 Icon=/opt/ParseScript/resources/images/icon.png
 Type=Application
-Categories=Office;
+Categories=Office;Graphics;
 MimeType=application/pdf;application/x-bzpdf;application/x-gzpdf;
