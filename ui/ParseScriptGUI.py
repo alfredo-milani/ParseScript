@@ -12,6 +12,7 @@ from entity.InputData import InputData
 from ui.ParseScriptUI import ParseScriptUI
 from ui.ParseScriptUI import TEXT_COLOR_DEFAULT, TEXT_COLOR_WARNING, TEXT_COLOR_ERROR, TEXT_COLOR_SUCCESS, \
     TEXT_COLOR_START_OPERATION
+from utils import split_char
 
 APP_EXIT = 1
 APP_HELP_HINT = 2
@@ -60,8 +61,6 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         # SET ICON
         # ON WINDOWS system comment the following icon setting code because we use pyinstaller to package this script
-        # On UNIX systems the icon is setted by ParseScript/support/setup_scripts/linux/parsescript.desktop file
-        '''
         icon = wx.Icon(
             os.path.join(
                 SystemConstants.APP_ABS_PATH,
@@ -72,7 +71,6 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             512
         )
         self.SetIcon(icon)
-        '''
 
         # MENU ITEMS
         menubar = wx.MenuBar()
