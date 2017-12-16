@@ -285,11 +285,17 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     content = document_to_text(input_file)
 
     if content is None:
-        SystemConstants.UI_CONSOLE.print_to_user("!!! Unknown format for file: %s. Skipping... !!!" % input_file)
+        SystemConstants.UI_CONSOLE.print_to_user(
+            "!!! Unknown format for file: %s. Skipping... !!!" % input_file,
+            TEXT_COLOR_WARNING
+        )
         return
         # sys.exit(EXIT_ERR_FILE)
     elif len(content) == 0:
-        SystemConstants.UI_CONSOLE.print_to_user("! File: %s already parsed. Skipping... !" % input_file)
+        SystemConstants.UI_CONSOLE.print_to_user(
+            "! File: %s already parsed. Skipping... !" % input_file,
+            TEXT_COLOR_WARNING
+        )
         return
         # sys.exit(EXIT_SUCCESS)
 
@@ -303,7 +309,7 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
 
     if raw_data_num_users != len(list_of_users):
         SystemConstants.UI_CONSOLE.print_to_user(
-            "WARNING:\nUser raw data: %d\nUser parsed: %d\nCheck if some user missing" % (
+            "WARNING:\tUser raw data: %d\tUser parsed: %d.\tCheck if some user missing\n" % (
                 raw_data_num_users,
                 len(list_of_users)
             ),
@@ -378,7 +384,7 @@ def check_match(to_match, list_to_check):
     return -1
 
 
-def get_users_list(content):
+def get_users_list_old_algorithm(content):
     """
     Crea una lista di tipo User da @content
     :param content: list
@@ -416,16 +422,14 @@ def get_users_list(content):
                         scores.append(constants.SCORES_LIST[item_position][1])
                     else:
                         SystemConstants.UI_CONSOLE.print_to_user(
-                            "Error parsing value of line: %s.\nValue: %s.\nLine: %d." % (content[i - 1], content[i], i),
+                            "Error parsing value of line: %s.\tValue: %s.\tPosizione elemento della lista: %d.\n" % (
+                            content[i - 1], content[i], i),
                             TEXT_COLOR_WARNING
                         )
                         continue
 
                 i += 1
                 s += 1
-
-            if constants.NEW_USER in content[i]:
-                continue
 
             # parsing credentials
             c = 0
@@ -452,13 +456,84 @@ def get_users_list(content):
                 i += 1
                 c += 1
 
-            if constants.NEW_USER in content[i]:
-                continue
-
             user = entity.User(name, email, surname, ntel, scores)
             users_list.append(user)
             if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
-                SystemConstants.UI_CONSOLE.print_to_user("WARNING: Error parsing User: " + user, TEXT_COLOR_WARNING)
+                SystemConstants.UI_CONSOLE.print_to_user("WARNING: Error parsing User: " + user + "\n",
+                                                         TEXT_COLOR_WARNING)
+
+            if constants.NEW_USER in content[i]:
+                continue
+
+        i += 1
+
+    return users_list
+
+
+def get_users_list(content):
+    """
+    Crea una lista di tipo User da @content
+    :param content: list
+    :return: list
+    """
+    score_list = [x[0] for x in constants.SCORES_LIST]
+    users_list = []
+    i = 0
+    while i < len(content):
+        # New user found
+        if constants.NEW_USER in content[i]:
+            name = ""
+            surname = ""
+            email = ""
+            ntel = ""
+            scores = []
+
+            i += 1
+            s, c = 0, 0
+            while i < len(content) and constants.NEW_USER not in content[i] and \
+                    i + 1 < len(content) and constants.NEW_USER not in content[i + 1]:
+                item_position = check_match(content[i], score_list)
+                # Item found in scores
+                if item_position != -1:
+                    i += 1
+                    s += 1
+                    if content[i] != constants.SCORE_VAL_NEGATIVE:
+                        if content[i] == constants.SCORE_VAL_POSITIVE:
+                            scores.append(constants.SCORES_LIST[item_position][1])
+                        else:
+                            SystemConstants.UI_CONSOLE.print_to_user(
+                                "Error parsing value of line: %s.\tValue: %s.\tPosizione elemento della lista: %d." %
+                                (content[i - 1], content[i], i),
+                                TEXT_COLOR_WARNING
+                            )
+
+                    i += 1
+                    continue
+
+                item_position = check_match(content[i], constants.CREDENTIALS_LIST)
+                # Item found in credentilas
+                if item_position != -1:
+                    i += 1
+                    c += 1
+                    if constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NAME:
+                        name = content[i]
+                    elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIALS_SURNAME:
+                        surname = content[i]
+                    elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_EMAIL:
+                        email = content[i]
+                    elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NTEL:
+                        ntel = content[i]
+
+                i += 1
+
+            if len(name) != 0 or len(email) != 0 or len(surname) != 0 or len(ntel) != 0 or len(scores) != 0:
+                user = entity.User(name, email, surname, ntel, scores)
+                users_list.append(user)
+                if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
+                    SystemConstants.UI_CONSOLE.print_to_user(
+                        "WARNING: Error parsing User: " + user + " at position: " + str(i) + " / " + str(i + 1) + "\n",
+                        TEXT_COLOR_WARNING
+                    )
 
         i += 1
 
