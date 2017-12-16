@@ -383,11 +383,11 @@ def check_match(to_match, list_to_check):
     return -1
 
 
-def get_users_list_old_algorithm(content):
+def get_users_list_oldest(content):
     """
     Crea una lista di tipo User da @content
-    :type content: list
-    :rtype: list
+    :param content: list
+    :return: list
     """
     users_list = []
     i = 0
@@ -458,11 +458,82 @@ def get_users_list_old_algorithm(content):
             user = entity.User(name, email, surname, ntel, scores)
             users_list.append(user)
             if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
-                SystemConstants.UI_CONSOLE.print_to_user("WARNING: Error parsing User: " + user + "\n",
-                                                         Colors.TEXT_COLOR_WARNING)
+                SystemConstants.UI_CONSOLE.print_to_user(
+                    "WARNING: Error parsing User: " + user + "\n",
+                    Colors.TEXT_COLOR_WARNING
+                )
 
             if constants.NEW_USER in content[i]:
                 continue
+
+        i += 1
+
+    return users_list
+
+
+def get_users_list_old(content):
+    """
+    Crea una lista di tipo User da @content
+    :type content: list
+    :rtype: list
+    """
+    score_list = [x[0] for x in constants.SCORES_LIST]
+    users_list = []
+    i = 0
+    while i < len(content):
+        # New user found
+        if constants.NEW_USER in content[i]:
+            name = ""
+            surname = ""
+            email = ""
+            ntel = ""
+            scores = []
+
+            s, c = 0, 0
+            while i + 1 < len(content) and constants.NEW_USER not in content[i + 1] and \
+                    i + 2 < len(content) and constants.NEW_USER not in content[i + 2]:
+                i += 1
+                item_position = check_match(content[i], score_list)
+                # Item found in scores
+                if item_position != -1:
+                    i += 1
+                    s += 1
+                    if content[i] != constants.SCORE_VAL_NEGATIVE:
+                        if content[i] == constants.SCORE_VAL_POSITIVE:
+                            scores.append(constants.SCORES_LIST[item_position][1])
+                        else:
+                            # Per far stampare anche l'utente interessato
+                            s -= 1
+                            SystemConstants.UI_CONSOLE.print_to_user(
+                                "Error parsing value of line: %s.\tValue: %s.\tPosizione elemento della lista: %d." %
+                                (content[i - 1], content[i], i),
+                                Colors.TEXT_COLOR_WARNING
+                            )
+
+                    continue
+
+                item_position = check_match(content[i], constants.CREDENTIALS_LIST)
+                # Item found in credentilas
+                if item_position != -1:
+                    i += 1
+                    c += 1
+                    if constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NAME:
+                        name = content[i]
+                    elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIALS_SURNAME:
+                        surname = content[i]
+                    elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_EMAIL:
+                        email = content[i]
+                    elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NTEL:
+                        ntel = content[i]
+
+            if len(name) != 0 or len(email) != 0 or len(surname) != 0 or len(ntel) != 0 or len(scores) != 0:
+                user = entity.User(name, email, surname, ntel, scores)
+                users_list.append(user)
+                if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
+                    SystemConstants.UI_CONSOLE.print_to_user(
+                        "WARNING: Error parsing User: " + user + " at position: " + str(i) + " / " + str(i + 1) + "\n",
+                        Colors.TEXT_COLOR_WARNING
+                    )
 
         i += 1
 
@@ -487,13 +558,15 @@ def get_users_list(content):
             ntel = ""
             scores = []
 
-            i += 1
             s, c = 0, 0
-            while i < len(content) and constants.NEW_USER not in content[i] and \
-                    i + 1 < len(content) and constants.NEW_USER not in content[i + 1]:
+            while i + 1 < len(content) and constants.NEW_USER not in content[i + 1]:
+                i += 1
                 item_position = check_match(content[i], score_list)
                 # Item found in scores
                 if item_position != -1:
+                    if i + 1 >= len(content) or constants.NEW_USER in content[i + 1]:
+                        break
+
                     i += 1
                     s += 1
                     if content[i] != constants.SCORE_VAL_NEGATIVE:
@@ -508,12 +581,14 @@ def get_users_list(content):
                                 Colors.TEXT_COLOR_WARNING
                             )
 
-                    i += 1
                     continue
 
                 item_position = check_match(content[i], constants.CREDENTIALS_LIST)
                 # Item found in credentilas
                 if item_position != -1:
+                    if i + 1 >= len(content) or constants.NEW_USER in content[i + 1]:
+                        break
+
                     i += 1
                     c += 1
                     if constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NAME:
@@ -524,8 +599,6 @@ def get_users_list(content):
                         email = content[i]
                     elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NTEL:
                         ntel = content[i]
-
-                i += 1
 
             if len(name) != 0 or len(email) != 0 or len(surname) != 0 or len(ntel) != 0 or len(scores) != 0:
                 user = entity.User(name, email, surname, ntel, scores)

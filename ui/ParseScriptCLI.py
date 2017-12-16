@@ -26,22 +26,34 @@ class ColorsCLI(Colors):
         TERMINAL_WARNING_COLOR
     ]
 
+    @staticmethod
+    def get_color_from_code(type_code):
+        for color in ColorsCLI.TERMINAL_COLORS:
+            if color[0] == type_code:
+                return color[1]
+
+        return ColorsCLI.get_default_color()
+
+    @staticmethod
+    def get_default_color():
+        return ColorsCLI.TERMINAL_DEFAULT_COLOR[1]
+
+    @staticmethod
+    def get_color_to_clear_console():
+        return ColorsCLI.CLEAR_CONSOLE
+
 
 class ParseScriptCLI(ParseScriptUI):
-    def print_to_user(self, message="", message_type=ColorsCLI.TEXT_COLOR_DEFAULT):
+    def print_to_user(self, message="", message_type=Colors.TEXT_COLOR_DEFAULT):
         if message is not None:
-            color = ColorsCLI.get_color_from_code(
-                message_type,
-                ColorsCLI.TERMINAL_COLORS,
-                ColorsCLI.TERMINAL_DEFAULT_COLOR[1]
-            )
-            print color + message + ColorsCLI.TERMINAL_DEFAULT_COLOR[1]
+            color = ColorsCLI.get_color_from_code(message_type)
+            print color + message + ColorsCLI.get_default_color()
             self.__flush_stdout_buffer__()
 
     def clear_console(self):
-        print ColorsCLI.CLEAR_CONSOLE
+        print ColorsCLI.get_color_to_clear_console()
         '''
-        Solution less "strong"
+        This solution not delete old chars
         osname = os.name
         if osname == 'posix':
             os.system('clear')

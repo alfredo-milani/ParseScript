@@ -13,20 +13,24 @@ class Colors(object):
     TEXT_COLOR_START_OPERATION = 2
 
     @staticmethod
-    def get_color_from_code(type_code, color_list, default_color):
+    @abstractmethod
+    def get_color_from_code(type_code):
         """
         Get correct color from @color_list based on @type_code.
         In case of errors return @Color (data type based on selected UI)
         :type type_code: int
-        :type color_list: list
-        :type default_color: Any
         :rtype: Any
         """
-        for color in color_list:
-            if color[0] == type_code:
-                return color[1]
+        raise NotImplementedError
 
-        return default_color
+    @staticmethod
+    @abstractmethod
+    def get_default_color():
+        """
+        Get default color
+        :rtype: Any
+        """
+        raise NotImplementedError
 
 
 class ParseScriptUI(object):

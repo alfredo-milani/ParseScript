@@ -1,4 +1,5 @@
 [Desktop Entry]
+Version=1.0
 Name=Parse Script
 Comment=Parsing files
 Exec=python /opt/ParseScript/DataRetrieval.py --gui %f

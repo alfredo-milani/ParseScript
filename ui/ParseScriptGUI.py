@@ -41,6 +41,18 @@ class ColorsGUI(Colors):
         CONSOLE_WARNING_COLOR
     ]
 
+    @staticmethod
+    def get_color_from_code(type_code):
+        for color in ColorsGUI.CONSOLE_COLORS:
+            if color[0] == type_code:
+                return color[1]
+
+        return ColorsGUI.get_default_color()
+
+    @staticmethod
+    def get_default_color():
+        return ColorsGUI.CONSOLE_DEFAULT_COLOR[1]
+
 
 class ParseScriptGUI(wx.Frame, ParseScriptUI):
     def __init__(self, parent, title):
@@ -351,13 +363,11 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         if self.user_console is not None:
             self.user_console.SetValue("")
 
-    def print_to_user(self, message="", message_type=ColorsGUI.TEXT_COLOR_DEFAULT):
+    def print_to_user(self, message="", message_type=Colors.TEXT_COLOR_DEFAULT):
         if self.user_console is not None and message is not None:
-            self.user_console.SetForegroundColour(
-                ColorsGUI.get_color_from_code(message_type, ColorsGUI.CONSOLE_COLORS, ColorsGUI.CONSOLE_DEFAULT_COLOR[1])
-            )
+            self.user_console.SetForegroundColour(ColorsGUI.get_color_from_code(message_type))
             self.user_console.AppendText(message + "\n")
-            self.user_console.SetForegroundColour(ColorsGUI.CONSOLE_DEFAULT_COLOR[1])
+            self.user_console.SetForegroundColour(ColorsGUI.get_default_color())
 
     def get_user_input_bool(self, question="", format_answere=""):
         dlg = wx.MessageDialog(None, question, style=wx.YES_NO | wx.ICON_QUESTION)
