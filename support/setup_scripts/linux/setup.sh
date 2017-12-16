@@ -25,7 +25,8 @@ if [ "${choise}" == "Yes" ]; then
 
     echo ">>>Spostamento ${software_name} in ${software_sys_path}"
     sudo rm -rf ${software_sys_path}/${software_name} &> ${null}
-    sudo chmod +x ${tmp_path}/${launcher_script}
+    # Non necessario
+    # sudo chmod +x ${tmp_path}/${launcher_script}
     sudo mv ${tmp_path}/${software_name} ${software_sys_path}
 
     echo ">>>Operazione completata. Riavviare il sistema o il Desktop Environment."

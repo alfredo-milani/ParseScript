@@ -2,7 +2,7 @@
 Version=1.0
 Name=Parse Script
 Comment=Parsing files
-Exec=python /opt/ParseScript/DataRetrieval.py --gui %f
+Exec=/opt/ParseScript/DataRetrieval.py --gui %f
 Path=/opt/ParseScript
 Terminal=false
 Icon=/opt/ParseScript/resources/images/icon.png
