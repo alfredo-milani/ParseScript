@@ -501,6 +501,8 @@ def get_users_list(content):
                         if content[i] == constants.SCORE_VAL_POSITIVE:
                             scores.append(constants.SCORES_LIST[item_position][1])
                         else:
+                            # Per far stampare anche l'utente interessato
+                            s -= 1
                             SystemConstants.UI_CONSOLE.print_to_user(
                                 "Error parsing value of line: %s.\tValue: %s.\tPosizione elemento della lista: %d." %
                                 (content[i - 1], content[i], i),
