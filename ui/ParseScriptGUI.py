@@ -9,9 +9,7 @@ from pathlib import Path
 from DataRetrieval import manage_operation
 from constants import SystemConstants
 from entity.InputData import InputData
-from ui.ParseScriptUI import ParseScriptUI
-from ui.ParseScriptUI import TEXT_COLOR_DEFAULT, TEXT_COLOR_WARNING, TEXT_COLOR_ERROR, TEXT_COLOR_SUCCESS, \
-    TEXT_COLOR_START_OPERATION
+from ui.ParseScriptUI import ParseScriptUI, Colors
 from utils import split_char
 
 APP_EXIT = 1
@@ -23,22 +21,25 @@ APP_SELECT_INPUT_DIR = 6
 APP_SHOW_PARSED_FILES = 8
 APP_CLEAN_CONSOLE = 7
 
-CONSOLE_DEFAULT_COLOR = (TEXT_COLOR_DEFAULT, wx.WHITE)
-CONSOLE_WARNING_COLOR = (TEXT_COLOR_WARNING, wx.YELLOW)
-CONSOLE_ERROR_COLOR = (TEXT_COLOR_ERROR, wx.RED)
-CONSOLE_SUCCESS_COLOR = (TEXT_COLOR_SUCCESS, wx.GREEN)
-CONSOLE_START_OPERATION_COLOR = (TEXT_COLOR_START_OPERATION, wx.CYAN)
-CONSOLE_COLORS = [
-    CONSOLE_DEFAULT_COLOR,
-    CONSOLE_ERROR_COLOR,
-    CONSOLE_SUCCESS_COLOR,
-    CONSOLE_START_OPERATION_COLOR,
-    CONSOLE_WARNING_COLOR
-]
-
 HELP_MSG = "Con questo tool è possibile fare il parsing di file in formato: *.pdf, *.txt o *.docx.\n" \
            "Si può scegliere di parsare un solo file o di parsare i files" \
            "contenuti in una specifica directory utilizzando i box appositi."
+
+
+class ColorsGUI(Colors):
+    CONSOLE_DEFAULT_COLOR = (Colors.TEXT_COLOR_DEFAULT, wx.WHITE)
+    CONSOLE_WARNING_COLOR = (Colors.TEXT_COLOR_WARNING, wx.YELLOW)
+    CONSOLE_ERROR_COLOR = (Colors.TEXT_COLOR_ERROR, wx.RED)
+    CONSOLE_SUCCESS_COLOR = (Colors.TEXT_COLOR_SUCCESS, wx.GREEN)
+    CONSOLE_START_OPERATION_COLOR = (Colors.TEXT_COLOR_START_OPERATION, wx.CYAN)
+
+    CONSOLE_COLORS = [
+        CONSOLE_DEFAULT_COLOR,
+        CONSOLE_ERROR_COLOR,
+        CONSOLE_SUCCESS_COLOR,
+        CONSOLE_START_OPERATION_COLOR,
+        CONSOLE_WARNING_COLOR
+    ]
 
 
 class ParseScriptGUI(wx.Frame, ParseScriptUI):
@@ -337,8 +338,8 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
     def __open_file__(outputdirectory):
         """
         Open file manager with root @filename for the correct OS
-        :param outputdirectory: string
-        :return: None
+        :type outputdirectory: str
+        :rtype: None
         """
         if sys.platform == "win32":
             os.startfile(outputdirectory)
@@ -350,15 +351,15 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         if self.user_console is not None:
             self.user_console.SetValue("")
 
-    def print_to_user(self, message="", message_type=TEXT_COLOR_DEFAULT):
+    def print_to_user(self, message="", message_type=ColorsGUI.TEXT_COLOR_DEFAULT):
         if self.user_console is not None and message is not None:
             self.user_console.SetForegroundColour(
-                self.get_color_from_code(message_type, CONSOLE_COLORS, CONSOLE_DEFAULT_COLOR[1])
+                ColorsGUI.get_color_from_code(message_type, ColorsGUI.CONSOLE_COLORS, ColorsGUI.CONSOLE_DEFAULT_COLOR[1])
             )
             self.user_console.AppendText(message + "\n")
-            self.user_console.SetForegroundColour(CONSOLE_DEFAULT_COLOR[1])
+            self.user_console.SetForegroundColour(ColorsGUI.CONSOLE_DEFAULT_COLOR[1])
 
-    def get_user_input(self, question="", format_answere=""):
+    def get_user_input_bool(self, question="", format_answere=""):
         dlg = wx.MessageDialog(None, question, style=wx.YES_NO | wx.ICON_QUESTION)
         result = dlg.ShowModal() == wx.ID_YES
         dlg.Destroy()

@@ -1,26 +1,26 @@
 from abc import abstractmethod
 
-TEXT_COLOR_DEFAULT = 0
-TEXT_COLOR_WARNING = -2
-TEXT_COLOR_ERROR = -1
-TEXT_COLOR_SUCCESS = 1
-TEXT_COLOR_START_OPERATION = 2
 
+class Colors(object):
+    """
+    Class containing colors
+    """
 
-class ParseScriptUI(object):
-    """
-    Interface to interact with user
-    """
+    TEXT_COLOR_DEFAULT = 0
+    TEXT_COLOR_WARNING = -2
+    TEXT_COLOR_ERROR = -1
+    TEXT_COLOR_SUCCESS = 1
+    TEXT_COLOR_START_OPERATION = 2
 
     @staticmethod
     def get_color_from_code(type_code, color_list, default_color):
         """
         Get correct color from @color_list based on @type_code.
         In case of errors return @Color (data type based on selected UI)
-        :param type_code: int
-        :param color_list: list
-        :param default_color: Color
-        :return: Color
+        :type type_code: int
+        :type color_list: list
+        :type default_color: Any
+        :rtype: Any
         """
         for color in color_list:
             if color[0] == type_code:
@@ -28,13 +28,19 @@ class ParseScriptUI(object):
 
         return default_color
 
+
+class ParseScriptUI(object):
+    """
+    Interface to interact with user
+    """
+
     @abstractmethod
-    def print_to_user(self, message="", message_type=TEXT_COLOR_DEFAULT):
+    def print_to_user(self, message="", message_type=Colors.TEXT_COLOR_DEFAULT):
         """
         Show @message to user of color @message_type: default (0), green (1), red (-1), grey (2)
-        :param message: string
-        :param message_type: int
-        :return: None
+        :type message: str
+        :type message_type: int
+        :rtype: None
         """
         raise NotImplementedError
 
@@ -42,16 +48,16 @@ class ParseScriptUI(object):
     def clear_console(self):
         """
         Clean console output
-        :return: None
+        :rtype: None
         """
         raise NotImplementedError
 
     @abstractmethod
-    def get_user_input(self, question="", format_answere=""):
+    def get_user_input_bool(self, question="", format_answere=""):
         """
         Get input from user depending on @question message with @format_answere as options
-        :param question: string
-        :param format_answere: string
-        :return: bool
+        :type format_answere: str
+        :type question: str
+        :rtype: bool
         """
         raise NotImplementedError

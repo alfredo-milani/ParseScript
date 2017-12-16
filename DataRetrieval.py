@@ -24,8 +24,7 @@ import constants
 import entity
 from constants import APP_NAME, SystemConstants
 from entity.InputData import InputData
-from ui.ParseScriptUI import TEXT_COLOR_START_OPERATION, TEXT_COLOR_WARNING, TEXT_COLOR_ERROR, \
-    TEXT_COLOR_SUCCESS
+from ui.ParseScriptUI import Colors
 from utils import document_to_text
 from utils.Converter import EXT_XLSX, split_char
 
@@ -63,7 +62,7 @@ def usage():
 def get_program_folder():
     """
     To get absolute path of the program (path which contain the function's file)
-    :return: string
+    :rtype: str
     """
     module_file = __file__
     module_dir = os.path.split(os.path.abspath(module_file))[0]
@@ -74,7 +73,7 @@ def get_program_folder():
 def set_up_sys():
     """
     Setup system: init global variables, loads external modules, ecc...
-    :return: None
+    :rtype: None
     """
     SystemConstants.APP_ABS_PATH = get_program_folder()
     SystemConstants.OS_TYPE = platform.system()
@@ -111,8 +110,8 @@ def set_up_sys():
 def parse_arg(argv):
     """
     Parsing list of user's input
-    :param argv: list
-    :return: InputData
+    :type argv: list
+    :rtype: InputData
     """
     input_data = InputData()
 
@@ -152,8 +151,8 @@ def parse_arg(argv):
 def launch_ui(input_data):
     """
     Start user interface depending on user input
-    :param input_data: InputData
-    :return: None
+    :type input_data: InputData
+    :rtype: None
     """
     if input_data.__getattribute__("gui"):
         import wx
@@ -173,15 +172,15 @@ def launch_ui(input_data):
 def manage_operation(input_data):
     """
     Launch operation depending on user input
-    :param input_data: InputData
-    :return: None
+    :type input_data: InputData
+    :rtype: None
     """
     input_file = input_data.__getattribute__("input_file")
     output_dir = input_data.__getattribute__("output_dir")
     sheet_title = input_data.__getattribute__("sheet_title")
     verbose = input_data.__getattribute__("verbose")
 
-    SystemConstants.UI_CONSOLE.print_to_user("<<<--- STARTING OPERATION --->>>", TEXT_COLOR_START_OPERATION)
+    SystemConstants.UI_CONSOLE.print_to_user("<<<--- STARTING OPERATION --->>>", Colors.TEXT_COLOR_START_OPERATION)
 
     if len(input_file) != 0:
         SystemConstants.UI_CONSOLE.print_to_user("Input: " + os.path.abspath(input_file))
@@ -189,7 +188,7 @@ def manage_operation(input_data):
         if not Path(output_dir).is_dir():
             SystemConstants.UI_CONSOLE.print_to_user(
                 "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, SystemConstants.TMP_PATH),
-                TEXT_COLOR_WARNING
+                Colors.TEXT_COLOR_WARNING
             )
             input_data.__setattr__("output_dir", SystemConstants.TMP_PATH)
             output_dir = input_data.__getattribute__("output_dir")
@@ -199,7 +198,7 @@ def manage_operation(input_data):
     SystemConstants.UI_CONSOLE.print_to_user("Output directory: " + os.path.abspath(output_dir))
 
     if not Path(input_file).exists():
-        SystemConstants.UI_CONSOLE.print_to_user("ERROR: %s not exist!" % input_file, TEXT_COLOR_ERROR)
+        SystemConstants.UI_CONSOLE.print_to_user("ERROR: %s not exist!" % input_file, Colors.TEXT_COLOR_ERROR)
         sys.exit(EXIT_ERR_ARG)
 
     if Path(input_file).is_dir():
@@ -213,7 +212,7 @@ def manage_operation(input_data):
     else:
         SystemConstants.UI_CONSOLE.print_to_user(
             "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file,
-            TEXT_COLOR_ERROR
+            Colors.TEXT_COLOR_ERROR
         )
         sys.exit(EXIT_ERR_ARG)
 
@@ -224,7 +223,7 @@ def manage_operation(input_data):
     for el in list_of_files:
         SystemConstants.UI_CONSOLE.print_to_user("\n>>> Parsing file: %s" % el)
         if verbose:
-            response = SystemConstants.UI_CONSOLE.get_user_input("Do you want to continue?", "Type [Yes] / [No]")
+            response = SystemConstants.UI_CONSOLE.get_user_input_bool("Do you want to continue?", "Type [Yes] / [No]")
 
             if response:
                 perform_operation(el, output_dir, sheet_title)
@@ -234,16 +233,16 @@ def manage_operation(input_data):
         else:
             perform_operation(el, output_dir, sheet_title)
 
-    SystemConstants.UI_CONSOLE.print_to_user("\n<<<--- OPERATION COMPLETED --->>>\n", TEXT_COLOR_SUCCESS)
+    SystemConstants.UI_CONSOLE.print_to_user("\n<<<--- OPERATION COMPLETED --->>>\n", Colors.TEXT_COLOR_SUCCESS)
 
 
 def replace_unsupported_char(string, chars_to_check, selected_char):
     """
     Replace @chars_to_check with @selected_char in @string
-    :param string: string
-    :param chars_to_check: string
-    :param selected_char: string
-    :return: string
+    :type string: str
+    :type chars_to_check: list
+    :type selected_char: str
+    :rtype: str
     """
     for char in chars_to_check:
         string = string.replace(char, selected_char)
@@ -254,9 +253,9 @@ def replace_unsupported_char(string, chars_to_check, selected_char):
 def count_users(data, user_delim):
     """
     Count occurences' number of @user_delim in @data
-    :param data: list
-    :param user_delim: string
-    :return: int
+    :type data: list
+    :type user_delim: str
+    :rtype: int
     """
     n = 0
     for el in data:
@@ -270,14 +269,14 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     """
     Perform parsing operation of file @input_file setting sheet title as @sheet_title and
     store the result in @output_dir directory
-    :param input_file: string
-    :param output_dir: string
-    :param sheet_title: string
-    :return: None
+    :type input_file: str
+    :type output_dir: str
+    :type sheet_title: str
+    :rtype: None
     """
     file_to_parse = Path(input_file)
     if not file_to_parse.is_file():
-        SystemConstants.UI_CONSOLE.print_to_user("File '%s' not found" % file_to_parse, TEXT_COLOR_ERROR)
+        SystemConstants.UI_CONSOLE.print_to_user("File '%s' not found" % file_to_parse, Colors.TEXT_COLOR_ERROR)
         return
         # sys.exit(EXIT_ERR_FILE)
 
@@ -287,14 +286,14 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     if content is None:
         SystemConstants.UI_CONSOLE.print_to_user(
             "!!! Unknown format for file: %s. Skipping... !!!" % input_file,
-            TEXT_COLOR_WARNING
+            Colors.TEXT_COLOR_WARNING
         )
         return
         # sys.exit(EXIT_ERR_FILE)
     elif len(content) == 0:
         SystemConstants.UI_CONSOLE.print_to_user(
             "! File: %s already parsed. Skipping... !" % input_file,
-            TEXT_COLOR_WARNING
+            Colors.TEXT_COLOR_WARNING
         )
         return
         # sys.exit(EXIT_SUCCESS)
@@ -313,7 +312,7 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
                 raw_data_num_users,
                 len(list_of_users)
             ),
-            TEXT_COLOR_WARNING
+            Colors.TEXT_COLOR_WARNING
         )
 
     wb = Workbook()
@@ -357,7 +356,7 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     file_to_save = output_dir + default_out
 
     if Path(file_to_save).exists():
-        response = SystemConstants.UI_CONSOLE.get_user_input(
+        response = SystemConstants.UI_CONSOLE.get_user_input_bool(
             "File: %s already exist.\nDo you want to override it?\n" % file_to_save,
             "Type [Yes] / [No]"
         )
@@ -373,9 +372,9 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
 def check_match(to_match, list_to_check):
     """
     Verifica, anche parziale, del matching tra l'elemento @to_match e gli elementi di @list_to_check
-    :param to_match: string
-    :param list_to_check: list
-    :return: int
+    :type to_match: str
+    :type list_to_check: list
+    :rtype: int
     """
     for i in range(len(list_to_check)):
         if list_to_check[i] in to_match:
@@ -387,8 +386,8 @@ def check_match(to_match, list_to_check):
 def get_users_list_old_algorithm(content):
     """
     Crea una lista di tipo User da @content
-    :param content: list
-    :return: list
+    :type content: list
+    :rtype: list
     """
     users_list = []
     i = 0
@@ -423,8 +422,8 @@ def get_users_list_old_algorithm(content):
                     else:
                         SystemConstants.UI_CONSOLE.print_to_user(
                             "Error parsing value of line: %s.\tValue: %s.\tPosizione elemento della lista: %d.\n" % (
-                            content[i - 1], content[i], i),
-                            TEXT_COLOR_WARNING
+                                content[i - 1], content[i], i),
+                            Colors.TEXT_COLOR_WARNING
                         )
                         continue
 
@@ -460,7 +459,7 @@ def get_users_list_old_algorithm(content):
             users_list.append(user)
             if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                 SystemConstants.UI_CONSOLE.print_to_user("WARNING: Error parsing User: " + user + "\n",
-                                                         TEXT_COLOR_WARNING)
+                                                         Colors.TEXT_COLOR_WARNING)
 
             if constants.NEW_USER in content[i]:
                 continue
@@ -473,8 +472,8 @@ def get_users_list_old_algorithm(content):
 def get_users_list(content):
     """
     Crea una lista di tipo User da @content
-    :param content: list
-    :return: list
+    :type content: list
+    :rtype: list
     """
     score_list = [x[0] for x in constants.SCORES_LIST]
     users_list = []
@@ -506,7 +505,7 @@ def get_users_list(content):
                             SystemConstants.UI_CONSOLE.print_to_user(
                                 "Error parsing value of line: %s.\tValue: %s.\tPosizione elemento della lista: %d." %
                                 (content[i - 1], content[i], i),
-                                TEXT_COLOR_WARNING
+                                Colors.TEXT_COLOR_WARNING
                             )
 
                     i += 1
@@ -534,7 +533,7 @@ def get_users_list(content):
                 if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                     SystemConstants.UI_CONSOLE.print_to_user(
                         "WARNING: Error parsing User: " + user + " at position: " + str(i) + " / " + str(i + 1) + "\n",
-                        TEXT_COLOR_WARNING
+                        Colors.TEXT_COLOR_WARNING
                     )
 
         i += 1
