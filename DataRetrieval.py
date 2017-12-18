@@ -321,7 +321,7 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     # create name for new sheet
     if sheet_title is None or len(sheet_title) == 0:
         text_to_split = os.path.basename(input_file).split('.')[0]
-        text_to_split = replace_unsupported_char(text_to_split, ['-', ' '], '_')
+        text_to_split = replace_unsupported_char(str(text_to_split), ['-', ' '], '_')
         month_list = text_to_split.split("_")
         try:
             if len(month_list) < 3:
@@ -566,6 +566,9 @@ def get_users_list(content):
                 if item_position != -1:
                     if i + 1 >= len(content) or constants.NEW_USER in content[i + 1]:
                         break
+                    elif check_match(content[i + 1], score_list) != -1 or \
+                            check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
+                        continue
 
                     i += 1
                     s += 1
@@ -584,10 +587,13 @@ def get_users_list(content):
                     continue
 
                 item_position = check_match(content[i], constants.CREDENTIALS_LIST)
-                # Item found in credentilas
+                # Item found in credentials
                 if item_position != -1:
                     if i + 1 >= len(content) or constants.NEW_USER in content[i + 1]:
                         break
+                    elif check_match(content[i + 1], score_list) != -1 or \
+                            check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
+                        continue
 
                     i += 1
                     c += 1
@@ -605,7 +611,7 @@ def get_users_list(content):
                 users_list.append(user)
                 if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                     SystemConstants.UI_CONSOLE.print_to_user(
-                        "WARNING: Error parsing User: " + user + " at position: " + str(i) + " / " + str(i + 1) + "\n",
+                        "WARNING: Unexpected value while parsing User: " + user + " at position: " + str(i) + " / " + str(i + 1) + "\n",
                         Colors.TEXT_COLOR_WARNING
                     )
 
