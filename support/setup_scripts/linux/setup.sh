@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Controllo preliminare: lo script deve essere eseguito come super user
+if [ `id -u` -ne 0 ]; then
+       sudo $0 $@
+       exit $?
+fi
+
 declare -r remote_repo="https://github.com/alfredo-milani/ParseScript"
 declare -r tmp_path="/dev/shm"
 declare -r software_name="ParseScript"
