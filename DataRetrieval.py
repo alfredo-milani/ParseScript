@@ -568,22 +568,27 @@ def get_users_list(content):
                         break
                     elif check_match(content[i + 1], score_list) != -1 or \
                             check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
+                        SystemConstants.UI_CONSOLE.print_to_user(
+                            "Unexpected parsing new value even if current is not parsed for user: " + user +
+                            "\tPosizione elemento della lista: %d." % i,
+                            Colors.TEXT_COLOR_WARNING
+                        )
                         continue
 
                     i += 1
-                    s += 1
                     if content[i] != constants.SCORE_VAL_NEGATIVE:
                         if content[i] == constants.SCORE_VAL_POSITIVE:
                             scores.append(constants.SCORES_LIST[item_position][1])
                         else:
-                            # Per far stampare anche l'utente interessato
-                            s -= 1
                             SystemConstants.UI_CONSOLE.print_to_user(
-                                "Error parsing value of line: %s.\tValue: %s.\tPosizione elemento della lista: %d." %
+                                "Error parsing score value for the line: '%s'.\tValue: '%s'.\t"
+                                "Posizione elemento della lista: %d." %
                                 (content[i - 1], content[i], i),
                                 Colors.TEXT_COLOR_WARNING
                             )
+                            continue
 
+                    s += 1
                     continue
 
                 item_position = check_match(content[i], constants.CREDENTIALS_LIST)
@@ -593,6 +598,11 @@ def get_users_list(content):
                         break
                     elif check_match(content[i + 1], score_list) != -1 or \
                             check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
+                        SystemConstants.UI_CONSOLE.print_to_user(
+                            "Unexpected parsing new value even if current is not parsed for user: " + user +
+                            "\tPosizione elemento della lista: %d." % i,
+                            Colors.TEXT_COLOR_WARNING
+                        )
                         continue
 
                     i += 1
@@ -606,14 +616,30 @@ def get_users_list(content):
                     elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NTEL:
                         ntel = content[i]
 
-            if len(name) != 0 or len(email) != 0 or len(surname) != 0 or len(ntel) != 0 or len(scores) != 0:
+            if name or email or surname or ntel or scores:
                 user = entity.User(name, email, surname, ntel, scores)
                 users_list.append(user)
                 if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
+                    # Check non effettuato durante l'assegnazione (nel parsing delle credenziali) dal momento che
+                    # la funzione filter elimina tutti i valori Falseish, quindi i valori
+                    # Checking only primary key name and email (as in https://www.prolon.it/contact-us/)
+                    if not name or not email:
+                        SystemConstants.UI_CONSOLE.print_to_user(
+                            "Error parsing credential (name or email empty) for User: " + user,
+                            Colors.TEXT_COLOR_WARNING
+                        )
+                    elif s == constants.SCORES_NUM:
+                        continue
+
                     SystemConstants.UI_CONSOLE.print_to_user(
-                        "WARNING: Unexpected value while parsing User: " + user + " at position: " + str(i) + " / " + str(i + 1) + "\n",
+                        "WARNING: The user may have been converted incorrectly: " + user + "\n",
                         Colors.TEXT_COLOR_WARNING
                     )
+            else:
+                SystemConstants.UI_CONSOLE.print_to_user(
+                    "WARNING: User with all empty entry at position: " + str(i) + " / " + str(i + 1) + "\n",
+                    Colors.TEXT_COLOR_WARNING
+                )
 
         i += 1
 
