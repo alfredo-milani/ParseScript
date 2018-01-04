@@ -163,7 +163,7 @@ def launch_ui(input_data):
         SystemConstants.UI_CONSOLE.Show(True)
         graphic_interface.MainLoop()
     else:
-        from ui.ParseScriptCLI import ParseScriptCLI
+        from ui import ParseScriptCLI
 
         SystemConstants.UI_CONSOLE = ParseScriptCLI()
         manage_operation(input_data)

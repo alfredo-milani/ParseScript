@@ -6,7 +6,6 @@ import sys
 import wx
 from pathlib import Path
 
-from DataRetrieval import manage_operation
 from constants import SystemConstants
 from entity.InputData import InputData
 from ui.ParseScriptUI import ParseScriptUI
@@ -287,6 +286,8 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             return
 
         # START OPERATION
+        from DataRetrieval import manage_operation
+
         input_data = InputData(input_file, output_dir, None, verbose, True)
         manage_operation(input_data)
 
@@ -332,11 +333,11 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             subprocess.call([opener, outputdirectory])
 
     def clear_console(self):
-        if self.user_console is not None:
+        if self.user_console:
             self.user_console.SetValue("")
 
     def print_to_user(self, message="", message_type=ParseScriptUI.Colors.TEXT_COLOR_DEFAULT):
-        if self.user_console is not None and message is not None:
+        if self.user_console and message:
             self.user_console.SetForegroundColour(ParseScriptGUI.ColorsGUI.get_color_from_code(message_type))
             self.user_console.AppendText(message + "\n")
             self.user_console.SetForegroundColour(ParseScriptGUI.ColorsGUI.get_default_color())
