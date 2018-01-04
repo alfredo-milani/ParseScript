@@ -24,7 +24,7 @@ import constants
 import entity
 from constants import APP_NAME, SystemConstants
 from entity.InputData import InputData
-from ui.ParseScriptUI import Colors
+from ui import ParseScriptUI
 from utils import document_to_text
 from utils.Converter import EXT_XLSX, split_char
 
@@ -180,7 +180,10 @@ def manage_operation(input_data):
     sheet_title = input_data.__getattribute__("sheet_title")
     verbose = input_data.__getattribute__("verbose")
 
-    SystemConstants.UI_CONSOLE.print_to_user("<<<--- STARTING OPERATION --->>>", Colors.TEXT_COLOR_START_OPERATION)
+    SystemConstants.UI_CONSOLE.print_to_user(
+        "<<<--- STARTING OPERATION --->>>",
+        ParseScriptUI.Colors.TEXT_COLOR_START_OPERATION
+    )
 
     if len(input_file) != 0:
         SystemConstants.UI_CONSOLE.print_to_user("Input: " + os.path.abspath(input_file))
@@ -188,7 +191,7 @@ def manage_operation(input_data):
         if not Path(output_dir).is_dir():
             SystemConstants.UI_CONSOLE.print_to_user(
                 "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, SystemConstants.TMP_PATH),
-                Colors.TEXT_COLOR_WARNING
+                ParseScriptUI.Colors.TEXT_COLOR_WARNING
             )
             input_data.__setattr__("output_dir", SystemConstants.TMP_PATH)
             output_dir = input_data.__getattribute__("output_dir")
@@ -198,7 +201,10 @@ def manage_operation(input_data):
     SystemConstants.UI_CONSOLE.print_to_user("Output directory: " + os.path.abspath(output_dir))
 
     if not Path(input_file).exists():
-        SystemConstants.UI_CONSOLE.print_to_user("ERROR: %s not exist!" % input_file, Colors.TEXT_COLOR_ERROR)
+        SystemConstants.UI_CONSOLE.print_to_user(
+            "ERROR: %s not exist!" % input_file,
+            ParseScriptUI.Colors.TEXT_COLOR_ERROR
+        )
         sys.exit(EXIT_ERR_ARG)
 
     if Path(input_file).is_dir():
@@ -212,7 +218,7 @@ def manage_operation(input_data):
     else:
         SystemConstants.UI_CONSOLE.print_to_user(
             "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file,
-            Colors.TEXT_COLOR_ERROR
+            ParseScriptUI.Colors.TEXT_COLOR_ERROR
         )
         sys.exit(EXIT_ERR_ARG)
 
@@ -233,7 +239,10 @@ def manage_operation(input_data):
         else:
             perform_operation(el, output_dir, sheet_title)
 
-    SystemConstants.UI_CONSOLE.print_to_user("\n<<<--- OPERATION COMPLETED --->>>\n", Colors.TEXT_COLOR_SUCCESS)
+    SystemConstants.UI_CONSOLE.print_to_user(
+        "\n<<<--- OPERATION COMPLETED --->>>\n",
+        ParseScriptUI.Colors.TEXT_COLOR_SUCCESS
+    )
 
 
 def replace_unsupported_char(string, chars_to_check, selected_char):
@@ -276,7 +285,10 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     """
     file_to_parse = Path(input_file)
     if not file_to_parse.is_file():
-        SystemConstants.UI_CONSOLE.print_to_user("File '%s' not found" % file_to_parse, Colors.TEXT_COLOR_ERROR)
+        SystemConstants.UI_CONSOLE.print_to_user(
+            "File '%s' not found" % file_to_parse,
+            ParseScriptUI.Colors.TEXT_COLOR_ERROR
+        )
         return
         # sys.exit(EXIT_ERR_FILE)
 
@@ -286,14 +298,14 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
     if content is None:
         SystemConstants.UI_CONSOLE.print_to_user(
             "!!! Unknown format for file: %s. Skipping... !!!" % input_file,
-            Colors.TEXT_COLOR_WARNING
+            ParseScriptUI.Colors.TEXT_COLOR_WARNING
         )
         return
         # sys.exit(EXIT_ERR_FILE)
     elif len(content) == 0:
         SystemConstants.UI_CONSOLE.print_to_user(
             "! File: %s already parsed. Skipping... !" % input_file,
-            Colors.TEXT_COLOR_WARNING
+            ParseScriptUI.Colors.TEXT_COLOR_WARNING
         )
         return
         # sys.exit(EXIT_SUCCESS)
@@ -312,7 +324,7 @@ def perform_operation(input_file, output_dir="", sheet_title=""):
                 raw_data_num_users,
                 len(list_of_users)
             ),
-            Colors.TEXT_COLOR_WARNING
+            ParseScriptUI.Colors.TEXT_COLOR_WARNING
         )
 
     wb = Workbook()
@@ -423,7 +435,7 @@ def get_users_list_oldest(content):
                         SystemConstants.UI_CONSOLE.print_to_user(
                             "Error parsing value of line: %s.\tValue: %s.\tPosizione elemento della lista: %d.\n" % (
                                 content[i - 1], content[i], i),
-                            Colors.TEXT_COLOR_WARNING
+                            ParseScriptUI.Colors.TEXT_COLOR_WARNING
                         )
                         continue
 
@@ -460,7 +472,7 @@ def get_users_list_oldest(content):
             if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                 SystemConstants.UI_CONSOLE.print_to_user(
                     "WARNING: Error parsing User: " + user + "\n",
-                    Colors.TEXT_COLOR_WARNING
+                    ParseScriptUI.Colors.TEXT_COLOR_WARNING
                 )
 
             if constants.NEW_USER in content[i]:
@@ -507,7 +519,7 @@ def get_users_list_old(content):
                             SystemConstants.UI_CONSOLE.print_to_user(
                                 "Error parsing value of line: %s.\tValue: %s.\tPosizione elemento della lista: %d." %
                                 (content[i - 1], content[i], i),
-                                Colors.TEXT_COLOR_WARNING
+                                ParseScriptUI.Colors.TEXT_COLOR_WARNING
                             )
 
                     continue
@@ -532,7 +544,7 @@ def get_users_list_old(content):
                 if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                     SystemConstants.UI_CONSOLE.print_to_user(
                         "WARNING: Error parsing User: " + user + " at position: " + str(i) + " / " + str(i + 1) + "\n",
-                        Colors.TEXT_COLOR_WARNING
+                        ParseScriptUI.Colors.TEXT_COLOR_WARNING
                     )
 
         i += 1
@@ -571,7 +583,7 @@ def get_users_list(content):
                         SystemConstants.UI_CONSOLE.print_to_user(
                             "Unexpected parsing new value even if current is not parsed for user: " + user +
                             "\tPosizione elemento della lista: %d." % i,
-                            Colors.TEXT_COLOR_WARNING
+                            ParseScriptUI.Colors.TEXT_COLOR_WARNING
                         )
                         continue
 
@@ -584,7 +596,7 @@ def get_users_list(content):
                                 "Error parsing score value for the line: '%s'.\tValue: '%s'.\t"
                                 "Posizione elemento della lista: %d." %
                                 (content[i - 1], content[i], i),
-                                Colors.TEXT_COLOR_WARNING
+                                ParseScriptUI.Colors.TEXT_COLOR_WARNING
                             )
                             continue
 
@@ -601,7 +613,7 @@ def get_users_list(content):
                         SystemConstants.UI_CONSOLE.print_to_user(
                             "Unexpected parsing new value even if current is not parsed for user: " + user +
                             "\tPosizione elemento della lista: %d." % i,
-                            Colors.TEXT_COLOR_WARNING
+                            ParseScriptUI.Colors.TEXT_COLOR_WARNING
                         )
                         continue
 
@@ -626,19 +638,19 @@ def get_users_list(content):
                     if not name or not email:
                         SystemConstants.UI_CONSOLE.print_to_user(
                             "Error parsing credential (name or email empty) for User: " + user,
-                            Colors.TEXT_COLOR_WARNING
+                            ParseScriptUI.Colors.TEXT_COLOR_WARNING
                         )
                     elif s == constants.SCORES_NUM:
                         continue
 
                     SystemConstants.UI_CONSOLE.print_to_user(
                         "WARNING: The user may have been converted incorrectly: " + user + "\n",
-                        Colors.TEXT_COLOR_WARNING
+                        ParseScriptUI.Colors.TEXT_COLOR_WARNING
                     )
             else:
                 SystemConstants.UI_CONSOLE.print_to_user(
                     "WARNING: User with all empty entry at position: " + str(i) + " / " + str(i + 1) + "\n",
-                    Colors.TEXT_COLOR_WARNING
+                    ParseScriptUI.Colors.TEXT_COLOR_WARNING
                 )
 
         i += 1

@@ -1,42 +1,41 @@
 from abc import abstractmethod
 
 
-class Colors(object):
-    """
-    Class containing colors
-    """
-
-    TEXT_COLOR_DEFAULT = 0
-    TEXT_COLOR_WARNING = -2
-    TEXT_COLOR_ERROR = -1
-    TEXT_COLOR_SUCCESS = 1
-    TEXT_COLOR_START_OPERATION = 2
-
-    @staticmethod
-    @abstractmethod
-    def get_color_from_code(type_code):
-        """
-        Get correct color from @color_list based on @type_code.
-        In case of errors return @Color (data type based on selected UI)
-        :type type_code: int
-        :rtype: Any
-        """
-        raise NotImplementedError
-
-    @staticmethod
-    @abstractmethod
-    def get_default_color():
-        """
-        Get default color
-        :rtype: Any
-        """
-        raise NotImplementedError
-
-
 class ParseScriptUI(object):
     """
     Interface to interact with user
     """
+
+    class Colors(object):
+        """
+        Class containing colors
+        """
+
+        TEXT_COLOR_DEFAULT = 0
+        TEXT_COLOR_WARNING = -2
+        TEXT_COLOR_ERROR = -1
+        TEXT_COLOR_SUCCESS = 1
+        TEXT_COLOR_START_OPERATION = 2
+
+        @staticmethod
+        @abstractmethod
+        def get_color_from_code(type_code):
+            """
+            Get correct color from @color_list based on @type_code.
+            In case of errors return @Color (data type based on selected UI)
+            :type type_code: int
+            :rtype: Any
+            """
+            raise NotImplementedError
+
+        @staticmethod
+        @abstractmethod
+        def get_default_color():
+            """
+            Get default color
+            :rtype: Any
+            """
+            raise NotImplementedError
 
     @abstractmethod
     def print_to_user(self, message="", message_type=Colors.TEXT_COLOR_DEFAULT):

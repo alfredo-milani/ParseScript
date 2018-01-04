@@ -9,7 +9,7 @@ from pathlib import Path
 from DataRetrieval import manage_operation
 from constants import SystemConstants
 from entity.InputData import InputData
-from ui.ParseScriptUI import ParseScriptUI, Colors
+from ui.ParseScriptUI import ParseScriptUI
 from utils import split_char
 
 APP_EXIT = 1
@@ -24,34 +24,6 @@ APP_CLEAN_CONSOLE = 7
 HELP_MSG = "Con questo tool è possibile fare il parsing di file in formato: *.pdf, *.txt o *.docx.\n" \
            "Si può scegliere di parsare un solo file o di parsare i files" \
            "contenuti in una specifica directory utilizzando i box appositi."
-
-
-class ColorsGUI(Colors):
-    CONSOLE_DEFAULT_COLOR = (Colors.TEXT_COLOR_DEFAULT, wx.WHITE)
-    CONSOLE_WARNING_COLOR = (Colors.TEXT_COLOR_WARNING, wx.YELLOW)
-    CONSOLE_ERROR_COLOR = (Colors.TEXT_COLOR_ERROR, wx.RED)
-    CONSOLE_SUCCESS_COLOR = (Colors.TEXT_COLOR_SUCCESS, wx.GREEN)
-    CONSOLE_START_OPERATION_COLOR = (Colors.TEXT_COLOR_START_OPERATION, wx.CYAN)
-
-    CONSOLE_COLORS = [
-        CONSOLE_DEFAULT_COLOR,
-        CONSOLE_ERROR_COLOR,
-        CONSOLE_SUCCESS_COLOR,
-        CONSOLE_START_OPERATION_COLOR,
-        CONSOLE_WARNING_COLOR
-    ]
-
-    @staticmethod
-    def get_color_from_code(type_code):
-        for color in ColorsGUI.CONSOLE_COLORS:
-            if color[0] == type_code:
-                return color[1]
-
-        return ColorsGUI.get_default_color()
-
-    @staticmethod
-    def get_default_color():
-        return ColorsGUI.CONSOLE_DEFAULT_COLOR[1]
 
 
 class ParseScriptGUI(wx.Frame, ParseScriptUI):
@@ -363,14 +335,41 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         if self.user_console is not None:
             self.user_console.SetValue("")
 
-    def print_to_user(self, message="", message_type=Colors.TEXT_COLOR_DEFAULT):
+    def print_to_user(self, message="", message_type=ParseScriptUI.Colors.TEXT_COLOR_DEFAULT):
         if self.user_console is not None and message is not None:
-            self.user_console.SetForegroundColour(ColorsGUI.get_color_from_code(message_type))
+            self.user_console.SetForegroundColour(ParseScriptGUI.ColorsGUI.get_color_from_code(message_type))
             self.user_console.AppendText(message + "\n")
-            self.user_console.SetForegroundColour(ColorsGUI.get_default_color())
+            self.user_console.SetForegroundColour(ParseScriptGUI.ColorsGUI.get_default_color())
 
     def get_user_input_bool(self, question="", format_answere=""):
         dlg = wx.MessageDialog(None, question, style=wx.YES_NO | wx.ICON_QUESTION)
         result = dlg.ShowModal() == wx.ID_YES
         dlg.Destroy()
         return result
+
+    class ColorsGUI(ParseScriptUI.Colors):
+        CONSOLE_DEFAULT_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_DEFAULT, wx.WHITE)
+        CONSOLE_WARNING_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_WARNING, wx.YELLOW)
+        CONSOLE_ERROR_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_ERROR, wx.RED)
+        CONSOLE_SUCCESS_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_SUCCESS, wx.GREEN)
+        CONSOLE_START_OPERATION_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_START_OPERATION, wx.CYAN)
+
+        CONSOLE_COLORS = [
+            CONSOLE_DEFAULT_COLOR,
+            CONSOLE_ERROR_COLOR,
+            CONSOLE_SUCCESS_COLOR,
+            CONSOLE_START_OPERATION_COLOR,
+            CONSOLE_WARNING_COLOR
+        ]
+
+        @staticmethod
+        def get_color_from_code(type_code):
+            for color in ParseScriptGUI.ColorsGUI.CONSOLE_COLORS:
+                if color[0] == type_code:
+                    return color[1]
+
+            return ParseScriptGUI.ColorsGUI.get_default_color()
+
+        @staticmethod
+        def get_default_color():
+            return ParseScriptGUI.ColorsGUI.CONSOLE_DEFAULT_COLOR[1]
