@@ -288,7 +288,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         # START OPERATION
         from DataRetrieval import manage_operation
 
-        input_data = InputData(input_file, output_dir, None, verbose, True)
+        input_data = InputData(input_file, output_dir, verbose=verbose, gui=True)
         manage_operation(input_data)
 
     @staticmethod

@@ -113,8 +113,6 @@ def parse_arg(argv):
     :type argv: list
     :rtype: InputData
     """
-    input_data = InputData()
-
     try:
         opts, args = getopt.getopt(
             argv,
@@ -130,22 +128,27 @@ def parse_arg(argv):
         usage()
         sys.exit(EXIT_ERR_ARG)
 
+    input_file = ""
+    output_dir = ""
+    sheet_title = ""
+    verbose = True
+    gui = False
     for opt, arg in opts:
         if opt in ("-h", "-H", "--help", "--HELP"):
             usage()
             sys.exit(EXIT_SUCCESS)
         elif opt in ("-i", "--I", "--ifile"):
-            input_data.__setattr__("input_file", arg)
+            input_file = arg
         elif opt in ("-o", "--O", "--odir"):
-            input_data.__setattr__("output_dir", arg)
+            output_dir = arg
         elif opt in "--not-ask":
-            input_data.__setattr__("verbose", False)
+            verbose = False
         elif opt in ("-t", "--T"):
-            input_data.__setattr__("sheet_title", arg)
+            sheet_title = arg
         elif opt in ("--gui", "--GUI"):
-            input_data.__setattr__("gui", True)
+            gui = True
 
-    return input_data
+    return InputData(input_file, output_dir, sheet_title, verbose, gui)
 
 
 def launch_ui(input_data):

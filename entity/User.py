@@ -1,26 +1,36 @@
 # coding=utf-8
 class User(object):
-    '''
-    Classe contente tutte le informazioni necessarie a costituire il file exel
+    """
+    Classe contente le informazioni necessarie a costituire il file exel
+    """
 
-    Attributes:
-            name: String che rappresenta il nome dell'utente corrente
-            surname: String che rappresenta il cognome dell'utente corrente
-            email: String che rappresenta l'indirizzo email dell'utente corrente
-            scores: List che contiene le risposte che hanno avuto un esito positivo (cioè 1)
-    '''
-    def __init__(self, name, email, surname="", ntel="", scores=None):
+    def __init__(self, name, email, surname, ntel, scores):
+        """
+        Istanzia un nuovo utente
+        :param name: Nome dell'utente corrente
+        :param email: Indirizzo email dell'utente corrente
+        :param surname: Cognome dell'utente corrente
+        :param ntel: Numero di telefono dell'utente corrente
+        :param scores: Risposte che hanno avuto un esito positivo (cioè 1)
+
+        :type name: str
+        :type email: str
+        :type surname: str
+        :type ntel: str
+        :type scores: list
+        """
         self.name = name
         self.surname = surname
         self.email = email
         self.ntel = ntel
         self.scores = scores
 
-    '''
-    Per convertire la lista dei punti in stringa
-    '''
     def __score_from_list_to_string__(self):
-        if self.scores is None or len(self.scores) == 0:
+        """
+        Per convertire la lista dei punti in stringa
+        :rtype: str
+        """
+        if not self.scores or len(self.scores) == 0:
             return "[]"
         return "[" + ", ".join(str(x) for x in self.scores) + "]"
 
@@ -28,16 +38,17 @@ class User(object):
         return self.name + ", " + self.surname + ", " + self.email + ", " + \
                self.ntel + ", " + self.__score_from_list_to_string__()
 
-    # called if: User + "string"
+    # Called if: User + "string"
     def __add__(self, other):
         return str(self) + other
 
-    # called if: "string" + User
+    # Called if: "string" + User
     def __radd__(self, other):
         return other + str(self)
 
-    '''
-    Per convertire l'istanza di User in lista contenente i dati in formato stringa
-    '''
     def get_list_from_instance(self):
+        """
+        Per convertire l'istanza di User in lista contenente i dati in formato stringa
+        :rtype: list
+        """
         return [self.name, self.surname, self.ntel, self.email, self.__score_from_list_to_string__()]
