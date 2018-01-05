@@ -287,10 +287,9 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             return
 
         # START OPERATION
-        from control.DataRetrievalController import manage_operation
-
+        from control import DataRetrievalController
         input_data = InputData(input_file, output_dir, verbose=verbose, gui=True)
-        manage_operation(input_data)
+        DataRetrievalController().manage_operation(input_data)
 
     @staticmethod
     def __alert_on_error__(message, windows_name):

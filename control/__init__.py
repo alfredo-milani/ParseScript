@@ -1,1 +1,1 @@
-from DataRetrievalController import *
+from DataRetrievalController import DataRetrievalController

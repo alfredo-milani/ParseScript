@@ -1,26 +1,26 @@
 #!/usr/bin/python
+# ============================================================================
+# Titolo:           Main.py
+# Descrizione:      Script per estrapolare dati da un file *.txt ed inserirli in un file *.xlsx
+# Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
+# Data:             ven 20 ott 2017, 19.36.00, CEST
+# Licenza:          MIT License
+# Versione:         2.0.0
+# Note:             --/--
+# Versione bash:    4.4.12(1)-release
+# ============================================================================
 import sys
 
-import constants
-from constants import SystemConstants
 from control import DataRetrievalController
 
-# NOTA: Applicazione del patter MVC approssimativa (View e Controller non completamente isolati)
 if __name__ == "__main__":
-    DataRetrievalController.set_up_sys()
+    DataRetrievalController().set_up_sys()
 
-    # Windows system
-    if SystemConstants.OS_TYPE == constants.OS_WIN:
-        SystemConstants.TMP_PATH = constants.DEFAULT_TMP_WIN
-    # Unix system
-    elif SystemConstants.OS_TYPE == constants.OS_LINUX:
-        SystemConstants.TMP_PATH = constants.DEFAULT_TMP_LINUX
-
-    DataRetrievalController.launch_ui(
-        DataRetrievalController.parse_arg(sys.argv[1:])
+    DataRetrievalController().launch_ui(
+        DataRetrievalController().parse_arg(sys.argv[1:])
     )
 
     # FOR PACKAGING OPERATION UNCOMMENT THIS LINE AND COMMENT ABOVE LINE
-    # DataRetrievalController.launch_ui(
-    #   DataRetrievalController.parse_arg(["--gui"])
+    # DataRetrievalController().launch_ui(
+    #     DataRetrievalController().parse_arg(["--gui"])
     # )
