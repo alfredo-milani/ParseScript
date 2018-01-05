@@ -34,7 +34,7 @@ case ${debug} in
                 echo "Starting $tool with GUI"
 
                 echo ""
-                ${tool} --gui # &> ${null}
+                ${tool} --gui &> ${null}
                 ;;
         esac
         ;;

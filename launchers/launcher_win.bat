@@ -13,7 +13,7 @@ set debug=-1
 set ui_type=1
 set abs_path=%~dp0
 set tab=
-set tool=%abs_path%\..\DataRetrieval.py
+set tool=%abs_path%\..\Main.py
 set dir_to_convert=%abs_path%\..\DATA_TO_CONVERT
 set dir_converted=%abs_path%\..\DATA_CONVERTED
 
