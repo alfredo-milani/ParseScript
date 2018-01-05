@@ -1,6 +1,5 @@
-#!/usr/bin/python
 # ============================================================================
-# Titolo:           dataRetrieval.py
+# Titolo:           DataRetrievalController.py
 # Descrizione:      Script per estrapolare dati da un file *.txt ed inserirli in un file *.xlsx
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             ven 20 ott 2017, 19.36.00, CEST
@@ -17,16 +16,17 @@ import sys
 from os.path import isfile
 
 from openpyxl import Workbook
-from openpyxl.worksheet.table import TableStyleInfo, Table
+from openpyxl.compat import range
+from openpyxl.worksheet.table import Table, TableStyleInfo
 from pathlib import Path
 
 import constants
-import entity
+import model
 from constants import APP_NAME, SystemConstants
-from entity.InputData import InputData
-from ui import ParseScriptUI
-from utils import document_to_text
+from model.InputData import InputData
+from utils import document_to_text, ProjectPath
 from utils.Converter import EXT_XLSX, split_char
+from view import ParseScriptUI
 
 EXIT_SUCCESS = 0
 EXIT_ERR_ARG = 1
@@ -55,19 +55,8 @@ def usage():
     )
     print "\t-t | --T= )\t\t\tSetting sheet title. Default behaviour: based on input filename"
     print "\t--not-ask )\t\t\tRiduces user interaction"
-    print "\t--ui | --GUI )\t\t\tLaunch script in graphical mode"
+    print "\t--view | --GUI )\t\t\tLaunch script in graphical mode"
     print "\t-h | -H | --help | --HELP )\tShow this help\n"
-
-
-def get_program_folder():
-    """
-    To get absolute path of the program (path which contain the function's file)
-    :rtype: str
-    """
-    module_file = __file__
-    module_dir = os.path.split(os.path.abspath(module_file))[0]
-    program_folder = os.path.abspath(module_dir)
-    return program_folder
 
 
 def set_up_sys():
@@ -75,36 +64,12 @@ def set_up_sys():
     Setup system: init global variables, loads external modules, ecc...
     :rtype: None
     """
-    SystemConstants.APP_ABS_PATH = get_program_folder()
+    SystemConstants.APP_ABS_PATH = ProjectPath.get_program_folder()
     SystemConstants.OS_TYPE = platform.system()
     if SystemConstants.OS_TYPE == constants.OS_WIN:
         SystemConstants.TMP_PATH = constants.DEFAULT_TMP_WIN
     elif SystemConstants.OS_TYPE == constants.OS_LINUX:
         SystemConstants.TMP_PATH = constants.DEFAULT_TMP_LINUX
-
-    try:
-        # import xlsxwriter;
-        from openpyxl import Workbook
-        from openpyxl.compat import range
-        from openpyxl.utils import get_column_letter
-        from openpyxl.worksheet.table import Table, TableStyleInfo
-    except ImportError as err:
-        print str(err)
-
-        if SystemConstants.OS_TYPE == constants.OS_WIN:
-            print "TODO: batch script to autosetup package"
-            # Required with old library
-            # print "Unzip file 'XlsxWriter-RELEASE_1.0.2.zip'"
-            # print "Open prompt and execute 'python setup.py install'"
-            # print "OR"
-            # print "Try with 'pip install packagename' with admin's privileges"
-            print "Perform command: 'pip install openpyxl'"
-        elif SystemConstants.OS_TYPE == constants.OS_LINUX:
-            print "Perform command: 'sudo pip install openpyxl'"
-            # Required with old library
-            # subprocess.call([INIT_SCRIPT_NAME])
-
-        sys.exit(EXIT_ERR_PACKAGE_MISSING)
 
 
 def parse_arg(argv):
@@ -159,14 +124,14 @@ def launch_ui(input_data):
     """
     if input_data.__getattribute__("gui"):
         import wx
-        from ui import ParseScriptGUI
+        from view import ParseScriptGUI
 
         graphic_interface = wx.App(False)
         SystemConstants.UI_CONSOLE = ParseScriptGUI(None, APP_NAME)
         SystemConstants.UI_CONSOLE.Show(True)
         graphic_interface.MainLoop()
     else:
-        from ui import ParseScriptCLI
+        from view import ParseScriptCLI
 
         SystemConstants.UI_CONSOLE = ParseScriptCLI()
         manage_operation(input_data)
@@ -398,7 +363,7 @@ def check_match(to_match, list_to_check):
     return -1
 
 
-def get_users_list_oldest(content):
+def get_users_list_v1(content):
     """
     Crea una lista di tipo User da @content
     :param content: list
@@ -470,7 +435,7 @@ def get_users_list_oldest(content):
                 i += 1
                 c += 1
 
-            user = entity.User(name, email, surname, ntel, scores)
+            user = model.User(name, email, surname, ntel, scores)
             users_list.append(user)
             if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                 SystemConstants.UI_CONSOLE.print_to_user(
@@ -486,7 +451,7 @@ def get_users_list_oldest(content):
     return users_list
 
 
-def get_users_list_old(content):
+def get_users_list_v2(content):
     """
     Crea una lista di tipo User da @content
     :type content: list
@@ -542,7 +507,7 @@ def get_users_list_old(content):
                         ntel = content[i]
 
             if len(name) != 0 or len(email) != 0 or len(surname) != 0 or len(ntel) != 0 or len(scores) != 0:
-                user = entity.User(name, email, surname, ntel, scores)
+                user = model.User(name, email, surname, ntel, scores)
                 users_list.append(user)
                 if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                     SystemConstants.UI_CONSOLE.print_to_user(
@@ -591,6 +556,7 @@ def get_users_list(content):
                         continue
 
                     i += 1
+                    # Check input values
                     if content[i] != constants.SCORE_VAL_NEGATIVE:
                         if content[i] == constants.SCORE_VAL_POSITIVE:
                             scores.append(constants.SCORES_LIST[item_position][1])
@@ -632,15 +598,15 @@ def get_users_list(content):
                         ntel = content[i]
 
             if name or email or surname or ntel or scores:
-                user = entity.User(name, email, surname, ntel, scores)
+                user = model.User(name, email, surname, ntel, scores)
                 users_list.append(user)
                 if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                     # Check non effettuato durante l'assegnazione (nel parsing delle credenziali) dal momento che
-                    # la funzione filter elimina tutti i valori Falseish, quindi i valori
-                    # Checking only primary key name and email (as in https://www.prolon.it/contact-us/)
-                    if not name or not email:
+                    # la funzione filter elimina tutti i valori Falseish
+                    # (primary key as in https://fs27.formsite.com/lnisrl/form4/fill?1=6536383b0aff580572ef85e25764f3b2)
+                    if not (name and email and surname and ntel):
                         SystemConstants.UI_CONSOLE.print_to_user(
-                            "Error parsing credential (name or email empty) for User: " + user,
+                            "Error parsing credential (name, email, surname or phone number empty) for User: " + user,
                             ParseScriptUI.Colors.TEXT_COLOR_WARNING
                         )
                     elif s == constants.SCORES_NUM:
@@ -659,10 +625,3 @@ def get_users_list(content):
         i += 1
 
     return users_list
-
-
-if __name__ == "__main__":
-    set_up_sys()
-    launch_ui(parse_arg(sys.argv[1:]))
-    # ON WINDOWS system uncomment this line
-    # launch_ui(parse_arg(["--gui"]))

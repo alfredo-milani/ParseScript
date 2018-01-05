@@ -7,9 +7,9 @@ import wx
 from pathlib import Path
 
 from constants import SystemConstants
-from entity.InputData import InputData
-from ui.ParseScriptUI import ParseScriptUI
+from model.InputData import InputData
 from utils import split_char
+from view.ParseScriptUI import ParseScriptUI
 
 APP_EXIT = 1
 APP_HELP_HINT = 2
@@ -44,17 +44,18 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         panel = wx.Panel(self)
 
         # SET ICON
-        # ON WINDOWS system comment the following icon setting code because we use pyinstaller to package this script
-        icon = wx.Icon(
-            os.path.join(
-                SystemConstants.APP_ABS_PATH,
-                "resources" + split_char() + "images" + split_char() + "icon.png"
-            ),
-            wx.BITMAP_TYPE_PNG,
-            512,
-            512
-        )
-        self.SetIcon(icon)
+        # On windows system pyinstaller set app's icon
+        if SystemConstants.OS_TYPE != SystemConstants.OS_WIN:
+            icon = wx.Icon(
+                os.path.join(
+                    SystemConstants.APP_ABS_PATH,
+                    "resources" + split_char() + "images" + split_char() + "icon.png"
+                ),
+                wx.BITMAP_TYPE_PNG,
+                512,
+                512
+            )
+            self.SetIcon(icon)
 
         # MENU ITEMS
         menubar = wx.MenuBar()
@@ -189,8 +190,8 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         edittextconsole.SetEditable(False)
         font.SetPointSize(15)
         edittextconsole.SetFont(font)
-        # ON WINDOWS system uncomment this line
-        # edittextconsole.SetBackgroundColour((148, 162, 183))
+        if SystemConstants.OS_TYPE == SystemConstants.OS_WIN:
+            edittextconsole.SetBackgroundColour((148, 162, 183))
 
         global USER_CONSOLE
         USER_CONSOLE = edittextconsole
@@ -286,7 +287,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             return
 
         # START OPERATION
-        from DataRetrieval import manage_operation
+        from control.DataRetrievalController import manage_operation
 
         input_data = InputData(input_file, output_dir, verbose=verbose, gui=True)
         manage_operation(input_data)

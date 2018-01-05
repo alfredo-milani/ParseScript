@@ -1,6 +1,6 @@
 import sys
 
-from ui.ParseScriptUI import ParseScriptUI
+from view.ParseScriptUI import ParseScriptUI
 
 
 class ParseScriptCLI(ParseScriptUI):
