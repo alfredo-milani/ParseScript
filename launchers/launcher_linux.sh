@@ -5,7 +5,7 @@
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             sab 21 ott 2017, 15.52.00, CEST
 # Licenza:          MIT License
-# Versione:         1.5.0
+# Versione:         2.0.0
 # Note:             Per eseguire questo script aprire una shell bash (Ctrl + Alt + T) ed eseguire il file "/path/to/script/launcher_linux.sh"
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
