@@ -21,7 +21,7 @@ from view import ParseScriptUI
 
 class DataRetrievalController(object):
     """
-    Clontrollore per le view che estendono l'interfaccia in view/ParseScriptUI
+    Controllore per le view che estendono l'interfaccia in view/ParseScriptUI
     """
 
     EXIT_SUCCESS = 0
