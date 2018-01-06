@@ -4,6 +4,10 @@ from view.ParseScriptUI import ParseScriptUI
 
 
 class ParseScriptCLI(ParseScriptUI):
+    """
+    CLI user interface
+    """
+
     def print_to_user(self, message="", message_type=ParseScriptUI.Colors.TEXT_COLOR_DEFAULT):
         if message:
             color = ParseScriptCLI.ColorsCLI.get_color_from_code(message_type)
@@ -40,6 +44,10 @@ class ParseScriptCLI(ParseScriptUI):
         sys.stdout.flush()
 
     class ColorsCLI(ParseScriptUI.Colors):
+        """
+        Defining colors for CLI
+        """
+
         COLOR_RED = "\033[0;31m"
         COLOR_YELLOW = "\033[1;33m"
         COLOR_GREEN = "\033[0;32m"

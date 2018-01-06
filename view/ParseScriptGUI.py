@@ -11,21 +11,25 @@ from model.InputData import InputData
 from utils import split_char
 from view.ParseScriptUI import ParseScriptUI
 
-APP_EXIT = 1
-APP_HELP_HINT = 2
-APP_START = 3
-APP_SELECT_INPUT_FILE = 4
-APP_SELECT_OUTPUT_DIR = 5
-APP_SELECT_INPUT_DIR = 6
-APP_SHOW_PARSED_FILES = 8
-APP_CLEAN_CONSOLE = 7
-
-HELP_MSG = "Con questo tool è possibile fare il parsing di file in formato: *.pdf, *.txt o *.docx.\n" \
-           "Si può scegliere di parsare un solo file o di parsare i files" \
-           "contenuti in una specifica directory utilizzando i box appositi."
-
 
 class ParseScriptGUI(wx.Frame, ParseScriptUI):
+    """
+    GUI user interface
+    """
+
+    APP_EXIT = 1
+    APP_HELP_HINT = 2
+    APP_START = 3
+    APP_SELECT_INPUT_FILE = 4
+    APP_SELECT_OUTPUT_DIR = 5
+    APP_SELECT_INPUT_DIR = 6
+    APP_SHOW_PARSED_FILES = 8
+    APP_CLEAN_CONSOLE = 7
+
+    HELP_MSG = "Con questo tool è possibile fare il parsing di file in formato: *.pdf, *.txt o *.docx.\n" \
+               "Si può scegliere di parsare un solo file o di parsare i files" \
+               "contenuti in una specifica directory utilizzando i box appositi."
+
     def __init__(self, parent, title):
         super(ParseScriptGUI, self).__init__(parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition, size=(900, 500))
 
@@ -61,7 +65,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         menubar = wx.MenuBar()
 
         filemenu = wx.Menu()
-        quitmenuitem = wx.MenuItem(filemenu, APP_EXIT, '&Quit\tCtrl+Q')
+        quitmenuitem = wx.MenuItem(filemenu, ParseScriptGUI.APP_EXIT, '&Quit\tCtrl+Q')
         '''
         # ON WINDOWS viene mostrata non ridimensionata
         # ON UNIX systems (Debian) non viene mostrata
@@ -72,7 +76,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         '''
 
         helpmenu = wx.Menu()
-        helpmenuitem = wx.MenuItem(helpmenu, APP_HELP_HINT, "&Help\tCtrl+H")
+        helpmenuitem = wx.MenuItem(helpmenu, ParseScriptGUI.APP_HELP_HINT, "&Help\tCtrl+H")
 
         filemenu.Append(quitmenuitem)
         helpmenu.Append(helpmenuitem)
@@ -98,7 +102,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         inputboxpathfileinput = wx.BoxSizer(wx.HORIZONTAL)
         self.edittextfile = wx.TextCtrl(panel)
-        buttonfileinput = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_INPUT_FILE)
+        buttonfileinput = wx.Button(panel, label="...", size=(50, 10), id=ParseScriptGUI.APP_SELECT_INPUT_FILE)
         inputboxpathfileinput.Add(self.edittextfile, flag=wx.RIGHT, border=10, proportion=1)
         inputboxpathfileinput.Add(buttonfileinput, flag=wx.EXPAND)
 
@@ -107,7 +111,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         inputboxpathdirinput = wx.BoxSizer(wx.HORIZONTAL)
         self.edittextdirinput = wx.TextCtrl(panel)
-        buttondirinput = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_INPUT_DIR)
+        buttondirinput = wx.Button(panel, label="...", size=(50, 10), id=ParseScriptGUI.APP_SELECT_INPUT_DIR)
         inputboxpathdirinput.Add(self.edittextdirinput, flag=wx.RIGHT, border=10, proportion=1)
         inputboxpathdirinput.Add(buttondirinput, flag=wx.EXPAND)
 
@@ -132,7 +136,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         outputstatictext = wx.StaticText(panel, label='Select output directory')
         outputstatictext.SetFont(font)
         self.edittextdiroutput = wx.TextCtrl(panel)
-        buttondiroutput = wx.Button(panel, label="...", size=(50, 10), id=APP_SELECT_OUTPUT_DIR)
+        buttondiroutput = wx.Button(panel, label="...", size=(50, 10), id=ParseScriptGUI.APP_SELECT_OUTPUT_DIR)
 
         outputbox.Add(outputstatictext, flag=wx.RIGHT, border=10)
         outputbox.Add(self.edittextdiroutput, flag=wx.RIGHT, border=10, proportion=1)
@@ -148,9 +152,9 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         # START / STOP BUTTONS
         manageoperationbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        buttonstart = wx.Button(panel, label='Start', size=(150, 30), id=APP_START)
+        buttonstart = wx.Button(panel, label='Start', size=(150, 30), id=ParseScriptGUI.APP_START)
         buttonstart.SetFont(font)
-        buttonclose = wx.Button(panel, label='Close', size=(150, 30), id=APP_EXIT)
+        buttonclose = wx.Button(panel, label='Close', size=(150, 30), id=ParseScriptGUI.APP_EXIT)
         buttonclose.SetFont(font)
 
         manageoperationbox.Add(buttonstart)
@@ -166,9 +170,9 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         # LOG TOOLS
         logbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        buttoncleanconsole = wx.Button(panel, label="Clear", id=APP_CLEAN_CONSOLE, size=(50, 30))
+        buttoncleanconsole = wx.Button(panel, label="Clear", id=ParseScriptGUI.APP_CLEAN_CONSOLE, size=(50, 30))
         buttoncleanconsole.SetFont(font)
-        buttonshowfiles = wx.Button(panel, label="Files", id=APP_SHOW_PARSED_FILES, size=(50, 30))
+        buttonshowfiles = wx.Button(panel, label="Files", id=ParseScriptGUI.APP_SHOW_PARSED_FILES, size=(50, 30))
         buttonshowfiles.SetFont(font)
         self.checkboxverbose = wx.CheckBox(panel, label="Verbose")
         self.checkboxverbose.SetFont(font)
@@ -210,47 +214,47 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         panel.SetSizer(mainbox)
 
         # BINDINGS WIDGETS
-        self.Bind(wx.EVT_MENU, self.on_quit, id=APP_EXIT)
-        self.Bind(wx.EVT_MENU, self.on_help, id=APP_HELP_HINT)
-        self.Bind(wx.EVT_BUTTON, self.on_quit, id=APP_EXIT)
-        self.Bind(wx.EVT_BUTTON, self.on_show_parsed_files, id=APP_SHOW_PARSED_FILES)
+        self.Bind(wx.EVT_MENU, self.on_quit, id=ParseScriptGUI.APP_EXIT)
+        self.Bind(wx.EVT_MENU, self.on_help, id=ParseScriptGUI.APP_HELP_HINT)
+        self.Bind(wx.EVT_BUTTON, self.on_quit, id=ParseScriptGUI.APP_EXIT)
+        self.Bind(wx.EVT_BUTTON, self.on_show_parsed_files, id=ParseScriptGUI.APP_SHOW_PARSED_FILES)
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.clear_console(),
             # button e id si possono anche usare in mutua esclusione
             # buttoncleanconsole,
-            id=APP_CLEAN_CONSOLE
+            id=ParseScriptGUI.APP_CLEAN_CONSOLE
         )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_start(),
-            id=APP_START
+            id=ParseScriptGUI.APP_START
         )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_show_parsed_files(self.edittextdiroutput.GetValue()),
-            id=APP_SHOW_PARSED_FILES
+            id=ParseScriptGUI.APP_SHOW_PARSED_FILES
         )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_selected_filename(self.edittextfile),
-            id=APP_SELECT_INPUT_FILE
+            id=ParseScriptGUI.APP_SELECT_INPUT_FILE
         )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_selected_directory(self.edittextdiroutput),
-            id=APP_SELECT_OUTPUT_DIR
+            id=ParseScriptGUI.APP_SELECT_OUTPUT_DIR
         )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_selected_directory(self.edittextdirinput),
-            id=APP_SELECT_INPUT_DIR
+            id=ParseScriptGUI.APP_SELECT_INPUT_DIR
         )
 
     @staticmethod
     def on_help(event):
         event.Skip()
-        dial = wx.MessageDialog(None, HELP_MSG, 'Help', wx.OK | wx.ICON_QUESTION)
+        dial = wx.MessageDialog(None, ParseScriptGUI.HELP_MSG, 'Help', wx.OK | wx.ICON_QUESTION)
         dial.ShowModal()
 
     def on_quit(self, event):
@@ -349,6 +353,10 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         return result
 
     class ColorsGUI(ParseScriptUI.Colors):
+        """
+        Defining colors for GUI
+        """
+
         CONSOLE_DEFAULT_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_DEFAULT, wx.WHITE)
         CONSOLE_WARNING_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_WARNING, wx.YELLOW)
         CONSOLE_ERROR_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_ERROR, wx.RED)

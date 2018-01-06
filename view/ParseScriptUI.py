@@ -3,12 +3,12 @@ from abc import abstractmethod
 
 class ParseScriptUI(object):
     """
-    Interface to interact with user
+    Contract to interact with user
     """
 
     class Colors(object):
         """
-        Class containing colors
+        Contract which define color of user interface
         """
 
         TEXT_COLOR_DEFAULT = 0
