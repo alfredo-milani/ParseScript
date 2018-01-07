@@ -12,15 +12,16 @@
 import sys
 
 from control import DataRetrievalController
+from utils.Common import set_up_sys, parse_arg
 
 if __name__ == "__main__":
-    DataRetrievalController().set_up_sys()
+    set_up_sys()
 
     DataRetrievalController().launch_ui(
-        DataRetrievalController().parse_arg(sys.argv[1:])
+        parse_arg(sys.argv[1:])
     )
 
     # FOR PACKAGING OPERATION UNCOMMENT THIS LINE AND COMMENT ABOVE LINE
     # DataRetrievalController().launch_ui(
-    #     DataRetrievalController().parse_arg(["--gui"])
+    #     parse_arg(["--gui"])
     # )

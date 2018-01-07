@@ -23,17 +23,15 @@ case ${debug} in
         case ${ui_type} in
             0 )
                 # CLI
-                echo "Current directory: `pwd`"
+                echo -e "Current directory: `pwd`\n"
 
-                echo ""
                 ${tool} --I="${dir_to_convert}" --O="${dir_converted}" --not-ask
                 ;;
 
             1 )
                 # GUI
-                echo "Starting $tool with GUI"
+                echo -e "Starting $tool with GUI\n"
 
-                echo ""
                 ${tool} --gui &> ${null}
                 ;;
         esac

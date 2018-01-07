@@ -1,6 +1,4 @@
-import getopt
 import os
-import platform
 import random
 import sys
 from os.path import isfile
@@ -14,7 +12,7 @@ import constants
 import model
 from constants import APP_NAME, SystemConstants
 from model.InputData import InputData
-from utils import document_to_text, ProjectPath
+from utils import document_to_text
 from utils.Converter import EXT_XLSX, split_char
 from view import ParseScriptUI
 
@@ -23,95 +21,6 @@ class DataRetrievalController(object):
     """
     Controllore per le view che estendono l'interfaccia in view/ParseScriptUI
     """
-
-    EXIT_SUCCESS = 0
-    EXIT_ERR_ARG = 1
-    EXIT_ERR_FILE = 2
-    EXIT_ERR_BAD_CONTENT = 3
-    EXIT_ERR_PACKAGE_MISSING = 4
-
-    @staticmethod
-    def usage():
-        """
-        Show usage to user on CLI
-        :return: None
-        """
-        print "\n# Utilizzo\n"
-        print "\t./" + os.path.basename(__file__) + " [Options]\n"
-        print "# Options\n"
-        print "\t-i | --I= | --ifile= )\t\tSetting input file"
-        print (
-                "\t-o | --O= | --odir= )\t\tSetting output directory. If not specified the files "
-                "will be created in the default temp directory ('%s' -> '%s' | '%s' -> '%s')" % (
-                    constants.OS_WIN,
-                    constants.DEFAULT_TMP_WIN,
-                    constants.OS_LINUX,
-                    constants.DEFAULT_TMP_LINUX
-                )
-        )
-        print "\t-t | --T= )\t\t\tSetting sheet title. Default behaviour: based on input filename"
-        print "\t--not-ask )\t\t\tRiduces user interaction"
-        print "\t--view | --GUI )\t\t\tLaunch script in graphical mode"
-        print "\t-h | -H | --help | --HELP )\tShow this help\n"
-
-    @staticmethod
-    def set_up_sys():
-        """
-        Setup system: init global variables, loads external modules, ecc...
-        :rtype: None
-        """
-        SystemConstants.APP_ABS_PATH = ProjectPath.get_program_folder()
-        SystemConstants.OS_TYPE = platform.system()
-        # Windows system
-        if SystemConstants.OS_TYPE == constants.OS_WIN:
-            SystemConstants.TMP_PATH = constants.DEFAULT_TMP_WIN
-        # Unix system
-        elif SystemConstants.OS_TYPE == constants.OS_LINUX:
-            SystemConstants.TMP_PATH = constants.DEFAULT_TMP_LINUX
-
-    @staticmethod
-    def parse_arg(argv):
-        """
-        Parsing list of user's input
-        :type argv: list
-        :rtype: InputData
-        """
-        try:
-            opts, args = getopt.getopt(
-                argv,
-                "hHt:i:o:",
-                ["not-ask", "gui", "GUI", "help", "HELP", "T=", "I=", "O=", "ifile=", "odir="]
-            )
-        except getopt.GetoptError as err:
-            print str(err)
-            DataRetrievalController.usage()
-            sys.exit(DataRetrievalController.EXIT_ERR_ARG)
-
-        if len(opts) == 0 and len(args) == 0:
-            DataRetrievalController.usage()
-            sys.exit(DataRetrievalController.EXIT_ERR_ARG)
-
-        input_file = ""
-        output_dir = ""
-        sheet_title = ""
-        verbose = True
-        gui = False
-        for opt, arg in opts:
-            if opt in ("-h", "-H", "--help", "--HELP"):
-                DataRetrievalController.usage()
-                sys.exit(DataRetrievalController.EXIT_SUCCESS)
-            elif opt in ("-i", "--I", "--ifile"):
-                input_file = arg
-            elif opt in ("-o", "--O", "--odir"):
-                output_dir = arg
-            elif opt in "--not-ask":
-                verbose = False
-            elif opt in ("-t", "--T"):
-                sheet_title = arg
-            elif opt in ("--gui", "--GUI"):
-                gui = True
-
-        return InputData(input_file, output_dir, sheet_title, verbose, gui)
 
     @staticmethod
     def launch_ui(input_data):
@@ -243,7 +152,7 @@ class DataRetrievalController(object):
         return n
 
     @staticmethod
-    def perform_operation(input_file, output_dir="", sheet_title=""):
+    def perform_operation(input_file, output_dir, sheet_title=""):
         """
         Perform parsing operation of file @input_file setting sheet title as @sheet_title and
         store the result in @output_dir directory

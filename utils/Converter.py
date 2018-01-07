@@ -89,7 +89,3 @@ def document_to_text(file_path):
         return convert_pdf_to_txt(file_path)
     else:
         return None
-
-
-if __name__ == "__main__":
-    print document_to_text("/dev/shm/Formsite 20 ottobre.docx")

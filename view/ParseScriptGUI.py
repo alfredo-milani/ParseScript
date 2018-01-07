@@ -48,9 +48,10 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         panel = wx.Panel(self)
 
         # SET ICON
-        # On windows system pyinstaller set app's icon
-        # In case of packaging in linux comment following if body
+        # ON UNIX systems comment following if body
         if SystemConstants.OS_TYPE != SystemConstants.OS_WIN:
+            # In Windows system we use pyinstaller for packaging with the flag --icon to set icon
+            # so the following code is unecessary
             icon = wx.Icon(
                 os.path.join(
                     SystemConstants.APP_ABS_PATH,
