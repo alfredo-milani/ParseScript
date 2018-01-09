@@ -1,7 +1,7 @@
 # coding=utf-8
-'''
-    Informazioni circa il modello del file da cui estrapolare i dati
-'''
+"""
+Informazioni circa il modello del file da cui estrapolare i dati
+"""
 NEW_USER = "Scoring Summary"
 
 SCORE_VAL_POSITIVE = "1"

@@ -1,4 +1,3 @@
-# coding=utf-8
 import os
 import subprocess
 import sys
@@ -25,10 +24,6 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
     APP_SELECT_INPUT_DIR = 6
     APP_SHOW_PARSED_FILES = 8
     APP_CLEAN_CONSOLE = 7
-
-    HELP_MSG = "Con questo tool è possibile fare il parsing di file in formato: *.pdf, *.txt o *.docx.\n" \
-               "Si può scegliere di parsare un solo file o di parsare i files" \
-               "contenuti in una specifica directory utilizzando i box appositi."
 
     def __init__(self, parent, title):
         super(ParseScriptGUI, self).__init__(parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition, size=(900, 500))
@@ -256,7 +251,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
     @staticmethod
     def on_help(event):
         event.Skip()
-        dial = wx.MessageDialog(None, ParseScriptGUI.HELP_MSG, 'Help', wx.OK | wx.ICON_QUESTION)
+        dial = wx.MessageDialog(None, SystemConstants.HELP_MSG, 'Help', wx.OK | wx.ICON_QUESTION)
         dial.ShowModal()
 
     def on_quit(self, event):

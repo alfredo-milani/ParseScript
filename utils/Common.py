@@ -29,23 +29,8 @@ def usage():
     Show usage to user on CLI
     :return: None
     """
-    print "\n# Utilizzo\n"
-    print "\t./" + os.path.basename(__file__) + " [Options]\n"
-    print "# Options\n"
-    print "\t-i | --I= | --ifile= )\t\tSetting input file"
-    print (
-            "\t-o | --O= | --odir= )\t\tSetting output directory. If not specified the files "
-            "will be created in the default temp directory ('%s' -> '%s' | '%s' -> '%s')" % (
-                SystemConstants.OS_WIN,
-                SystemConstants.DEFAULT_TMP_WIN,
-                SystemConstants.OS_LINUX,
-                SystemConstants.DEFAULT_TMP_LINUX
-            )
-    )
-    print "\t-t | --T= )\t\t\tSetting sheet title. Default behaviour: based on input filename"
-    print "\t--not-ask )\t\t\tRiduces user interaction"
-    print "\t--view | --GUI )\t\t\tLaunch script in graphical mode"
-    print "\t-h | -H | --help | --HELP )\tShow this help\n"
+    print SystemConstants.HELP_MSG
+    print SystemConstants.USAGE_MSG
 
 
 def set_up_sys():
