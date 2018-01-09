@@ -29,7 +29,6 @@ def usage():
     Show usage to user on CLI
     :return: None
     """
-    print SystemConstants.HELP_MSG
     print SystemConstants.USAGE_MSG
 
 
