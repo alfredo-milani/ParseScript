@@ -43,8 +43,9 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         panel = wx.Panel(self)
 
         # SET ICON
-        # ON PACKAGING remove "SystemConstants.APP_ABS_PATH + split_char() + " from the following icon's path
-        # ON PACKAGING on Windows system the icon must be in *.ico format
+        # ON PACKAGING remove "SystemConstants.APP_ABS_PATH + split_char() + " from the following icon's path.
+        # ON PACKAGING on Windows system the icon must be in *.ico format;
+        # after pyinstaller is executed move the executable in the root of the project.
         icon = wx.Icon(
             SystemConstants.APP_ABS_PATH + split_char() +
             "resources" + split_char() +
