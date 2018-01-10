@@ -3,11 +3,7 @@ Tool per estrapolare informazioni utili da form da "prolon.it".
 
 
 Istruzioni per il packaging:
-    -Per fare il packaging di ParseScript in un file *.exe utilizzare il tool pyinstaller (pyinstaller --onefile --windowed --icon=\path\to\icon main.py).
-    Visitare li sito https://wxpython.org/pages/downloads/index.html per installare il package wxpython.
-
-    -Per il packaging nei sistemi Unix leggere i commenti preceduti dalla dicitura "ON UNIX" nel file view/ParseScriptGUI.py.
-    Utilizzare il tool pyinstaller (come sopra)
+    -Per fare il packaging di ParseScript in un file *.exe (o un eseguibile per i sistemi Unix) leggere i commenti "ON PACKAGING" ed utilizzare il tool pyinstaller (pyinstaller --onefile --windowed --icon=\path\to\icon main.py) dalla directory root del progetto perché per settare le icone si utilizzano paths relativi.
     Visitare li sito https://wxpython.org/pages/downloads/index.html per installare il package wxpython.
 
 Istruzioni per eseguire lo script in sistemi Unix:

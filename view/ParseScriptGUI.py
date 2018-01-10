@@ -43,20 +43,17 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         panel = wx.Panel(self)
 
         # SET ICON
-        # ON UNIX systems comment following if body
-        if SystemConstants.OS_TYPE != SystemConstants.OS_WIN:
-            # In Windows system we use pyinstaller for packaging with the flag --icon to set icon
-            # so the following code is unecessary
-            icon = wx.Icon(
-                os.path.join(
-                    SystemConstants.APP_ABS_PATH,
-                    "resources" + split_char() + "images" + split_char() + "icon.png"
-                ),
-                wx.BITMAP_TYPE_PNG,
-                512,
-                512
-            )
-            self.SetIcon(icon)
+        # ON PACKAGING remove "SystemConstants.APP_ABS_PATH + split_char() + " from the following icon's path
+        # ON PACKAGING on Windows system the icon must be in *.ico format
+        icon = wx.Icon(
+            SystemConstants.APP_ABS_PATH + split_char() +
+            "resources" + split_char() +
+            "images" + split_char() + "icon.png",
+            wx.BITMAP_TYPE_PNG,
+            512,
+            512
+        )
+        self.SetIcon(icon)
 
         # MENU ITEMS
         menubar = wx.MenuBar()
@@ -191,6 +188,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         edittextconsole.SetEditable(False)
         font.SetPointSize(15)
         edittextconsole.SetFont(font)
+        # Change background console color on Windows systems
         if SystemConstants.OS_TYPE == SystemConstants.OS_WIN:
             edittextconsole.SetBackgroundColour((148, 162, 183))
 
