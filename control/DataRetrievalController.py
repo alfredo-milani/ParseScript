@@ -549,7 +549,8 @@ class DataRetrievalController(object):
         column_list = []
         for row in ws[('%s{}:%s{}' % (column, column)).format(ws.min_row, ws.max_row)]:
             for cell in row:
-                column_list.append(cell.value.encode("ascii", "ignore"))
+                if cell.value is not None:
+                    column_list.append(cell.value.encode("ascii", "ignore"))
 
         return column_list
 
