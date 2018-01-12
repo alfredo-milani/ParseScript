@@ -1,5 +1,6 @@
 import sys
 
+from constants import SystemConstants
 from view.ParseScriptUI import ParseScriptUI
 
 
@@ -43,16 +44,33 @@ class ParseScriptCLI(ParseScriptUI):
     def __flush_stdout_buffer__():
         sys.stdout.flush()
 
+    # noinspection PyUnresolvedReferences
     class ColorsCLI(ParseScriptUI.Colors):
         """
         Defining colors for CLI
         """
 
-        COLOR_RED = "\033[0;31m"
-        COLOR_YELLOW = "\033[1;33m"
-        COLOR_GREEN = "\033[0;32m"
-        COLOR_GRAY_DARK = "\033[1;30m"
-        COLOR_NONE = "\033[0m"
+        @staticmethod
+        def __choose_code_color_OS__(color_code):
+            if SystemConstants.OS_TYPE == SystemConstants.OS_WIN:
+                return ""
+            else:
+                if color_code == ParseScriptUI.Colors.TEXT_COLOR_ERROR:
+                    return "\033[0;31m"
+                elif color_code == ParseScriptUI.Colors.TEXT_COLOR_WARNING:
+                    return "\033[1;33m"
+                elif color_code == ParseScriptUI.Colors.TEXT_COLOR_SUCCESS:
+                    return "\033[0;32m"
+                elif color_code == ParseScriptUI.Colors.TEXT_COLOR_START_OPERATION:
+                    return "\033[1;30m"
+                elif color_code == ParseScriptUI.Colors.TEXT_COLOR_DEFAULT:
+                    return "\033[0m"
+
+        COLOR_RED = __choose_code_color_OS__.__func__(ParseScriptUI.Colors.TEXT_COLOR_ERROR)
+        COLOR_YELLOW = __choose_code_color_OS__.__func__(ParseScriptUI.Colors.TEXT_COLOR_WARNING)
+        COLOR_GREEN = __choose_code_color_OS__.__func__(ParseScriptUI.Colors.TEXT_COLOR_SUCCESS)
+        COLOR_GRAY_DARK = __choose_code_color_OS__.__func__(ParseScriptUI.Colors.TEXT_COLOR_START_OPERATION)
+        COLOR_NONE = __choose_code_color_OS__.__func__(ParseScriptUI.Colors.TEXT_COLOR_DEFAULT)
         STYLE_UNDERLINED = "\033[4m"
         CLEAR_CONSOLE = "\033c"
 

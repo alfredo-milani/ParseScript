@@ -10,10 +10,10 @@
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
 debug=-1
-ui_type=0
+ui_type=1
 abs_path=`dirname $0`
 dir_to_convert=${abs_path}/../DATA_TO_CONVERT
-dir_converted=${abs_path}/../DATA_CONVERTE
+dir_converted=${abs_path}/../DATA_CONVERTED
 tool=${abs_path}/../Main.py
 null=/dev/null
 
