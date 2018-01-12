@@ -8,7 +8,7 @@ class ParseScriptCLI(ParseScriptUI):
     CLI user interface
     """
 
-    def print_to_user(self, message="", message_type=ParseScriptUI.Colors.TEXT_COLOR_DEFAULT):
+    def print_to_user(self, message, message_type=ParseScriptUI.Colors.TEXT_COLOR_DEFAULT):
         if message:
             color = ParseScriptCLI.ColorsCLI.get_color_from_code(message_type)
             print color + message + ParseScriptCLI.ColorsCLI.get_default_color()

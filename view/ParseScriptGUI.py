@@ -300,7 +300,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
     def on_selected_filename(edittextfilename):
         path = wx.FileSelector(
             message="Select file or directory to parse",
-            wildcard="File (*.txt,*.pdf,*.docx)|*.txt;*.pdf;*.docx",
+            wildcard="File (*.txt,*.pdf,*.docx,*.xlsx)|*.txt;*.pdf;*.docx;*.xlsx",
             default_path=SystemConstants.APP_ABS_PATH
         )
         if path is not None:
@@ -336,7 +336,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         if self.user_console:
             self.user_console.SetValue("")
 
-    def print_to_user(self, message="", message_type=ParseScriptUI.Colors.TEXT_COLOR_DEFAULT):
+    def print_to_user(self, message, message_type=ParseScriptUI.Colors.TEXT_COLOR_DEFAULT):
         if self.user_console and message:
             self.user_console.SetForegroundColour(ParseScriptGUI.ColorsGUI.get_color_from_code(message_type))
             self.user_console.AppendText(message + "\n")

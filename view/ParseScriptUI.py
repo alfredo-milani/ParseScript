@@ -38,7 +38,7 @@ class ParseScriptUI(object):
             raise NotImplementedError
 
     @abstractmethod
-    def print_to_user(self, message="", message_type=Colors.TEXT_COLOR_DEFAULT):
+    def print_to_user(self, message, message_type=Colors.TEXT_COLOR_DEFAULT):
         """
         Show @message to user of color @message_type: default (0), green (1), red (-1), grey (2)
         :type message: str

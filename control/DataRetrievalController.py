@@ -4,15 +4,17 @@ import sys
 from os.path import isfile
 
 from openpyxl import Workbook
+from openpyxl import load_workbook
 from openpyxl.compat import range
 from openpyxl.worksheet.table import Table, TableStyleInfo
 from pathlib import Path
 
 import constants
 import model
-from constants import APP_NAME, SystemConstants
+from constants import APP_NAME, SystemConstants, FormsiteConstants
+from model import User
 from model.InputData import InputData
-from utils import document_to_text
+from utils import document_to_text, Converter
 from utils.Converter import EXT_XLSX, split_char
 from view import ParseScriptUI
 
@@ -80,7 +82,7 @@ class DataRetrievalController(object):
                 "ERROR: %s not exist!" % input_file,
                 ParseScriptUI.Colors.TEXT_COLOR_ERROR
             )
-            sys.exit(DataRetrievalController.EXIT_ERR_ARG)
+            sys.exit(SystemConstants.EXIT_ERR_ARG)
 
         if Path(input_file).is_dir():
             list_of_files = [
@@ -95,7 +97,7 @@ class DataRetrievalController(object):
                 "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file,
                 ParseScriptUI.Colors.TEXT_COLOR_ERROR
             )
-            sys.exit(DataRetrievalController.EXIT_ERR_ARG)
+            sys.exit(SystemConstants.EXIT_ERR_ARG)
 
         SystemConstants.UI_CONSOLE.print_to_user("File that will be converted:")
         for el in list_of_files:
@@ -180,30 +182,31 @@ class DataRetrievalController(object):
             )
             return
             # sys.exit(EXIT_ERR_FILE)
-        elif len(content) == 0:
+
+        if content == Converter.EXT_XLSX:
             SystemConstants.UI_CONSOLE.print_to_user(
-                "! File: %s already parsed. Skipping... !" % input_file,
+                "Note: *.xlsx file will be parsed with custom procedure",
                 ParseScriptUI.Colors.TEXT_COLOR_WARNING
             )
-            return
-            # sys.exit(EXIT_SUCCESS)
 
-        # NOTE: filter returns a list in Python 2 and a generator in Python 3
-        # False-ish value include: False, None, 0, '', [], () and all others empty containers
-        data_list = filter(None, content.split("\n"))
+            list_of_users = DataRetrievalController.get_users_list_from_xlsx(input_file)
+        else:
+            # NOTE: filter returns a list in Python 2 and a generator in Python 3
+            # False-ish value include: False, None, 0, '', [], () and all others empty containers
+            data_list = filter(None, content.split("\n"))
 
-        raw_data_num_users = DataRetrievalController.count_users(data_list, constants.NEW_USER)
+            raw_data_num_users = DataRetrievalController.count_users(data_list, constants.NEW_USER)
 
-        list_of_users = DataRetrievalController.get_users_list(data_list)
+            list_of_users = DataRetrievalController.get_users_list(data_list)
 
-        if raw_data_num_users != len(list_of_users):
-            SystemConstants.UI_CONSOLE.print_to_user(
-                "WARNING:\tUser raw data: %d\tUser parsed: %d.\tCheck if some user missing\n" % (
-                    raw_data_num_users,
-                    len(list_of_users)
-                ),
-                ParseScriptUI.Colors.TEXT_COLOR_WARNING
-            )
+            if raw_data_num_users != len(list_of_users):
+                SystemConstants.UI_CONSOLE.print_to_user(
+                    "WARNING:\tUser raw data: %d\tUser parsed: %d.\tCheck if some user missing\n" % (
+                        raw_data_num_users,
+                        len(list_of_users)
+                    ),
+                    ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                )
 
         wb = Workbook()
         ws = wb.active
@@ -540,3 +543,75 @@ class DataRetrievalController(object):
             i += 1
 
         return users_list
+
+    @staticmethod
+    def get_column_from_xlsx(ws, column):
+        column_list = []
+        for row in ws[('%s{}:%s{}' % (column, column)).format(ws.min_row, ws.max_row)]:
+            for cell in row:
+                column_list.append(cell.value.encode("ascii", "ignore"))
+
+        return column_list
+
+    @staticmethod
+    def get_score_from_column_xlsx(column, score_list):
+        score = []
+        for i in range(len(FormsiteConstants.SCORES_LIST)):
+            if score_list[i][column] == '1':
+                score.append(FormsiteConstants.SCORES_LIST[i][1])
+
+        return score
+
+    @staticmethod
+    def get_users_list_from_xlsx(filename):
+        """
+        Crea una lista di @User da @filename in formato *.xlsx
+        :type filename: str
+        :rtype: list
+        """
+        wb = load_workbook(filename=filename, read_only=True)
+        sheet_ranges = wb.get_sheet_names()
+        # Encoding from unicode string (u'string') to ascii string
+        for sheet in range(len(sheet_ranges)):
+            sheet_ranges[sheet] = sheet_ranges[sheet].encode("ascii", "ignore")
+
+        users = []
+        for sheet in sheet_ranges:
+            ws = wb[sheet]
+
+            # Get names
+            names_list = DataRetrievalController.get_column_from_xlsx(ws, 'Y')
+
+            # Get surnames
+            surnames_list = DataRetrievalController.get_column_from_xlsx(ws, 'Z')
+
+            # Get email
+            email_list = DataRetrievalController.get_column_from_xlsx(ws, 'AA')
+
+            # Get ntel
+            ntel_list = DataRetrievalController.get_column_from_xlsx(ws, 'AB')
+
+            # Get status
+            status_list = DataRetrievalController.get_column_from_xlsx(ws, 'B')
+
+            # Get score
+            score_list = [
+                DataRetrievalController.get_column_from_xlsx(ws, 'F'),
+                DataRetrievalController.get_column_from_xlsx(ws, 'O'),
+                DataRetrievalController.get_column_from_xlsx(ws, 'Q'),
+                DataRetrievalController.get_column_from_xlsx(ws, 'S'),
+                DataRetrievalController.get_column_from_xlsx(ws, 'U'),
+                DataRetrievalController.get_column_from_xlsx(ws, 'W')
+            ]
+
+            for i in range(len(status_list)):
+                if status_list[i] == "Complete":
+                    users.append(User(
+                        names_list[i],
+                        email_list[i],
+                        surnames_list[i],
+                        ntel_list[i],
+                        DataRetrievalController.get_score_from_column_xlsx(i, score_list)
+                    ))
+
+        return users

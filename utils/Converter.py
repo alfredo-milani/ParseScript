@@ -64,7 +64,7 @@ def document_to_text(file_path):
     filename = filename_list[len(filename_list) - 1]
 
     if filename[-5:] == EXT_XLSX:
-        return ""
+        return EXT_XLSX
     elif filename[-4:] == EXT_TXT:
         with open(file_path, "r") as file_to_parse:
             return file_to_parse.read()
