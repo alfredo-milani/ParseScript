@@ -20,7 +20,7 @@ EXT_DOCX = ".docx"
 CMD_ODT = "odt2txt"
 EXT_ODT = ".odt"
 EXT_PDF = ".pdf"
-DECODE_FORMAT = "ascii"
+DECODE_FORMAT = "utf-8"
 
 
 def split_char():

@@ -339,7 +339,7 @@ class DataRetrievalController(object):
                     i += 1
                     if constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NAME:
                         name = content[i]
-                    elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIALS_SURNAME:
+                    elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_SURNAME:
                         surname = content[i]
                     elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_EMAIL:
                         email = content[i]
@@ -414,7 +414,7 @@ class DataRetrievalController(object):
                         c += 1
                         if constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NAME:
                             name = content[i]
-                        elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIALS_SURNAME:
+                        elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_SURNAME:
                             surname = content[i]
                         elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_EMAIL:
                             email = content[i]
@@ -506,7 +506,7 @@ class DataRetrievalController(object):
                         c += 1
                         if constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NAME:
                             name = content[i]
-                        elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIALS_SURNAME:
+                        elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_SURNAME:
                             surname = content[i]
                         elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_EMAIL:
                             email = content[i]
@@ -545,23 +545,53 @@ class DataRetrievalController(object):
         return users_list
 
     @staticmethod
-    def get_column_from_xlsx(ws, column):
+    def get_column_from_xlsx(worksheet, column_index):
+        """
+        Ritorna i valori della colonna relativa alla lettera @column in una lista
+        :type worksheet: Workbook[]
+        :type column_index: int
+        :rtype: list
+        """
         column_list = []
-        for row in ws[('%s{}:%s{}' % (column, column)).format(ws.min_row, ws.max_row)]:
-            for cell in row:
-                if cell.value is not None:
-                    column_list.append(cell.value.encode("ascii", "ignore"))
+        for row in worksheet.iter_rows():
+            value = row[column_index].value
+            if value is not None:
+                column_list.append(value.encode(Converter.DECODE_FORMAT, "ignore"))
 
         return column_list
 
     @staticmethod
     def get_score_from_column_xlsx(column, score_list):
+        """
+        Ritorna la lista di interi contenente lo score dell'utente che occupa
+        la posizione @column nelle liste contenute in @score_list
+        :param column: posizione utente
+        :param score_list: lista di liste; ogni lista contenuta in questo parametro rappresenta i
+        valori per lo score corrispondente all'i-esimo utente della lista
+        :type column: int
+        :type score_list: list
+        :rtype: list
+        """
         score = []
-        for i in range(len(FormsiteConstants.SCORES_LIST)):
-            if score_list[i][column] == '1':
+        for i in range(FormsiteConstants.SCORES_NUM):
+            if score_list[i][column] == FormsiteConstants.SCORE_VAL_POSITIVE:
                 score.append(FormsiteConstants.SCORES_LIST[i][1])
 
         return score
+
+    @staticmethod
+    def get_colum_index(colum_list, string):
+        """
+        Ritorna la posizione dell'elementeo @string nella lista @column_list
+        :type colum_list: list
+        :type string: str
+        :rtype: int
+        """
+        for el in range(len(colum_list)):
+            if string == colum_list[el]:
+                return el
+
+        return -1
 
     @staticmethod
     def get_users_list_from_xlsx(filename):
@@ -570,43 +600,83 @@ class DataRetrievalController(object):
         :type filename: str
         :rtype: list
         """
-        wb = load_workbook(filename=filename, read_only=True)
-        sheet_ranges = wb.get_sheet_names()
-        # Encoding from unicode string (u'string') to ascii string
+        workbook = load_workbook(filename=filename)
+        sheet_ranges = workbook.get_sheet_names()
+        # Encoding from unicode string (u'string') to utf-8 string
         for sheet in range(len(sheet_ranges)):
-            sheet_ranges[sheet] = sheet_ranges[sheet].encode("ascii", "ignore")
+            sheet_ranges[sheet] = sheet_ranges[sheet].encode(Converter.DECODE_FORMAT, "ignore")
 
         users = []
         for sheet in sheet_ranges:
-            ws = wb[sheet]
+            worksheet = workbook[sheet]
+
+            header_row = []
+            # Get header row
+            for column in worksheet.iter_cols():
+                value = column[0].value
+                if value is not None:
+                    header_row.append(value.encode(Converter.DECODE_FORMAT, "ignore"))
 
             # Get names
-            names_list = DataRetrievalController.get_column_from_xlsx(ws, 'Y')
+            names_list = DataRetrievalController.get_column_from_xlsx(
+                worksheet,
+                DataRetrievalController.get_colum_index(header_row, FormsiteConstants.CREDENTIAL_NAME)
+            )
 
             # Get surnames
-            surnames_list = DataRetrievalController.get_column_from_xlsx(ws, 'Z')
+            surnames_list = DataRetrievalController.get_column_from_xlsx(
+                worksheet,
+                DataRetrievalController.get_colum_index(header_row, FormsiteConstants.CREDENTIAL_SURNAME)
+            )
 
             # Get email
-            email_list = DataRetrievalController.get_column_from_xlsx(ws, 'AA')
+            email_list = DataRetrievalController.get_column_from_xlsx(
+                worksheet,
+                DataRetrievalController.get_colum_index(header_row, FormsiteConstants.CREDENTIAL_EMAIL)
+            )
 
             # Get ntel
-            ntel_list = DataRetrievalController.get_column_from_xlsx(ws, 'AB')
+            ntel_list = DataRetrievalController.get_column_from_xlsx(
+                worksheet,
+                DataRetrievalController.get_colum_index(header_row, FormsiteConstants.CREDENTIAL_NTEL)
+            )
 
             # Get status
-            status_list = DataRetrievalController.get_column_from_xlsx(ws, 'B')
+            status_list = DataRetrievalController.get_column_from_xlsx(
+                worksheet,
+                DataRetrievalController.get_colum_index(header_row, FormsiteConstants.STATUS_SURVEY)
+            )
 
             # Get score
             score_list = [
-                DataRetrievalController.get_column_from_xlsx(ws, 'F'),
-                DataRetrievalController.get_column_from_xlsx(ws, 'O'),
-                DataRetrievalController.get_column_from_xlsx(ws, 'Q'),
-                DataRetrievalController.get_column_from_xlsx(ws, 'S'),
-                DataRetrievalController.get_column_from_xlsx(ws, 'U'),
-                DataRetrievalController.get_column_from_xlsx(ws, 'W')
+                DataRetrievalController.get_column_from_xlsx(
+                    worksheet,
+                    DataRetrievalController.check_match(FormsiteConstants.SCORE_AGE, header_row)
+                ),
+                DataRetrievalController.get_column_from_xlsx(
+                    worksheet,
+                    DataRetrievalController.check_match(FormsiteConstants.SCORE_ALLERGENS, header_row)
+                ),
+                DataRetrievalController.get_column_from_xlsx(
+                    worksheet,
+                    DataRetrievalController.check_match(FormsiteConstants.SCORE_DISTURBANCES, header_row)
+                ),
+                DataRetrievalController.get_column_from_xlsx(
+                    worksheet,
+                    DataRetrievalController.check_match(FormsiteConstants.SCORE_INFECTION, header_row)
+                ),
+                DataRetrievalController.get_column_from_xlsx(
+                    worksheet,
+                    DataRetrievalController.check_match(FormsiteConstants.SCORE_PREGNANT, header_row)
+                ),
+                DataRetrievalController.get_column_from_xlsx(
+                    worksheet,
+                    DataRetrievalController.check_match(FormsiteConstants.SCORE_IMC, header_row)
+                )
             ]
 
             for i in range(len(status_list)):
-                if status_list[i] == "Complete":
+                if status_list[i] == FormsiteConstants.STATUS_SURVEY_COMPLETE:
                     users.append(User(
                         names_list[i],
                         email_list[i],

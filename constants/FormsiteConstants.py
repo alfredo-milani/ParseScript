@@ -4,8 +4,8 @@ Informazioni circa il modello del file da cui estrapolare i dati
 """
 NEW_USER = "Scoring Summary"
 
-SCORE_VAL_POSITIVE = "1"
-SCORE_VAL_NEGATIVE = "0"
+SCORE_VAL_POSITIVE = '1'
+SCORE_VAL_NEGATIVE = '0'
 SCORE_AGE = ("1. Hai meno di 18 anni o più di 68?", 1)
 SCORE_ALLERGENS = ("2. Sei allergico a frutta secca (noci macadamia, anacardi, noci, mandorle, noci pecan), "
                    "soia, avena, sesamo, o sedano)?", 2)
@@ -30,12 +30,12 @@ SCORES_NUM = len(SCORES_LIST)
 # a causa di problemi di decodifica con da formato *.docx
 # before: "Nome: *"; now: "Nome:"
 CREDENTIAL_NAME = "Nome:"
-CREDENTIALS_SURNAME = "Cognome:"
+CREDENTIAL_SURNAME = "Cognome:"
 CREDENTIAL_EMAIL = "Email:"
 CREDENTIAL_NTEL = "Telefono:"
 CREDENTIALS_LIST = [
     CREDENTIAL_NAME,
-    CREDENTIALS_SURNAME,
+    CREDENTIAL_SURNAME,
     CREDENTIAL_EMAIL,
     CREDENTIAL_NTEL
 ]
@@ -49,3 +49,7 @@ HEADER_ROW = [
     "scores",
     "note"
 ]
+
+STATUS_SURVEY = "Status"
+STATUS_SURVEY_COMPLETE = "Complete"
+STATUS_SURVEY_INCOMPLETE = "Incomplete"
