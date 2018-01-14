@@ -10,12 +10,9 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 from pathlib import Path
 
 import constants
-import model
 from constants import APP_NAME, SystemConstants, FormsiteConstants
-from model import User
-from model.InputData import InputData
-from utils import document_to_text, Converter
-from utils.Converter import EXT_XLSX, split_char
+from model import *
+from utils import *
 from view import ParseScriptUI
 
 
@@ -86,9 +83,9 @@ class DataRetrievalController(object):
 
         if Path(input_file).is_dir():
             list_of_files = [
-                input_file + split_char() + f
+                input_file + Converter.split_char() + f
                 for f in os.listdir(input_file)
-                if isfile(input_file + split_char() + f)
+                if isfile(input_file + Converter.split_char() + f)
             ]
         elif Path(input_file).is_file():
             list_of_files = [input_file]
@@ -173,7 +170,7 @@ class DataRetrievalController(object):
             # sys.exit(EXIT_ERR_FILE)
 
         # Conversione in base al formato del file di input
-        content = document_to_text(input_file)
+        content = Converter.document_to_text(input_file)
 
         if content is None:
             SystemConstants.UI_CONSOLE.print_to_user(
@@ -242,9 +239,9 @@ class DataRetrievalController(object):
         ws.add_table(tab)
 
         default_out = os.path.basename(input_file)
-        default_out = os.path.splitext(default_out)[0] + EXT_XLSX
+        default_out = os.path.splitext(default_out)[0] + Converter.EXT_XLSX
         if output_dir[len(output_dir) - 1] != '/' and output_dir[len(output_dir) - 1] != '\\':
-            output_dir += split_char()
+            output_dir += Converter.split_char()
         file_to_save = output_dir + default_out
 
         if Path(file_to_save).exists():
@@ -255,7 +252,8 @@ class DataRetrievalController(object):
 
             if not response:
                 # TODO potrebbe ancora esistere un file con lo stesso nome -> genera codice da funzione hash
-                file_to_save = file_to_save[:-len(EXT_XLSX)] + "_" + str(random.randint(0, 100000)) + EXT_XLSX
+                file_to_save = file_to_save[:-len(Converter.EXT_XLSX)] + "_" +\
+                               str(random.randint(0, 100000)) + Converter.EXT_XLSX
 
         wb.save(file_to_save)
         SystemConstants.UI_CONSOLE.print_to_user("<<< File parsed >>>")
@@ -348,7 +346,7 @@ class DataRetrievalController(object):
                     i += 1
                     c += 1
 
-                user = model.User(name, email, surname, ntel, scores)
+                user = User(name, email, surname, ntel, scores)
                 users_list.append(user)
                 if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                     SystemConstants.UI_CONSOLE.print_to_user(
@@ -421,7 +419,7 @@ class DataRetrievalController(object):
                             ntel = content[i]
 
                 if len(name) != 0 or len(email) != 0 or len(surname) != 0 or len(ntel) != 0 or len(scores) != 0:
-                    user = model.User(name, email, surname, ntel, scores)
+                    user = User(name, email, surname, ntel, scores)
                     users_list.append(user)
                     if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                         SystemConstants.UI_CONSOLE.print_to_user(
@@ -513,7 +511,7 @@ class DataRetrievalController(object):
                             ntel = content[i]
 
                 if name or email or surname or ntel or scores:
-                    user = model.User(name, email, surname, ntel, scores)
+                    user = User(name, email, surname, ntel, scores)
                     users_list.append(user)
                     if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                         # Check non effettuato durante l'assegnazione (nel parsing delle credenziali) dal momento che

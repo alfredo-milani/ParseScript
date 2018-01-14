@@ -11,14 +11,14 @@
 # ============================================================================
 import sys
 
-from control import DataRetrievalController
-from utils.Common import set_up_sys, parse_arg
 
 if __name__ == "__main__":
-    set_up_sys()
+    from utils import Common
+    Common.set_up_sys()
 
+    from control import DataRetrievalController
     DataRetrievalController().launch_ui(
-        parse_arg(sys.argv[1:])
+        Common.parse_arg(sys.argv[1:])
     )
 
     # FOR PACKAGING OPERATION UNCOMMENT THIS LINE AND COMMENT ABOVE LINE

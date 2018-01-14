@@ -1,7 +1,7 @@
 import sys
 
 from constants import SystemConstants
-from view.ParseScriptUI import ParseScriptUI
+from view import ParseScriptUI
 
 
 class ParseScriptCLI(ParseScriptUI):

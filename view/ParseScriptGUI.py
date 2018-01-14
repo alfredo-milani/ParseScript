@@ -6,9 +6,7 @@ import wx
 from pathlib import Path
 
 from constants import SystemConstants
-from model.InputData import InputData
-from utils import split_char
-from view.ParseScriptUI import ParseScriptUI
+from view import ParseScriptUI
 
 
 class ParseScriptGUI(wx.Frame, ParseScriptUI):
@@ -46,10 +44,11 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         # ON PACKAGING remove "SystemConstants.APP_ABS_PATH + split_char() + " from the following icon's path.
         # ON PACKAGING on Windows system the icon must be in *.ico format;
         # after pyinstaller is executed move the executable in the root of the project.
+        from utils import Converter
         icon = wx.Icon(
-            SystemConstants.APP_ABS_PATH + split_char() +
-            "resources" + split_char() +
-            "images" + split_char() + "icon.png",
+            SystemConstants.APP_ABS_PATH + Converter.split_char() +
+            "resources" + Converter.split_char() +
+            "images" + Converter.split_char() + "icon.png",
             wx.BITMAP_TYPE_PNG,
             512,
             512
@@ -288,6 +287,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         # START OPERATION
         from control import DataRetrievalController
+        from model import InputData
         input_data = InputData(input_file, output_dir, verbose=verbose, gui=True)
         DataRetrievalController().manage_operation(input_data)
 
