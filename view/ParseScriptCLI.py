@@ -1,6 +1,5 @@
 import sys
 
-from constants import SystemConstants
 from view import ParseScriptUI
 
 
@@ -52,6 +51,7 @@ class ParseScriptCLI(ParseScriptUI):
 
         @staticmethod
         def __choose_code_color_OS__(color_code):
+            from constants import SystemConstants
             if SystemConstants.OS_TYPE == SystemConstants.OS_WIN:
                 return ""
             else:

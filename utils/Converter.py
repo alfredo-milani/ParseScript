@@ -9,8 +9,6 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 
-import constants
-
 
 class Converter(object):
     EXT_XLSX = ".xlsx"
@@ -26,10 +24,11 @@ class Converter(object):
 
     @staticmethod
     def split_char():
+        from constants import SystemConstants
         os = platform.system()
-        if os == constants.OS_WIN:
+        if os == SystemConstants.OS_WIN:
             return '\\'
-        elif os == constants.OS_LINUX:
+        elif os == SystemConstants.OS_LINUX:
             return '/'
 
     @staticmethod

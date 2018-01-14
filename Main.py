@@ -11,13 +11,13 @@
 # ============================================================================
 import sys
 
+from control import DataRetrievalController
+from utils import Common
 
 if __name__ == "__main__":
-    from utils import Common
     Common.set_up_sys()
 
-    from control import DataRetrievalController
-    DataRetrievalController().launch_ui(
+    DataRetrievalController.launch_ui(
         Common.parse_arg(sys.argv[1:])
     )
 
