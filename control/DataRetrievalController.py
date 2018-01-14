@@ -297,7 +297,7 @@ class DataRetrievalController(object):
                 # parsing scores
                 s = 0
                 score_list = [x[0] for x in constants.SCORES_LIST]
-                for score in range(constants.SCORES_NUM):
+                for _ in range(constants.SCORES_NUM):
                     while True:
                         item_position = DataRetrievalController.check_match(content[i], score_list)
                         if item_position != -1 or constants.NEW_USER in content[i]:
@@ -325,7 +325,7 @@ class DataRetrievalController(object):
 
                 # parsing credentials
                 c = 0
-                for credential in range(constants.CREDENTIALS_NUM):
+                for _ in range(constants.CREDENTIALS_NUM):
                     while True:
                         item_position = DataRetrievalController.check_match(content[i], constants.CREDENTIALS_LIST)
                         if item_position != -1 or constants.NEW_USER in content[i]:
