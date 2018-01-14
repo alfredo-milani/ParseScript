@@ -35,10 +35,10 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         self.edittextdiroutput = None
         self.checkboxverbose = None
         ###
-        self.InitView()
+        self.init_view()
         self.Centre()
 
-    def InitView(self):
+    def init_view(self):
         # CREATE PANEL
         panel = wx.Panel(self)
 
@@ -271,7 +271,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             input_dir = None
 
         if input_file is None and input_dir is None:
-            self.__alert_on_error__("Error loading file: check if the input file exist!", "Wrong path")
+            self.alert_on_error("Error loading file: check if the input file exist!", "Wrong path")
             return
 
         # se esistono entrambi i path (input file e input directory), considero solo il path che punta ad una directory
@@ -283,7 +283,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             output_dir = None
 
         if output_dir is None:
-            self.__alert_on_error__("Error: check if the output location exist!", "Wrong path")
+            self.alert_on_error("Error: check if the output location exist!", "Wrong path")
             return
 
         # START OPERATION
@@ -292,7 +292,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         DataRetrievalController().manage_operation(input_data)
 
     @staticmethod
-    def __alert_on_error__(message, windows_name):
+    def alert_on_error(message, windows_name):
         dial = wx.MessageDialog(None, message, windows_name, wx.OK | wx.ICON_ERROR)
         dial.ShowModal()
 
@@ -317,10 +317,10 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             edittextdirectory.SetValue(path)
 
     def on_show_parsed_files(self, outputdirectory):
-        self.__open_file__(outputdirectory)
+        self.open_file(outputdirectory)
 
     @staticmethod
-    def __open_file__(outputdirectory):
+    def open_file(outputdirectory):
         """
         Open file manager with root @filename for the correct OS
         :type outputdirectory: str

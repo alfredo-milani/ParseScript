@@ -13,7 +13,7 @@ import constants
 
 EXT_XLSX = ".xlsx"
 EXT_TXT = ".txt"
-CODEC_UTF_8 = "utf-8"
+ENCODE_UTF_8 = "utf-8"
 CMD_DOC = "antiword"
 EXT_DOC = ".doc"
 EXT_DOCX = ".docx"
@@ -34,7 +34,7 @@ def split_char():
 def convert_pdf_to_txt(path):
     rsrcmgr = PDFResourceManager()
     retstr = StringIO()
-    codec = CODEC_UTF_8
+    codec = ENCODE_UTF_8
     laparams = LAParams()
     device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
     fp = file(path, 'rb')
@@ -78,7 +78,7 @@ def document_to_text(file_path):
         paratextlist = getdocumenttext(document)
         newparatextlist = []
         for paratext in paratextlist:
-            newparatextlist.append(paratext.encode(CODEC_UTF_8))
+            newparatextlist.append(paratext.encode(ENCODE_UTF_8))
         return '\n\n'.join(newparatextlist)
     elif filename[-4:] == EXT_ODT:
         cmd = [CMD_ODT, file_path]

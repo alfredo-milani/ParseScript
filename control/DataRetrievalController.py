@@ -172,7 +172,7 @@ class DataRetrievalController(object):
             return
             # sys.exit(EXIT_ERR_FILE)
 
-        # conversione in base al formato del file di input
+        # Conversione in base al formato del file di input
         content = document_to_text(input_file)
 
         if content is None:
@@ -182,8 +182,7 @@ class DataRetrievalController(object):
             )
             return
             # sys.exit(EXIT_ERR_FILE)
-
-        if content == Converter.EXT_XLSX:
+        elif content == Converter.EXT_XLSX:
             SystemConstants.UI_CONSOLE.print_to_user(
                 "Note: *.xlsx file will be parsed with custom procedure",
                 ParseScriptUI.Colors.TEXT_COLOR_WARNING
@@ -211,7 +210,7 @@ class DataRetrievalController(object):
         wb = Workbook()
         ws = wb.active
 
-        # create name for new sheet
+        # Create name for new sheet
         if sheet_title is None or len(sheet_title) == 0:
             text_to_split = os.path.basename(input_file).split('.')[0]
             text_to_split = DataRetrievalController.replace_unsupported_char(str(text_to_split), ['-', ' '], '_')
@@ -224,12 +223,12 @@ class DataRetrievalController(object):
                 sheet_title = text_to_split
         ws.title = sheet_title
 
-        # add column headings. NB. these must be strings
+        # Add column headings. NB. these must be strings
         ws.append(constants.HEADER_ROW)
         for user in list_of_users:
             ws.append(user.get_list_from_instance())
 
-        # adding table to sheet
+        # Adding table to sheet
         tab = Table(displayName="Table1", ref="A1:E" + str(len(list_of_users) + 1))
         # Add a default style with striped rows and banded columns
         style = TableStyleInfo(
@@ -244,7 +243,7 @@ class DataRetrievalController(object):
 
         default_out = os.path.basename(input_file)
         default_out = os.path.splitext(default_out)[0] + EXT_XLSX
-        if output_dir[len(output_dir) - 1] != '/' or output_dir[len(output_dir) - 1] != '\\':
+        if output_dir[len(output_dir) - 1] != '/' and output_dir[len(output_dir) - 1] != '\\':
             output_dir += split_char()
         file_to_save = output_dir + default_out
 
@@ -556,7 +555,7 @@ class DataRetrievalController(object):
         for row in worksheet.iter_rows():
             value = row[column_index].value
             if value is not None:
-                column_list.append(value.encode(Converter.DECODE_FORMAT, "ignore"))
+                column_list.append(value.encode(Converter.ENCODE_UTF_8, "ignore"))
 
         return column_list
 
@@ -580,15 +579,15 @@ class DataRetrievalController(object):
         return score
 
     @staticmethod
-    def get_colum_index(colum_list, string):
+    def get_column_index(column_list, string):
         """
         Ritorna la posizione dell'elementeo @string nella lista @column_list
-        :type colum_list: list
+        :type column_list: list
         :type string: str
         :rtype: int
         """
-        for el in range(len(colum_list)):
-            if string == colum_list[el]:
+        for el in range(len(column_list)):
+            if string == column_list[el]:
                 return el
 
         return -1
@@ -604,7 +603,7 @@ class DataRetrievalController(object):
         sheet_ranges = workbook.get_sheet_names()
         # Encoding from unicode string (u'string') to utf-8 string
         for sheet in range(len(sheet_ranges)):
-            sheet_ranges[sheet] = sheet_ranges[sheet].encode(Converter.DECODE_FORMAT, "ignore")
+            sheet_ranges[sheet] = sheet_ranges[sheet].encode(Converter.ENCODE_UTF_8, "ignore")
 
         users = []
         for sheet in sheet_ranges:
@@ -613,38 +612,39 @@ class DataRetrievalController(object):
             header_row = []
             # Get header row
             for column in worksheet.iter_cols():
+                # Get only first row's elements
                 value = column[0].value
                 if value is not None:
-                    header_row.append(value.encode(Converter.DECODE_FORMAT, "ignore"))
+                    header_row.append(value.encode(Converter.ENCODE_UTF_8, "ignore"))
 
             # Get names
             names_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_colum_index(header_row, FormsiteConstants.CREDENTIAL_NAME)
+                DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_NAME)
             )
 
             # Get surnames
             surnames_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_colum_index(header_row, FormsiteConstants.CREDENTIAL_SURNAME)
+                DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_SURNAME)
             )
 
             # Get email
             email_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_colum_index(header_row, FormsiteConstants.CREDENTIAL_EMAIL)
+                DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_EMAIL)
             )
 
             # Get ntel
             ntel_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_colum_index(header_row, FormsiteConstants.CREDENTIAL_NTEL)
+                DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_NTEL)
             )
 
             # Get status
             status_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_colum_index(header_row, FormsiteConstants.STATUS_SURVEY)
+                DataRetrievalController.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY)
             )
 
             # Get score
@@ -676,6 +676,7 @@ class DataRetrievalController(object):
             ]
 
             for i in range(len(status_list)):
+                # Get only users which completed the survey
                 if status_list[i] == FormsiteConstants.STATUS_SURVEY_COMPLETE:
                     users.append(User(
                         names_list[i],
