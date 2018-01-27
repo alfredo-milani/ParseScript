@@ -237,12 +237,12 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_directory(self.edittextdiroutput),
+            lambda event: self.on_selected_directory(self.edittextdiroutput, "Select output directory"),
             id=ParseScriptGUI.APP_SELECT_OUTPUT_DIR
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_directory(self.edittextdirinput),
+            lambda event: self.on_selected_directory(self.edittextdirinput, "Select input directory"),
             id=ParseScriptGUI.APP_SELECT_INPUT_DIR
         )
 
@@ -299,7 +299,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
     @staticmethod
     def on_selected_filename(edittextfilename):
         path = wx.FileSelector(
-            message="Select file or directory to parse",
+            message="Select file to parse",
             wildcard="File (*.txt,*.pdf,*.docx,*.xlsx)|*.txt;*.pdf;*.docx;*.xlsx",
             default_path=SystemConstants.APP_ABS_PATH
         )
@@ -307,9 +307,9 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
             edittextfilename.SetValue(path)
 
     @staticmethod
-    def on_selected_directory(edittextdirectory):
+    def on_selected_directory(edittextdirectory, message):
         path = wx.DirSelector(
-            message="Select output directory",
+            message=message,
             default_path=SystemConstants.APP_ABS_PATH
         )
 
