@@ -13,12 +13,12 @@ import constants
 from constants import APP_NAME, SystemConstants, FormsiteConstants
 from model import *
 from utils import *
-from view import ParseScriptUI
+from view import DataRetrievalUI
 
 
 class DataRetrievalController(object):
     """
-    Controllore per le view che estendono l'interfaccia in view/ParseScriptUI
+    Controllore per le view che estendono l'interfaccia in view/DataRetrievalUI
     """
 
     @staticmethod
@@ -30,16 +30,16 @@ class DataRetrievalController(object):
         """
         if input_data.__getattribute__("gui"):
             import wx
-            from view import ParseScriptGUI
+            from view import DataRetrievalGUI
 
             graphic_interface = wx.App(False)
-            SystemConstants.UI_CONSOLE = ParseScriptGUI(None, APP_NAME)
+            SystemConstants.UI_CONSOLE = DataRetrievalGUI(None, APP_NAME)
             SystemConstants.UI_CONSOLE.Show(True)
             graphic_interface.MainLoop()
         else:
-            from view import ParseScriptCLI
+            from view import DataRetrievalCLI
 
-            SystemConstants.UI_CONSOLE = ParseScriptCLI()
+            SystemConstants.UI_CONSOLE = DataRetrievalCLI()
             DataRetrievalController.manage_operation(input_data)
 
     @staticmethod
@@ -56,7 +56,7 @@ class DataRetrievalController(object):
 
         SystemConstants.UI_CONSOLE.print_to_user(
             "<<<--- STARTING OPERATION --->>>",
-            ParseScriptUI.Colors.TEXT_COLOR_START_OPERATION
+            DataRetrievalUI.Colors.TEXT_COLOR_START_OPERATION
         )
 
         if len(input_file) != 0:
@@ -65,7 +65,7 @@ class DataRetrievalController(object):
             if not Path(output_dir).is_dir():
                 SystemConstants.UI_CONSOLE.print_to_user(
                     "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, SystemConstants.TMP_PATH),
-                    ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                    DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                 )
                 input_data.__setattr__("output_dir", SystemConstants.TMP_PATH)
                 output_dir = input_data.__getattribute__("output_dir")
@@ -77,7 +77,7 @@ class DataRetrievalController(object):
         if not Path(input_file).exists():
             SystemConstants.UI_CONSOLE.print_to_user(
                 "ERROR: %s not exist!" % input_file,
-                ParseScriptUI.Colors.TEXT_COLOR_ERROR
+                DataRetrievalUI.Colors.TEXT_COLOR_ERROR
             )
             sys.exit(SystemConstants.EXIT_ERR_ARG)
 
@@ -92,7 +92,7 @@ class DataRetrievalController(object):
         else:
             SystemConstants.UI_CONSOLE.print_to_user(
                 "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file,
-                ParseScriptUI.Colors.TEXT_COLOR_ERROR
+                DataRetrievalUI.Colors.TEXT_COLOR_ERROR
             )
             sys.exit(SystemConstants.EXIT_ERR_ARG)
 
@@ -118,7 +118,7 @@ class DataRetrievalController(object):
 
         SystemConstants.UI_CONSOLE.print_to_user(
             "\n<<<--- OPERATION COMPLETED --->>>\n",
-            ParseScriptUI.Colors.TEXT_COLOR_SUCCESS
+            DataRetrievalUI.Colors.TEXT_COLOR_SUCCESS
         )
 
     @staticmethod
@@ -164,7 +164,7 @@ class DataRetrievalController(object):
         if not file_to_parse.is_file():
             SystemConstants.UI_CONSOLE.print_to_user(
                 "File '%s' not found" % file_to_parse,
-                ParseScriptUI.Colors.TEXT_COLOR_ERROR
+                DataRetrievalUI.Colors.TEXT_COLOR_ERROR
             )
             return
             # sys.exit(EXIT_ERR_FILE)
@@ -175,14 +175,14 @@ class DataRetrievalController(object):
         if content is None:
             SystemConstants.UI_CONSOLE.print_to_user(
                 "!!! Unknown format for file: %s. Skipping... !!!" % input_file,
-                ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
             )
             return
             # sys.exit(EXIT_ERR_FILE)
         elif content == Converter.EXT_XLSX:
             SystemConstants.UI_CONSOLE.print_to_user(
                 "Note: *.xlsx file will be parsed with custom procedure",
-                ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
             )
 
             list_of_users = DataRetrievalController.get_users_list_from_xlsx(input_file)
@@ -201,7 +201,7 @@ class DataRetrievalController(object):
                         raw_data_num_users,
                         len(list_of_users)
                     ),
-                    ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                    DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                 )
 
         wb = Workbook()
@@ -314,7 +314,7 @@ class DataRetrievalController(object):
                                 "Error parsing value of line: %s.\tValue: %s."
                                 "\tPosizione elemento della lista: %d.\n" % (
                                     content[i - 1], content[i], i),
-                                ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                             )
                             continue
 
@@ -351,7 +351,7 @@ class DataRetrievalController(object):
                 if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                     SystemConstants.UI_CONSOLE.print_to_user(
                         "WARNING: Error parsing User: " + user + "\n",
-                        ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                        DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                     )
 
                 if constants.NEW_USER in content[i]:
@@ -399,7 +399,7 @@ class DataRetrievalController(object):
                                     "Error parsing value of line: %s.\tValue: %s."
                                     "\tPosizione elemento della lista: %d." %
                                     (content[i - 1], content[i], i),
-                                    ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                                    DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                                 )
 
                         continue
@@ -425,7 +425,7 @@ class DataRetrievalController(object):
                         SystemConstants.UI_CONSOLE.print_to_user(
                             "WARNING: Error parsing User: " + user + " at position: " +
                             str(i) + " / " + str(i + 1) + "\n",
-                            ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                            DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                         )
 
             i += 1
@@ -464,7 +464,7 @@ class DataRetrievalController(object):
                             SystemConstants.UI_CONSOLE.print_to_user(
                                 "Unexpected parsing new value even if current is not parsed for user: " + user +
                                 "\tPosizione elemento della lista: %d." % i,
-                                ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                             )
                             continue
 
@@ -478,7 +478,7 @@ class DataRetrievalController(object):
                                     "Error parsing score value for the line: '%s'.\tValue: '%s'.\t"
                                     "Posizione elemento della lista: %d." %
                                     (content[i - 1], content[i], i),
-                                    ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                                    DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                                 )
                                 continue
 
@@ -495,7 +495,7 @@ class DataRetrievalController(object):
                             SystemConstants.UI_CONSOLE.print_to_user(
                                 "Unexpected parsing new value even if current is not parsed for user: " + user +
                                 "\tPosizione elemento della lista: %d." % i,
-                                ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                             )
                             continue
 
@@ -522,19 +522,19 @@ class DataRetrievalController(object):
                             SystemConstants.UI_CONSOLE.print_to_user(
                                 "Error parsing credential (name, email, surname or phone number empty) for User: " +
                                 user,
-                                ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                             )
                         elif s == constants.SCORES_NUM:
                             continue
 
                         SystemConstants.UI_CONSOLE.print_to_user(
                             "WARNING: The user may have been converted incorrectly: " + user + "\n",
-                            ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                            DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                         )
                 else:
                     SystemConstants.UI_CONSOLE.print_to_user(
                         "WARNING: User with all empty entry at position: " + str(i) + " / " + str(i + 1) + "\n",
-                        ParseScriptUI.Colors.TEXT_COLOR_WARNING
+                        DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                     )
 
             i += 1

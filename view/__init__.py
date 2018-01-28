@@ -1,4 +1,4 @@
-# ParseScriptUI must be the first import
-from ParseScriptUI import ParseScriptUI
-from ParseScriptCLI import ParseScriptCLI
-from ParseScriptGUI import ParseScriptGUI
+# DataRetrievalUI must be the first import
+from DataRetrieval import DataRetrievalUI
+from DataRetrievalCLI import DataRetrievalCLI
+from DataRetrievalGUI import DataRetrievalGUI

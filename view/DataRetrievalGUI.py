@@ -6,10 +6,10 @@ import wx
 from pathlib import Path
 
 from constants import SystemConstants
-from view import ParseScriptUI
+from view import DataRetrievalUI
 
 
-class ParseScriptGUI(wx.Frame, ParseScriptUI):
+class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
     """
     GUI user interface
     """
@@ -24,7 +24,8 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
     APP_CLEAN_CONSOLE = 7
 
     def __init__(self, parent, title):
-        super(ParseScriptGUI, self).__init__(parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition, size=(900, 500))
+        super(DataRetrievalGUI, self).__init__(parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition,
+                                               size=(900, 500))
 
         # Objects that will be used
         self.user_console = None
@@ -59,7 +60,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         menubar = wx.MenuBar()
 
         filemenu = wx.Menu()
-        quitmenuitem = wx.MenuItem(filemenu, ParseScriptGUI.APP_EXIT, '&Quit\tCtrl+Q')
+        quitmenuitem = wx.MenuItem(filemenu, DataRetrievalGUI.APP_EXIT, '&Quit\tCtrl+Q')
         '''
         # ON WINDOWS viene mostrata non ridimensionata
         # ON UNIX systems (Debian) non viene mostrata
@@ -70,7 +71,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         '''
 
         helpmenu = wx.Menu()
-        helpmenuitem = wx.MenuItem(helpmenu, ParseScriptGUI.APP_HELP_HINT, "&Help\tCtrl+H")
+        helpmenuitem = wx.MenuItem(helpmenu, DataRetrievalGUI.APP_HELP_HINT, "&Help\tCtrl+H")
 
         filemenu.Append(quitmenuitem)
         helpmenu.Append(helpmenuitem)
@@ -96,7 +97,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         inputboxpathfileinput = wx.BoxSizer(wx.HORIZONTAL)
         self.edittextfile = wx.TextCtrl(panel)
-        buttonfileinput = wx.Button(panel, label="...", size=(50, 10), id=ParseScriptGUI.APP_SELECT_INPUT_FILE)
+        buttonfileinput = wx.Button(panel, label="...", size=(50, 10), id=DataRetrievalGUI.APP_SELECT_INPUT_FILE)
         inputboxpathfileinput.Add(self.edittextfile, flag=wx.RIGHT, border=10, proportion=1)
         inputboxpathfileinput.Add(buttonfileinput, flag=wx.EXPAND)
 
@@ -105,7 +106,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         inputboxpathdirinput = wx.BoxSizer(wx.HORIZONTAL)
         self.edittextdirinput = wx.TextCtrl(panel)
-        buttondirinput = wx.Button(panel, label="...", size=(50, 10), id=ParseScriptGUI.APP_SELECT_INPUT_DIR)
+        buttondirinput = wx.Button(panel, label="...", size=(50, 10), id=DataRetrievalGUI.APP_SELECT_INPUT_DIR)
         inputboxpathdirinput.Add(self.edittextdirinput, flag=wx.RIGHT, border=10, proportion=1)
         inputboxpathdirinput.Add(buttondirinput, flag=wx.EXPAND)
 
@@ -130,7 +131,7 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         outputstatictext = wx.StaticText(panel, label='Select output directory')
         outputstatictext.SetFont(font)
         self.edittextdiroutput = wx.TextCtrl(panel)
-        buttondiroutput = wx.Button(panel, label="...", size=(50, 10), id=ParseScriptGUI.APP_SELECT_OUTPUT_DIR)
+        buttondiroutput = wx.Button(panel, label="...", size=(50, 10), id=DataRetrievalGUI.APP_SELECT_OUTPUT_DIR)
 
         outputbox.Add(outputstatictext, flag=wx.RIGHT, border=10)
         outputbox.Add(self.edittextdiroutput, flag=wx.RIGHT, border=10, proportion=1)
@@ -146,9 +147,9 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         # START / STOP BUTTONS
         manageoperationbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        buttonstart = wx.Button(panel, label='Start', size=(150, 30), id=ParseScriptGUI.APP_START)
+        buttonstart = wx.Button(panel, label='Start', size=(150, 30), id=DataRetrievalGUI.APP_START)
         buttonstart.SetFont(font)
-        buttonclose = wx.Button(panel, label='Close', size=(150, 30), id=ParseScriptGUI.APP_EXIT)
+        buttonclose = wx.Button(panel, label='Close', size=(150, 30), id=DataRetrievalGUI.APP_EXIT)
         buttonclose.SetFont(font)
 
         manageoperationbox.Add(buttonstart)
@@ -164,9 +165,9 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         # LOG TOOLS
         logbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        buttoncleanconsole = wx.Button(panel, label="Clear", id=ParseScriptGUI.APP_CLEAN_CONSOLE, size=(50, 30))
+        buttoncleanconsole = wx.Button(panel, label="Clear", id=DataRetrievalGUI.APP_CLEAN_CONSOLE, size=(50, 30))
         buttoncleanconsole.SetFont(font)
-        buttonshowfiles = wx.Button(panel, label="Files", id=ParseScriptGUI.APP_SHOW_PARSED_FILES, size=(50, 30))
+        buttonshowfiles = wx.Button(panel, label="Files", id=DataRetrievalGUI.APP_SHOW_PARSED_FILES, size=(50, 30))
         buttonshowfiles.SetFont(font)
         self.checkboxverbose = wx.CheckBox(panel, label="Verbose")
         self.checkboxverbose.SetFont(font)
@@ -209,41 +210,41 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         panel.SetSizer(mainbox)
 
         # BINDINGS WIDGETS
-        self.Bind(wx.EVT_MENU, self.on_quit, id=ParseScriptGUI.APP_EXIT)
-        self.Bind(wx.EVT_MENU, self.on_help, id=ParseScriptGUI.APP_HELP_HINT)
-        self.Bind(wx.EVT_BUTTON, self.on_quit, id=ParseScriptGUI.APP_EXIT)
-        self.Bind(wx.EVT_BUTTON, self.on_show_parsed_files, id=ParseScriptGUI.APP_SHOW_PARSED_FILES)
+        self.Bind(wx.EVT_MENU, self.on_quit, id=DataRetrievalGUI.APP_EXIT)
+        self.Bind(wx.EVT_MENU, self.on_help, id=DataRetrievalGUI.APP_HELP_HINT)
+        self.Bind(wx.EVT_BUTTON, self.on_quit, id=DataRetrievalGUI.APP_EXIT)
+        self.Bind(wx.EVT_BUTTON, self.on_show_parsed_files, id=DataRetrievalGUI.APP_SHOW_PARSED_FILES)
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.clear_console(),
             # button e id si possono anche usare in mutua esclusione
             # buttoncleanconsole,
-            id=ParseScriptGUI.APP_CLEAN_CONSOLE
+            id=DataRetrievalGUI.APP_CLEAN_CONSOLE
         )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_start(),
-            id=ParseScriptGUI.APP_START
+            id=DataRetrievalGUI.APP_START
         )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_show_parsed_files(self.edittextdiroutput.GetValue()),
-            id=ParseScriptGUI.APP_SHOW_PARSED_FILES
+            id=DataRetrievalGUI.APP_SHOW_PARSED_FILES
         )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_selected_filename(self.edittextfile),
-            id=ParseScriptGUI.APP_SELECT_INPUT_FILE
+            id=DataRetrievalGUI.APP_SELECT_INPUT_FILE
         )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_selected_directory(self.edittextdiroutput, "Select output directory"),
-            id=ParseScriptGUI.APP_SELECT_OUTPUT_DIR
+            id=DataRetrievalGUI.APP_SELECT_OUTPUT_DIR
         )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.on_selected_directory(self.edittextdirinput, "Select input directory"),
-            id=ParseScriptGUI.APP_SELECT_INPUT_DIR
+            id=DataRetrievalGUI.APP_SELECT_INPUT_DIR
         )
 
     @staticmethod
@@ -336,11 +337,11 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         if self.user_console:
             self.user_console.SetValue("")
 
-    def print_to_user(self, message, message_type=ParseScriptUI.Colors.TEXT_COLOR_DEFAULT):
+    def print_to_user(self, message, message_type=DataRetrievalUI.Colors.TEXT_COLOR_DEFAULT):
         if self.user_console and message:
-            self.user_console.SetForegroundColour(ParseScriptGUI.ColorsGUI.get_color_from_code(message_type))
+            self.user_console.SetForegroundColour(DataRetrievalGUI.ColorsGUI.get_color_from_code(message_type))
             self.user_console.AppendText(message + "\n")
-            self.user_console.SetForegroundColour(ParseScriptGUI.ColorsGUI.get_default_color())
+            self.user_console.SetForegroundColour(DataRetrievalGUI.ColorsGUI.get_default_color())
 
     def get_user_input_bool(self, question="", format_answere=""):
         dlg = wx.MessageDialog(None, question, style=wx.YES_NO | wx.ICON_QUESTION)
@@ -348,16 +349,16 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
         dlg.Destroy()
         return result
 
-    class ColorsGUI(ParseScriptUI.Colors):
+    class ColorsGUI(DataRetrievalUI.Colors):
         """
         Defining colors for GUI
         """
 
-        CONSOLE_DEFAULT_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_DEFAULT, wx.WHITE)
-        CONSOLE_WARNING_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_WARNING, wx.YELLOW)
-        CONSOLE_ERROR_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_ERROR, wx.RED)
-        CONSOLE_SUCCESS_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_SUCCESS, wx.GREEN)
-        CONSOLE_START_OPERATION_COLOR = (ParseScriptUI.Colors.TEXT_COLOR_START_OPERATION, wx.CYAN)
+        CONSOLE_DEFAULT_COLOR = (DataRetrievalUI.Colors.TEXT_COLOR_DEFAULT, wx.WHITE)
+        CONSOLE_WARNING_COLOR = (DataRetrievalUI.Colors.TEXT_COLOR_WARNING, wx.YELLOW)
+        CONSOLE_ERROR_COLOR = (DataRetrievalUI.Colors.TEXT_COLOR_ERROR, wx.RED)
+        CONSOLE_SUCCESS_COLOR = (DataRetrievalUI.Colors.TEXT_COLOR_SUCCESS, wx.GREEN)
+        CONSOLE_START_OPERATION_COLOR = (DataRetrievalUI.Colors.TEXT_COLOR_START_OPERATION, wx.CYAN)
 
         CONSOLE_COLORS = [
             CONSOLE_DEFAULT_COLOR,
@@ -369,12 +370,12 @@ class ParseScriptGUI(wx.Frame, ParseScriptUI):
 
         @staticmethod
         def get_color_from_code(type_code):
-            for color in ParseScriptGUI.ColorsGUI.CONSOLE_COLORS:
+            for color in DataRetrievalGUI.ColorsGUI.CONSOLE_COLORS:
                 if color[0] == type_code:
                     return color[1]
 
-            return ParseScriptGUI.ColorsGUI.get_default_color()
+            return DataRetrievalGUI.ColorsGUI.get_default_color()
 
         @staticmethod
         def get_default_color():
-            return ParseScriptGUI.ColorsGUI.CONSOLE_DEFAULT_COLOR[1]
+            return DataRetrievalGUI.ColorsGUI.CONSOLE_DEFAULT_COLOR[1]

@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 
-class ParseScriptUI(object):
+class DataRetrievalUI(object):
     """
     Contract to interact with user
     """
