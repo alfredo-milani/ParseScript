@@ -33,23 +33,29 @@ CREDENTIAL_NAME = "Nome:"
 CREDENTIAL_SURNAME = "Cognome:"
 CREDENTIAL_EMAIL = "Email:"
 CREDENTIAL_NTEL = "Telefono:"
+CREDENTIAL_DATE = "Finish Time"
 CREDENTIALS_LIST = [
     CREDENTIAL_NAME,
     CREDENTIAL_SURNAME,
     CREDENTIAL_EMAIL,
-    CREDENTIAL_NTEL
+    CREDENTIAL_NTEL,
+    CREDENTIAL_DATE
 ]
 CREDENTIALS_NUM = len(CREDENTIALS_LIST)
 
-HEADER_ROW = [
-    "nome",
-    "cognome",
-    "telefono",
-    "email",
-    "scores",
-    "note"
-]
-
+# Per gestire *.xlsx file
 STATUS_SURVEY = "Status"
 STATUS_SURVEY_COMPLETE = "Complete"
 STATUS_SURVEY_INCOMPLETE = "Incomplete"
+STATUS_SURVEY_DATE = "Date"
+
+
+HEADER_ROW = [
+    "Nome",
+    "Cognome",
+    "Telefono",
+    "Email",
+    "Scores",
+    "Data",
+    "Note"
+]

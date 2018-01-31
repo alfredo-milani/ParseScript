@@ -185,7 +185,7 @@ class DataRetrievalController(object):
                 DataRetrievalUI.Colors.TEXT_COLOR_WARNING
             )
 
-            list_of_users = DataRetrievalController.get_users_list_from_xlsx(input_file)
+            list_of_users = DataRetrievalController.parse_users_list_from_xlsx(input_file)
         else:
             # NOTE: filter returns a list in Python 2 and a generator in Python 3
             # False-ish value include: False, None, 0, '', [], () and all others empty containers
@@ -193,7 +193,7 @@ class DataRetrievalController(object):
 
             raw_data_num_users = DataRetrievalController.count_users(data_list, constants.NEW_USER)
 
-            list_of_users = DataRetrievalController.get_users_list(data_list)
+            list_of_users = DataRetrievalController.parse_users_list(data_list)
 
             if raw_data_num_users != len(list_of_users):
                 SystemConstants.UI_CONSOLE.print_to_user(
@@ -226,7 +226,7 @@ class DataRetrievalController(object):
             ws.append(user.get_list_from_instance())
 
         # Adding table to sheet
-        tab = Table(displayName="Table1", ref="A1:E" + str(len(list_of_users) + 1))
+        tab = Table(displayName="Table1", ref="A1:F" + str(len(list_of_users) + 1))
         # Add a default style with striped rows and banded columns
         style = TableStyleInfo(
             name="TableStyleMedium9",
@@ -273,7 +273,7 @@ class DataRetrievalController(object):
         return -1
 
     @staticmethod
-    def get_users_list_v1(content):
+    def parse_users_list_v1(content):
         """
         Crea una lista di tipo User da @content
         :param content: list
@@ -362,7 +362,7 @@ class DataRetrievalController(object):
         return users_list
 
     @staticmethod
-    def get_users_list_v2(content):
+    def parse_users_list_v2(content):
         """
         Crea una lista di tipo User da @content
         :type content: list
@@ -433,7 +433,7 @@ class DataRetrievalController(object):
         return users_list
 
     @staticmethod
-    def get_users_list(content):
+    def parse_users_list(content):
         """
         Crea una lista di tipo User da @content
         :type content: list
@@ -449,6 +449,7 @@ class DataRetrievalController(object):
                 surname = ""
                 email = ""
                 ntel = ""
+                date = ""
                 scores = []
 
                 s, c = 0, 0
@@ -509,18 +510,21 @@ class DataRetrievalController(object):
                             email = content[i]
                         elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_NTEL:
                             ntel = content[i]
+                        elif constants.CREDENTIALS_LIST[item_position] == constants.CREDENTIAL_DATE:
+                            date = content[i]
 
-                if name or email or surname or ntel or scores:
-                    user = User(name, email, surname, ntel, scores)
+                if name or email or surname or ntel or scores or date:
+                    user = User(name, email, surname, ntel, scores, date)
                     users_list.append(user)
                     if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                         # Check non effettuato durante l'assegnazione (nel parsing delle credenziali) dal momento che
                         # la funzione filter elimina tutti i valori Falseish
                         # (primary key as in
                         #  https://fs27.formsite.com/lnisrl/form4/fill?1=6536383b0aff580572ef85e25764f3b2)
-                        if not (name and email and surname and ntel):
+                        if not (name and email and surname and ntel and date):
                             SystemConstants.UI_CONSOLE.print_to_user(
-                                "Error parsing credential (name, email, surname or phone number empty) for User: " +
+                                "Error parsing credential (name, email, surname, phone number empty or date) "
+                                "for User: " +
                                 user,
                                 DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                             )
@@ -591,7 +595,7 @@ class DataRetrievalController(object):
         return -1
 
     @staticmethod
-    def get_users_list_from_xlsx(filename):
+    def parse_users_list_from_xlsx(filename):
         """
         Crea una lista di @User da @filename in formato *.xlsx
         :type filename: str
@@ -645,6 +649,12 @@ class DataRetrievalController(object):
                 DataRetrievalController.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY)
             )
 
+            # Get end date
+            date_list = DataRetrievalController.get_column_from_xlsx(
+                worksheet,
+                DataRetrievalController.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY_DATE)
+            )
+
             # Get score
             score_list = [
                 DataRetrievalController.get_column_from_xlsx(
@@ -681,7 +691,8 @@ class DataRetrievalController(object):
                         email_list[i],
                         surnames_list[i],
                         ntel_list[i],
-                        DataRetrievalController.get_score_from_column_xlsx(i, score_list)
+                        DataRetrievalController.get_score_from_column_xlsx(i, score_list),
+                        date_list[i]
                     ))
 
         return users

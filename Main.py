@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # ============================================================================
 # Titolo:           Main.py
-# Descrizione:      Script per estrapolare dati da un file *.txt ed inserirli in un file *.xlsx
+# Descrizione:      Script per estrapolare dati da un file ed inserirli in un file *.xlsx
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             ven 20 ott 2017, 19.36.00, CEST
 # Licenza:          MIT License
