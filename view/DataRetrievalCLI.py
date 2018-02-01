@@ -8,6 +8,9 @@ class DataRetrievalCLI(DataRetrievalUI):
     CLI user interface
     """
 
+    def __init__(self):
+        super(DataRetrievalCLI, self).__init__()
+
     def print_to_user(self, message, message_type=DataRetrievalUI.Colors.TEXT_COLOR_DEFAULT):
         if message:
             color = DataRetrievalCLI.ColorsCLI.get_color_from_code(message_type)
@@ -48,6 +51,9 @@ class DataRetrievalCLI(DataRetrievalUI):
         """
         Defining colors for CLI
         """
+
+        def __init__(self):
+            super(DataRetrievalCLI.ColorsCLI, self).__init__()
 
         @staticmethod
         def __choose_code_color_OS__(color_code):

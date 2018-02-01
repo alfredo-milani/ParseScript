@@ -19,8 +19,61 @@ class InputData(object):
         :type verbose: bool
         :type gui: bool
         """
+
+        """
+        NOTE ABOUT PROPERTIES: a property allows you to abstract away internal implementation details 
+        (e.g. input_file is the public interface for __input_file). 
+        However, if you directly manipulate __input_file yourself, then your interface will not call setter
+        during initialization.
+        NOTE: _x = private attribute; __x = super-private attribute
+        """
         self.input_file = input_file
         self.output_dir = output_dir
         self.sheet_title = sheet_title
         self.verbose = verbose
         self.gui = gui
+
+    @property
+    def input_file(self):
+        return self.__input_file
+
+    @input_file.setter
+    def input_file(self, value):
+        # PyCharm inspection bug
+        self.__input_file = value
+
+    @property
+    def output_file(self):
+        return self.__output_file
+
+    @output_file.setter
+    def output_file(self, value):
+        # PyCharm inspection bug
+        self.__output_file = value
+
+    @property
+    def sheet_title(self):
+        return self.__sheet_title
+
+    @sheet_title.setter
+    def sheet_title(self, value):
+        # PyCharm inspection bug
+        self.__sheet_title = value
+
+    @property
+    def verbose(self):
+        return self.__verbose
+
+    @verbose.setter
+    def verbose(self, value):
+        # PyCharm inspection bug
+        self.__verbose = value
+
+    @property
+    def gui(self):
+        return self.__gui
+
+    @gui.setter
+    def gui(self, value):
+        # PyCharm inspection bug
+        self.__gui = value

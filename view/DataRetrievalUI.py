@@ -6,6 +6,9 @@ class DataRetrievalUI(object):
     Contract to interact with user
     """
 
+    def __init__(self):
+        pass
+
     class Colors(object):
         """
         Contract which define color of user interface
@@ -16,6 +19,9 @@ class DataRetrievalUI(object):
         TEXT_COLOR_ERROR = -1
         TEXT_COLOR_SUCCESS = 1
         TEXT_COLOR_START_OPERATION = 2
+
+        def __init__(self):
+            pass
 
         @staticmethod
         @abstractmethod

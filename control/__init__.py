@@ -1,1 +1,3 @@
 from DataRetrievalController import DataRetrievalController
+from DataRetrievalGUIController import DataRetrievalGUIController
+from DataRetrievalCLIController import DataRetrievalCLIController

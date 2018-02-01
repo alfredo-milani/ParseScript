@@ -1,9 +1,4 @@
-import os
-import subprocess
-import sys
-
 import wx
-from pathlib import Path
 
 from constants import SystemConstants
 from view import DataRetrievalUI
@@ -24,18 +19,77 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
     APP_CLEAN_CONSOLE = 7
 
     def __init__(self, parent, title):
-        super(DataRetrievalGUI, self).__init__(parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition,
-                                               size=(900, 500))
+        super(DataRetrievalGUI, self).__init__(
+            parent,
+            id=wx.ID_ANY,
+            title=title,
+            pos=wx.DefaultPosition,
+            size=(900, 500)
+        )
 
         # Objects that will be used
-        self.user_console = None
-        self.edittextfile = None
-        self.edittextdirinput = None
-        self.edittextdiroutput = None
-        self.checkboxverbose = None
+        self.__user_console = None
+        self.__edittextfile = None
+        self.__edittextdirinput = None
+        self.__edittextdiroutput = None
+        self.__checkboxverbose = None
+        self.__controller_instance = None
         ###
         self.init_view()
         self.Centre()
+
+    @property
+    def user_console(self):
+        return self.__user_console
+
+    @user_console.setter
+    def user_console(self, value):
+        # PyCharm inspection bug
+        self.__user_console = value
+
+    @property
+    def edittextfile(self):
+        return self.__edittextfile
+
+    @edittextfile.setter
+    def edittextfile(self, value):
+        # PyCharm inspection bug
+        self.__edittextfile = value
+
+    @property
+    def edittextdirinput(self):
+        return self.__edittextdirinput
+
+    @edittextdirinput.setter
+    def edittextdirinput(self, value):
+        # PyCharm inspection bug
+        self.__edittextdirinput = value
+
+    @property
+    def edittextdiroutput(self):
+        return self.__edittextdiroutput
+
+    @edittextdiroutput.setter
+    def edittextdiroutput(self, value):
+        # PyCharm inspection bug
+        self.__edittextdiroutput = value
+
+    @property
+    def checkboxverbose(self):
+        return self.__user_console
+
+    @checkboxverbose.setter
+    def checkboxverbose(self, value):
+        # PyCharm inspection bug
+        self.__checkboxverbose = value
+
+    @property
+    def controller_instance(self):
+        return self.__controller_instance
+
+    @controller_instance.setter
+    def controller_instance(self, value):
+        self.__controller_instance = value
 
     def init_view(self):
         # CREATE PANEL
@@ -96,18 +150,18 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         inputboxpath = wx.BoxSizer(wx.VERTICAL)
 
         inputboxpathfileinput = wx.BoxSizer(wx.HORIZONTAL)
-        self.edittextfile = wx.TextCtrl(panel)
+        self.__edittextfile = wx.TextCtrl(panel)
         buttonfileinput = wx.Button(panel, label="...", size=(50, 10), id=DataRetrievalGUI.APP_SELECT_INPUT_FILE)
-        inputboxpathfileinput.Add(self.edittextfile, flag=wx.RIGHT, border=10, proportion=1)
+        inputboxpathfileinput.Add(self.__edittextfile, flag=wx.RIGHT, border=10, proportion=1)
         inputboxpathfileinput.Add(buttonfileinput, flag=wx.EXPAND)
 
         inputstatictextchoose = wx.StaticText(panel, label="OR")
         inputstatictextchoose.SetFont(font)
 
         inputboxpathdirinput = wx.BoxSizer(wx.HORIZONTAL)
-        self.edittextdirinput = wx.TextCtrl(panel)
+        self.__edittextdirinput = wx.TextCtrl(panel)
         buttondirinput = wx.Button(panel, label="...", size=(50, 10), id=DataRetrievalGUI.APP_SELECT_INPUT_DIR)
-        inputboxpathdirinput.Add(self.edittextdirinput, flag=wx.RIGHT, border=10, proportion=1)
+        inputboxpathdirinput.Add(self.__edittextdirinput, flag=wx.RIGHT, border=10, proportion=1)
         inputboxpathdirinput.Add(buttondirinput, flag=wx.EXPAND)
 
         inputboxpath.Add(inputboxpathfileinput, flag=wx.EXPAND)
@@ -130,11 +184,11 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
 
         outputstatictext = wx.StaticText(panel, label='Select output directory')
         outputstatictext.SetFont(font)
-        self.edittextdiroutput = wx.TextCtrl(panel)
+        self.__edittextdiroutput = wx.TextCtrl(panel)
         buttondiroutput = wx.Button(panel, label="...", size=(50, 10), id=DataRetrievalGUI.APP_SELECT_OUTPUT_DIR)
 
         outputbox.Add(outputstatictext, flag=wx.RIGHT, border=10)
-        outputbox.Add(self.edittextdiroutput, flag=wx.RIGHT, border=10, proportion=1)
+        outputbox.Add(self.__edittextdiroutput, flag=wx.RIGHT, border=10, proportion=1)
         outputbox.Add(buttondiroutput, flag=wx.EXPAND)
 
         mainbox.Add(outputbox, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
@@ -169,15 +223,15 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         buttoncleanconsole.SetFont(font)
         buttonshowfiles = wx.Button(panel, label="Files", id=DataRetrievalGUI.APP_SHOW_PARSED_FILES, size=(50, 30))
         buttonshowfiles.SetFont(font)
-        self.checkboxverbose = wx.CheckBox(panel, label="Verbose")
-        self.checkboxverbose.SetFont(font)
+        self.__checkboxverbose = wx.CheckBox(panel, label="Verbose")
+        self.__checkboxverbose.SetFont(font)
         statictextlogs = wx.StaticText(panel, label='Logs')
         font.SetPointSize(12)
         statictextlogs.SetFont(font)
 
         logbox.Add(buttoncleanconsole, flag=wx.ALIGN_CENTER_VERTICAL)
         logbox.Add(buttonshowfiles, flag=wx.ALIGN_CENTER_VERTICAL)
-        logbox.Add(self.checkboxverbose, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
+        logbox.Add(self.__checkboxverbose, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
         logbox.Add(statictextlogs, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
 
         mainbox.Add(logbox, border=10, flag=wx.ALL | wx.EXPAND)
@@ -195,7 +249,7 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
 
         global USER_CONSOLE
         USER_CONSOLE = edittextconsole
-        self.user_console = edittextconsole
+        self.__user_console = edittextconsole
 
         consolebox.Add(edittextconsole, proportion=1, flag=wx.EXPAND | wx.BOTTOM, border=5)
 
@@ -210,10 +264,21 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         panel.SetSizer(mainbox)
 
         # BINDINGS WIDGETS
-        self.Bind(wx.EVT_MENU, self.on_quit, id=DataRetrievalGUI.APP_EXIT)
-        self.Bind(wx.EVT_MENU, self.on_help, id=DataRetrievalGUI.APP_HELP_HINT)
-        self.Bind(wx.EVT_BUTTON, self.on_quit, id=DataRetrievalGUI.APP_EXIT)
-        self.Bind(wx.EVT_BUTTON, self.on_show_parsed_files, id=DataRetrievalGUI.APP_SHOW_PARSED_FILES)
+        self.Bind(
+            wx.EVT_MENU,
+            lambda event: self.__controller_instance.handle_quit(),
+            id=DataRetrievalGUI.APP_EXIT
+        )
+        self.Bind(
+            wx.EVT_MENU,
+            lambda event: self.__controller_instance.handle_help(),
+            id=DataRetrievalGUI.APP_HELP_HINT
+        )
+        self.Bind(
+            wx.EVT_BUTTON,
+            lambda event: self.__controller_instance.handle_quit(),
+            id=DataRetrievalGUI.APP_EXIT
+        )
         self.Bind(
             wx.EVT_BUTTON,
             lambda event: self.clear_console(),
@@ -223,79 +288,29 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_start(),
+            lambda event: self.__controller_instance.handle_start(),
             id=DataRetrievalGUI.APP_START
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_show_parsed_files(self.edittextdiroutput.GetValue()),
+            lambda event: self.__controller_instance.handle_show_files(self.__edittextdiroutput.GetValue()),
             id=DataRetrievalGUI.APP_SHOW_PARSED_FILES
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_filename(self.edittextfile),
+            lambda event: self.on_selected_filename(self.__edittextfile),
             id=DataRetrievalGUI.APP_SELECT_INPUT_FILE
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_directory(self.edittextdiroutput, "Select output directory"),
+            lambda event: self.on_selected_directory(self.__edittextdiroutput, "Select output directory"),
             id=DataRetrievalGUI.APP_SELECT_OUTPUT_DIR
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_directory(self.edittextdirinput, "Select input directory"),
+            lambda event: self.on_selected_directory(self.__edittextdirinput, "Select input directory"),
             id=DataRetrievalGUI.APP_SELECT_INPUT_DIR
         )
-
-    @staticmethod
-    def on_help(event):
-        event.Skip()
-        dial = wx.MessageDialog(None, SystemConstants.HELP_MSG, 'Help', wx.OK | wx.ICON_QUESTION)
-        dial.ShowModal()
-
-    def on_quit(self, event):
-        event.Skip()
-        self.Close()
-
-    def on_start(self):
-        input_file = self.edittextfile.GetValue()
-        input_dir = self.edittextdirinput.GetValue()
-        output_dir = self.edittextdiroutput.GetValue()
-        verbose = self.checkboxverbose.GetValue()
-
-        # CHECK INPUT
-        if input_file is None or len(input_file) == 0 or not Path(input_file).exists():
-            input_file = None
-
-        if input_dir is None or len(input_dir) == 0 or not Path(input_dir).exists():
-            input_dir = None
-
-        if input_file is None and input_dir is None:
-            self.alert_on_error("Error loading file: check if the input file exist!", "Wrong path")
-            return
-
-        # se esistono entrambi i path (input file e input directory), considero solo il path che punta ad una directory
-        if input_dir is not None:
-            input_file = input_dir
-
-        # CHECK OUTPUT
-        if output_dir is None or len(output_dir) == 0 or not Path(output_dir).exists():
-            output_dir = None
-
-        if output_dir is None:
-            self.alert_on_error("Error: check if the output location exist!", "Wrong path")
-            return
-
-        # START OPERATION
-        from control import DataRetrievalController
-        from model import InputData
-        input_data = InputData(input_file, output_dir, verbose=verbose, gui=True)
-        DataRetrievalController().manage_operation(input_data)
-
-    @staticmethod
-    def alert_on_error(message, windows_name):
-        dial = wx.MessageDialog(None, message, windows_name, wx.OK | wx.ICON_ERROR)
-        dial.ShowModal()
 
     @staticmethod
     def on_selected_filename(edittextfilename):
@@ -317,31 +332,14 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         if path is not None:
             edittextdirectory.SetValue(path)
 
-    def on_show_parsed_files(self, outputdirectory):
-        self.open_file(outputdirectory)
-
-    @staticmethod
-    def open_file(outputdirectory):
-        """
-        Open file manager with root @filename for the correct OS
-        :type outputdirectory: str
-        :rtype: None
-        """
-        if sys.platform == "win32":
-            os.startfile(outputdirectory)
-        else:
-            opener = "open" if sys.platform == "darwin" else "xdg-open"
-            subprocess.call([opener, outputdirectory])
+    def print_to_user(self, message, message_type=DataRetrievalUI.Colors.TEXT_COLOR_DEFAULT):
+        if self.__user_console and message:
+            self.__user_console.SetForegroundColour(DataRetrievalGUI.ColorsGUI.get_color_from_code(message_type))
+            self.__user_console.AppendText(message + "\n")
+            self.__user_console.SetForegroundColour(DataRetrievalGUI.ColorsGUI.get_default_color())
 
     def clear_console(self):
-        if self.user_console:
-            self.user_console.SetValue("")
-
-    def print_to_user(self, message, message_type=DataRetrievalUI.Colors.TEXT_COLOR_DEFAULT):
-        if self.user_console and message:
-            self.user_console.SetForegroundColour(DataRetrievalGUI.ColorsGUI.get_color_from_code(message_type))
-            self.user_console.AppendText(message + "\n")
-            self.user_console.SetForegroundColour(DataRetrievalGUI.ColorsGUI.get_default_color())
+        self.__controller_instance.handle_clear()
 
     def get_user_input_bool(self, question="", format_answere=""):
         dlg = wx.MessageDialog(None, question, style=wx.YES_NO | wx.ICON_QUESTION)
@@ -367,6 +365,9 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
             CONSOLE_START_OPERATION_COLOR,
             CONSOLE_WARNING_COLOR
         ]
+
+        def __init__(self):
+            super(DataRetrievalGUI.ColorsGUI, self).__init__()
 
         @staticmethod
         def get_color_from_code(type_code):

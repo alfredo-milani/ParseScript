@@ -10,7 +10,7 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 from pathlib import Path
 
 import constants
-from constants import APP_NAME, SystemConstants, FormsiteConstants
+from constants import SystemConstants, FormsiteConstants
 from model import *
 from utils import *
 from view import DataRetrievalUI
@@ -21,26 +21,8 @@ class DataRetrievalController(object):
     Controllore per le view che estendono l'interfaccia in view/DataRetrievalUI
     """
 
-    @staticmethod
-    def launch_ui(input_data):
-        """
-        Start user interface depending on user input
-        :type input_data: InputData
-        :rtype: None
-        """
-        if input_data.__getattribute__("gui"):
-            import wx
-            from view import DataRetrievalGUI
-
-            graphic_interface = wx.App(False)
-            SystemConstants.UI_CONSOLE = DataRetrievalGUI(None, APP_NAME)
-            SystemConstants.UI_CONSOLE.Show(True)
-            graphic_interface.MainLoop()
-        else:
-            from view import DataRetrievalCLI
-
-            SystemConstants.UI_CONSOLE = DataRetrievalCLI()
-            DataRetrievalController.manage_operation(input_data)
+    def __init__(self):
+        pass
 
     @staticmethod
     def manage_operation(input_data):
@@ -49,10 +31,10 @@ class DataRetrievalController(object):
         :type input_data: InputData
         :rtype: None
         """
-        input_file = input_data.__getattribute__("input_file")
-        output_dir = input_data.__getattribute__("output_dir")
-        sheet_title = input_data.__getattribute__("sheet_title")
-        verbose = input_data.__getattribute__("verbose")
+        input_file = input_data.input_file
+        output_dir = input_data.output_dir
+        sheet_title = input_data.sheet_title
+        verbose = input_data.verbose
 
         SystemConstants.UI_CONSOLE.print_to_user(
             "<<<--- STARTING OPERATION --->>>",
@@ -67,11 +49,11 @@ class DataRetrievalController(object):
                     "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, SystemConstants.TMP_PATH),
                     DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                 )
-                input_data.__setattr__("output_dir", SystemConstants.TMP_PATH)
-                output_dir = input_data.__getattribute__("output_dir")
+                input_data.output_dir = SystemConstants.TMP_PATH
+                output_dir = input_data.output_dir
         else:
-            input_data.__setattr__("output_dir", SystemConstants.TMP_PATH)
-            output_dir = input_data.__getattribute__("output_dir")
+            input_data.output_dir = SystemConstants.TMP_PATH
+            output_dir = input_data.output_dir
         SystemConstants.UI_CONSOLE.print_to_user("Output directory: " + os.path.abspath(output_dir))
 
         if not Path(input_file).exists():
@@ -120,20 +102,6 @@ class DataRetrievalController(object):
             "\n<<<--- OPERATION COMPLETED --->>>\n",
             DataRetrievalUI.Colors.TEXT_COLOR_SUCCESS
         )
-
-    @staticmethod
-    def replace_unsupported_char(string, chars_to_check, selected_char):
-        """
-        Replace @chars_to_check with @selected_char in @string
-        :type string: str
-        :type chars_to_check: list
-        :type selected_char: str
-        :rtype: str
-        """
-        for char in chars_to_check:
-            string = string.replace(char, selected_char)
-
-        return string
 
     @staticmethod
     def count_users(data, user_delim):
@@ -210,7 +178,7 @@ class DataRetrievalController(object):
         # Create name for new sheet
         if sheet_title is None or len(sheet_title) == 0:
             text_to_split = os.path.basename(input_file).split('.')[0]
-            text_to_split = DataRetrievalController.replace_unsupported_char(str(text_to_split), ['-', ' '], '_')
+            text_to_split = Common.replace_unsupported_char(str(text_to_split), ['-', ' '], '_')
             month_list = text_to_split.split("_")
             try:
                 if len(month_list) < 3:

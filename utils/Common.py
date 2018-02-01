@@ -7,6 +7,7 @@ from constants import SystemConstants
 
 
 class Common(object):
+
     @staticmethod
     def get_program_folder():
         """
@@ -91,3 +92,17 @@ class Common(object):
 
         from model import InputData
         return InputData(input_file, output_dir, sheet_title, verbose, gui)
+
+    @staticmethod
+    def replace_unsupported_char(string, chars_to_check, selected_char):
+        """
+        Replace @chars_to_check with @selected_char in @string
+        :type string: str
+        :type chars_to_check: list
+        :type selected_char: str
+        :rtype: str
+        """
+        for char in chars_to_check:
+            string = string.replace(char, selected_char)
+
+        return string

@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================================
 # Titolo:           launcher_linux.sh
-# Descrizione:      Launcher di DataRetrieval.py con interfaccia grafica
+# Descrizione:      Launcher di DataRetrievalUI.py con interfaccia grafica
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             sab 21 ott 2017, 15.52.00, CEST
 # Licenza:          MIT License

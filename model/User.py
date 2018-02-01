@@ -28,31 +28,92 @@ class User(object):
         self.scores = scores
         self.date = date
 
-        self.data_list = [
-            self.name,
-            self.surname,
-            self.email,
-            self.ntel,
-            self.scores,
-            self.date
-        ]
+    @property
+    def name(self):
+        return self.__name
 
-    def __score_from_list_to_string__(self):
+    @name.setter
+    def name(self, value):
+        # PyCharm inspection bug
+        self.__name = value
+
+    @property
+    def surname(self):
+        return self.__surname
+
+    @surname.setter
+    def surname(self, value):
+        # PyCharm inspection bug
+        self.__surname = value
+
+    @property
+    def email(self):
+        return self.__email
+
+    @email.setter
+    def email(self, value):
+        # PyCharm inspection bug
+        self.__email = value
+
+    @property
+    def ntel(self):
+        return self.__ntel
+
+    @ntel.setter
+    def ntel(self, value):
+        if not value.isdigit():
+            # raise ValueError("The phone number can't accept characters!")
+            # print "Phone number contains character: %s" % value
+            pass
+
+        # PyCharm inspection bug
+        self.__ntel = value
+
+    @property
+    def scores(self):
+        return self.__scores
+
+    @scores.setter
+    def scores(self, value):
+        # PyCharm inspection bug
+        self.__scores = value
+
+    @property
+    def date(self):
+        return self.__date
+
+    @date.setter
+    def date(self, value):
+        # PyCharm inspection bug
+        self.__date = value
+
+    def __score_from_list_to_string(self):
         """
         Per convertire la lista dei punti in stringa
         :rtype: str
         """
-        if not self.scores or len(self.scores) == 0:
+        if not self.__scores or len(self.__scores) == 0:
             return "[]"
 
-        return "[" + ", ".join(str(x) for x in self.scores) + "]"
+        return "[" + ", ".join(str(x) for x in self.__scores) + "]"
+
+    def get_list_from_instance(self):
+        """
+        Per convertire l'istanza di User in lista contenente i dati in formato stringa
+        :rtype: list
+        """
+        return [
+            self.__name,
+            self.__surname,
+            self.__ntel,
+            self.__email,
+            self.__score_from_list_to_string(),
+            self.__date
+        ]
 
     def __str__(self):
-        if self.data_list:
-            return self.name + ", " + self.surname + ", " + self.email + ", " + \
-                   self.ntel + ", " + self.__score_from_list_to_string__() + ", " + self.date
-
-        return "Empty User"
+        return self.__name + ", " + self.__surname + ", " + self.__email + ", " + \
+               self.__ntel + ", " + self.__score_from_list_to_string() + ", " + self.__date
 
     # Called if: User + "string"
     def __add__(self, other):
@@ -61,10 +122,3 @@ class User(object):
     # Called if: "string" + User
     def __radd__(self, other):
         return other + str(self)
-
-    def get_list_from_instance(self):
-        """
-        Per convertire l'istanza di User in lista contenente i dati in formato stringa
-        :rtype: list
-        """
-        return [self.name, self.surname, self.ntel, self.email, self.__score_from_list_to_string__(), self.date]
