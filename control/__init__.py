@@ -1,3 +1,4 @@
+# DataRetrievalController must be the first import
 from DataRetrievalController import DataRetrievalController
-from DataRetrievalGUIController import DataRetrievalGUIController
 from DataRetrievalCLIController import DataRetrievalCLIController
+from DataRetrievalGUIController import DataRetrievalGUIController

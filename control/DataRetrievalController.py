@@ -587,43 +587,43 @@ class DataRetrievalController(object):
                 if value is not None:
                     header_row.append(value.encode(Converter.ENCODE_UTF_8, "ignore"))
 
-            # Get names
+            # Get names column
             names_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
                 DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_NAME)
             )
 
-            # Get surnames
+            # Get surnames column
             surnames_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
                 DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_SURNAME)
             )
 
-            # Get email
+            # Get email column
             email_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
                 DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_EMAIL)
             )
 
-            # Get ntel
+            # Get ntel column
             ntel_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
                 DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_NTEL)
             )
 
-            # Get status
+            # Get status column
             status_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
                 DataRetrievalController.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY)
             )
 
-            # Get end date
+            # Get end date column
             date_list = DataRetrievalController.get_column_from_xlsx(
                 worksheet,
                 DataRetrievalController.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY_DATE)
             )
 
-            # Get score
+            # Get score column
             score_list = [
                 DataRetrievalController.get_column_from_xlsx(
                     worksheet,

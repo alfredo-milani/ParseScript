@@ -76,7 +76,7 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
 
     @property
     def checkboxverbose(self):
-        return self.__user_console
+        return self.__checkboxverbose
 
     @checkboxverbose.setter
     def checkboxverbose(self, value):

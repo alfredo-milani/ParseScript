@@ -4,7 +4,6 @@ import sys
 
 import wx
 
-from constants import SystemConstants
 from control import DataRetrievalController
 from view import DataRetrievalGUI
 
@@ -78,6 +77,7 @@ class DataRetrievalGUIController(DataRetrievalController):
 
     @staticmethod
     def handle_help():
+        from constants import SystemConstants
         dial = wx.MessageDialog(
             None,
             SystemConstants.HELP_MSG,
