@@ -75,6 +75,11 @@ class User(object):
 
     @scores.setter
     def scores(self, value):
+        if not isinstance(value, list):
+            raise TypeError(
+                "Score value must be a string! Current value: " + str(value) + " Of type: " + str(type(value))
+            )
+
         # PyCharm inspection bug
         self.__scores = value
 
@@ -92,10 +97,21 @@ class User(object):
         Per convertire la lista dei punti in stringa
         :rtype: str
         """
-        if not self.__scores or len(self.__scores) == 0:
+        try:
+            return "[" + ", ".join(str(x) for x in self.__scores) + "]"
+        except TypeError:
             return "[]"
 
-        return "[" + ", ".join(str(x) for x in self.__scores) + "]"
+    def __get_first_answere(self):
+        """
+        Ritorna il numero della prima risposta (in formato stringa) effettuata dall'utente
+        Se l'utente non ha risposto ad alcuna domanda ritorna il valore -1
+        :rtype: str
+        """
+        try:
+            return str(self.__scores[0])
+        except IndexError:
+            return str()
 
     def get_list_from_instance(self):
         """
@@ -112,20 +128,13 @@ class User(object):
             self.__get_first_answere()
         ]
 
-    def __get_first_answere(self):
-        """
-        Ritorna il numero della prima risposta (in formato stringa) effettuata dall'utente
-        Se l'utente non ha risposto ad alcuna domanda ritorna il valore -1
-        :rtype: str
-        """
-        try:
-            return str(self.__scores[0])
-        except IndexError:
-            return str()
-
     def __str__(self):
-        return self.__name + ", " + self.__surname + ", " + self.__email + ", " + \
-               self.__ntel + ", " + self.__score_from_list_to_string() + ", " + self.__date
+        return self.__name + ", " + \
+               self.__surname + ", " + \
+               self.__email + ", " + \
+               self.__ntel + ", " + \
+               self.__score_from_list_to_string() + ", " + \
+               self.__date
 
     # Called if: User + "string"
     def __add__(self, other):
