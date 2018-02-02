@@ -51,11 +51,14 @@ STATUS_SURVEY_DATE = "Date"
 
 
 HEADER_ROW = [
+    "Data",
     "Nome",
     "Cognome",
     "Telefono",
     "Email",
-    "Scores",
-    "Data",
-    "Note"
+    "Score",
+    "Domanda",
+    "Note",
+    "Chiamato il",
+    "Esito"
 ]

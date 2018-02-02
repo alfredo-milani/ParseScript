@@ -103,13 +103,25 @@ class User(object):
         :rtype: list
         """
         return [
+            self.__date,
             self.__name,
             self.__surname,
             self.__ntel,
             self.__email,
             self.__score_from_list_to_string(),
-            self.__date
+            self.__get_first_answere()
         ]
+
+    def __get_first_answere(self):
+        """
+        Ritorna il numero della prima risposta (in formato stringa) effettuata dall'utente
+        Se l'utente non ha risposto ad alcuna domanda ritorna il valore -1
+        :rtype: str
+        """
+        try:
+            return str(self.__scores[0])
+        except IndexError:
+            return str()
 
     def __str__(self):
         return self.__name + ", " + self.__surname + ", " + self.__email + ", " + \

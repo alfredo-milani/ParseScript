@@ -25,85 +25,6 @@ class DataRetrievalController(object):
         pass
 
     @staticmethod
-    def manage_operation(input_data):
-        """
-        Launch operation depending on user input
-        :type input_data: InputData
-        :rtype: None
-        """
-        input_file = input_data.input_file
-        output_dir = input_data.output_dir
-        sheet_title = input_data.sheet_title
-        verbose = input_data.verbose
-
-        SystemConstants.UI_CONSOLE.print_to_user(
-            "<<<--- STARTING OPERATION --->>>",
-            DataRetrievalUI.Colors.TEXT_COLOR_START_OPERATION
-        )
-
-        if len(input_file) != 0:
-            SystemConstants.UI_CONSOLE.print_to_user("Input: " + os.path.abspath(input_file))
-        if len(output_dir) != 0:
-            if not Path(output_dir).is_dir():
-                SystemConstants.UI_CONSOLE.print_to_user(
-                    "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, SystemConstants.TMP_PATH),
-                    DataRetrievalUI.Colors.TEXT_COLOR_WARNING
-                )
-                input_data.output_dir = SystemConstants.TMP_PATH
-                output_dir = input_data.output_dir
-        else:
-            input_data.output_dir = SystemConstants.TMP_PATH
-            output_dir = input_data.output_dir
-        SystemConstants.UI_CONSOLE.print_to_user("Output directory: " + os.path.abspath(output_dir))
-
-        if not Path(input_file).exists():
-            SystemConstants.UI_CONSOLE.print_to_user(
-                "ERROR: %s not exist!" % input_file,
-                DataRetrievalUI.Colors.TEXT_COLOR_ERROR
-            )
-            sys.exit(SystemConstants.EXIT_ERR_ARG)
-
-        if Path(input_file).is_dir():
-            list_of_files = [
-                input_file + Converter.split_char() + f
-                for f in os.listdir(input_file)
-                if isfile(input_file + Converter.split_char() + f)
-            ]
-        elif Path(input_file).is_file():
-            list_of_files = [input_file]
-        else:
-            SystemConstants.UI_CONSOLE.print_to_user(
-                "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file,
-                DataRetrievalUI.Colors.TEXT_COLOR_ERROR
-            )
-            sys.exit(SystemConstants.EXIT_ERR_ARG)
-
-        SystemConstants.UI_CONSOLE.print_to_user("File that will be converted:")
-        for el in list_of_files:
-            SystemConstants.UI_CONSOLE.print_to_user("\t> %s" % el)
-
-        for el in list_of_files:
-            SystemConstants.UI_CONSOLE.print_to_user("\n>>> Parsing file: %s" % el)
-            if verbose:
-                response = SystemConstants.UI_CONSOLE.get_user_input_bool(
-                    "Do you want to continue?",
-                    "Type [Yes] / [No]"
-                )
-
-                if response:
-                    DataRetrievalController.perform_operation(el, output_dir, sheet_title)
-                else:
-                    SystemConstants.UI_CONSOLE.print_to_user("Skipping...")
-                    continue
-            else:
-                DataRetrievalController.perform_operation(el, output_dir, sheet_title)
-
-        SystemConstants.UI_CONSOLE.print_to_user(
-            "\n<<<--- OPERATION COMPLETED --->>>\n",
-            DataRetrievalUI.Colors.TEXT_COLOR_SUCCESS
-        )
-
-    @staticmethod
     def count_users(data, user_delim):
         """
         Count occurences' number of @user_delim in @data
@@ -194,7 +115,7 @@ class DataRetrievalController(object):
             ws.append(user.get_list_from_instance())
 
         # Adding table to sheet
-        tab = Table(displayName="Table1", ref="A1:F" + str(len(list_of_users) + 1))
+        tab = Table(displayName="Data", ref="A1:J" + str(len(list_of_users) + 1))
         # Add a default style with striped rows and banded columns
         style = TableStyleInfo(
             name="TableStyleMedium9",
@@ -225,6 +146,85 @@ class DataRetrievalController(object):
 
         wb.save(file_to_save)
         SystemConstants.UI_CONSOLE.print_to_user("<<< File parsed >>>")
+
+    @staticmethod
+    def manage_operation(input_data):
+        """
+        Launch operation depending on user input
+        :type input_data: InputData
+        :rtype: None
+        """
+        input_file = input_data.input_file
+        output_dir = input_data.output_dir
+        sheet_title = input_data.sheet_title
+        verbose = input_data.verbose
+
+        SystemConstants.UI_CONSOLE.print_to_user(
+            "<<<--- STARTING OPERATION --->>>",
+            DataRetrievalUI.Colors.TEXT_COLOR_START_OPERATION
+        )
+
+        if len(input_file) != 0:
+            SystemConstants.UI_CONSOLE.print_to_user("Input: " + os.path.abspath(input_file))
+        if len(output_dir) != 0:
+            if not Path(output_dir).is_dir():
+                SystemConstants.UI_CONSOLE.print_to_user(
+                    "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, SystemConstants.TMP_PATH),
+                    DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                )
+                input_data.output_dir = SystemConstants.TMP_PATH
+                output_dir = input_data.output_dir
+        else:
+            input_data.output_dir = SystemConstants.TMP_PATH
+            output_dir = input_data.output_dir
+        SystemConstants.UI_CONSOLE.print_to_user("Output directory: " + os.path.abspath(output_dir))
+
+        if not Path(input_file).exists():
+            SystemConstants.UI_CONSOLE.print_to_user(
+                "ERROR: %s not exist!" % input_file,
+                DataRetrievalUI.Colors.TEXT_COLOR_ERROR
+            )
+            sys.exit(SystemConstants.EXIT_ERR_ARG)
+
+        if Path(input_file).is_dir():
+            list_of_files = [
+                input_file + Converter.split_char() + f
+                for f in os.listdir(input_file)
+                if isfile(input_file + Converter.split_char() + f)
+            ]
+        elif Path(input_file).is_file():
+            list_of_files = [input_file]
+        else:
+            SystemConstants.UI_CONSOLE.print_to_user(
+                "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file,
+                DataRetrievalUI.Colors.TEXT_COLOR_ERROR
+            )
+            sys.exit(SystemConstants.EXIT_ERR_ARG)
+
+        SystemConstants.UI_CONSOLE.print_to_user("File that will be converted:")
+        for el in list_of_files:
+            SystemConstants.UI_CONSOLE.print_to_user("\t> %s" % el)
+
+        for el in list_of_files:
+            SystemConstants.UI_CONSOLE.print_to_user("\n>>> Parsing file: %s" % el)
+            if verbose:
+                response = SystemConstants.UI_CONSOLE.get_user_input_bool(
+                    "Do you want to continue?",
+                    "Type [Yes] / [No]"
+                )
+
+                if response:
+                    DataRetrievalController.perform_operation(el, output_dir, sheet_title)
+                else:
+                    SystemConstants.UI_CONSOLE.print_to_user("Skipping...")
+                    continue
+            else:
+                DataRetrievalController.perform_operation(el, output_dir, sheet_title)
+
+        SystemConstants.UI_CONSOLE.print_to_user(
+            "\n<<<--- OPERATION COMPLETED --->>>\n",
+            DataRetrievalUI.Colors.TEXT_COLOR_SUCCESS
+        )
 
     @staticmethod
     def check_match(to_match, list_to_check):
