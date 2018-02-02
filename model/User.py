@@ -77,7 +77,8 @@ class User(object):
     def scores(self, value):
         if not isinstance(value, list):
             raise TypeError(
-                "Score value must be a string! Current value: " + str(value) + " Of type: " + str(type(value))
+                "Score value must be a string! Current value: %s of type: %s" %
+                (str(value), str(type(value)))
             )
 
         # PyCharm inspection bug
@@ -97,15 +98,12 @@ class User(object):
         Per convertire la lista dei punti in stringa
         :rtype: str
         """
-        try:
-            return "[" + ", ".join(str(x) for x in self.__scores) + "]"
-        except TypeError:
-            return "[]"
+        return "[" + ", ".join(str(x) for x in self.__scores) + "]"
 
     def __get_first_answere(self):
         """
         Ritorna il numero della prima risposta (in formato stringa) effettuata dall'utente
-        Se l'utente non ha risposto ad alcuna domanda ritorna il valore -1
+        Se l'utente non ha risposto ad alcuna domanda ritorna la stringa vuota
         :rtype: str
         """
         try:
