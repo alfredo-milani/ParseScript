@@ -5,7 +5,7 @@
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             ven 20 ott 2017, 19.36.00, CEST
 # Licenza:          MIT License
-# Versione:         2.7.0
+# Versione:         2.7.2
 # Note:             --/--
 # Versione bash:    4.4.12(1)-release
 # ============================================================================

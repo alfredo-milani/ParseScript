@@ -4,6 +4,7 @@ import sys
 
 import wx
 
+from constants import SystemConstants
 from control import DataRetrievalController
 from view import DataRetrievalGUI
 
@@ -77,14 +78,34 @@ class DataRetrievalGUIController(DataRetrievalController):
 
     @staticmethod
     def handle_help():
-        from constants import SystemConstants
         dial = wx.MessageDialog(
             None,
             SystemConstants.HELP_MSG,
-            'Help',
+            "Help",
             wx.OK | wx.ICON_QUESTION
         )
         dial.ShowModal()
+
+    @staticmethod
+    def handle_filename_selected(edittext, message):
+        path = wx.FileSelector(
+            message=message,
+            wildcard="File (*.txt,*.pdf,*.docx,*.xlsx)|*.txt;*.pdf;*.docx;*.xlsx",
+            default_path=SystemConstants.APP_ABS_PATH
+        )
+
+        if path is not None:
+            edittext.SetValue(path)
+
+    @staticmethod
+    def handle_directory_selected(edittext, message):
+        path = wx.DirSelector(
+            message=message,
+            default_path=SystemConstants.APP_ABS_PATH
+        )
+
+        if path is not None:
+            edittext.SetValue(path)
 
     @staticmethod
     def alert_on_error(message, windows_name):

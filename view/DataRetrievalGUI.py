@@ -298,39 +298,28 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_filename(self.__edittextfile),
+            lambda event: self.__controller_instance.handle_filename_selected(
+                self.__edittextfile,
+                "Select file to parse"
+            ),
             id=DataRetrievalGUI.APP_SELECT_INPUT_FILE
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_directory(self.__edittextdiroutput, "Select output directory"),
+            lambda event: self.__controller_instance.handle_directory_selected(
+                self.__edittextdiroutput,
+                "Select output directory"
+            ),
             id=DataRetrievalGUI.APP_SELECT_OUTPUT_DIR
         )
         self.Bind(
             wx.EVT_BUTTON,
-            lambda event: self.on_selected_directory(self.__edittextdirinput, "Select input directory"),
+            lambda event: self.__controller_instance.handle_directory_selected(
+                self.__edittextdirinput,
+                "Select input directory"
+            ),
             id=DataRetrievalGUI.APP_SELECT_INPUT_DIR
         )
-
-    @staticmethod
-    def on_selected_filename(edittextfilename):
-        path = wx.FileSelector(
-            message="Select file to parse",
-            wildcard="File (*.txt,*.pdf,*.docx,*.xlsx)|*.txt;*.pdf;*.docx;*.xlsx",
-            default_path=SystemConstants.APP_ABS_PATH
-        )
-        if path is not None:
-            edittextfilename.SetValue(path)
-
-    @staticmethod
-    def on_selected_directory(edittextdirectory, message):
-        path = wx.DirSelector(
-            message=message,
-            default_path=SystemConstants.APP_ABS_PATH
-        )
-
-        if path is not None:
-            edittextdirectory.SetValue(path)
 
     def print_to_user(self, message, message_type=DataRetrievalUI.Colors.TEXT_COLOR_DEFAULT):
         if self.__user_console and message:
