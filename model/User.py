@@ -114,6 +114,7 @@ class User(object):
     def get_list_from_instance(self):
         """
         Per convertire l'istanza di User in lista contenente i dati in formato stringa
+        in accordo con l'attributo constants.FormsiteConstants.HEADER_ROW
         :rtype: list
         """
         return [
