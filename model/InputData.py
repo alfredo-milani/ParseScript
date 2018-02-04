@@ -43,13 +43,13 @@ class InputData(object):
         self.__input_file = value
 
     @property
-    def output_file(self):
-        return self.__output_file
+    def output_dir(self):
+        return self.__output_dir
 
-    @output_file.setter
-    def output_file(self, value):
+    @output_dir.setter
+    def output_dir(self, value):
         # PyCharm inspection bug
-        self.__output_file = value
+        self.__output_dir = value
 
     @property
     def sheet_title(self):

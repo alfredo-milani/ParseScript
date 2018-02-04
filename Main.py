@@ -28,10 +28,8 @@ if __name__ == "__main__":
 
         graphic_interface = wx.App(False)
 
-        gui_view = DataRetrievalGUI(None, APP_NAME)
-        controller = DataRetrievalGUIController()
-        controller.view_instance = gui_view
-        gui_view.controller_instance = controller
+        gui_view, controller = DataRetrievalGUI(None, APP_NAME), DataRetrievalGUIController()
+        controller.view_instance, gui_view.controller_instance = gui_view, controller
 
         SystemConstants.UI_CONSOLE = controller.view_instance
         SystemConstants.UI_CONSOLE.Show(True)
