@@ -70,7 +70,7 @@ class DataRetrievalController(object):
             # sys.exit(EXIT_ERR_FILE)
         elif content == Converter.EXT_XLSX:
             SystemConstants.UI_CONSOLE.print_to_user(
-                "Note: *.xlsx file will be parsed with custom procedure",
+                "Note: *.xlsx file will be parsed with custom procedure\n",
                 DataRetrievalUI.Colors.TEXT_COLOR_WARNING
             )
 
@@ -141,7 +141,7 @@ class DataRetrievalController(object):
 
             if not response:
                 # TODO potrebbe ancora esistere un file con lo stesso nome -> genera codice da funzione hash
-                file_to_save = file_to_save[:-len(Converter.EXT_XLSX)] + "_" +\
+                file_to_save = file_to_save[:-len(Converter.EXT_XLSX)] + "_" + \
                                str(random.randint(0, 100000)) + Converter.EXT_XLSX
 
         wb.save(file_to_save)
@@ -240,6 +240,7 @@ class DataRetrievalController(object):
 
         return -1
 
+    # noinspection PyArgumentList
     @staticmethod
     def parse_users_list_v1(content):
         """
@@ -329,6 +330,7 @@ class DataRetrievalController(object):
 
         return users_list
 
+    # noinspection PyArgumentList
     @staticmethod
     def parse_users_list_v2(content):
         """
@@ -651,16 +653,23 @@ class DataRetrievalController(object):
                 )
             ]
 
-            for i in range(len(status_list)):
-                # Get only users which completed the survey
-                if status_list[i] == FormsiteConstants.STATUS_SURVEY_COMPLETE:
-                    users.append(User(
-                        names_list[i],
-                        email_list[i],
-                        surnames_list[i],
-                        ntel_list[i],
-                        DataRetrievalController.get_score_from_column_xlsx(i, score_list),
-                        date_list[i]
-                    ))
+            try:
+                for i in range(len(status_list)):
+                    # Get only users which completed the survey
+                    if status_list[i] == FormsiteConstants.STATUS_SURVEY_COMPLETE:
+                        users.append(User(
+                            names_list[i],
+                            email_list[i],
+                            surnames_list[i],
+                            ntel_list[i],
+                            DataRetrievalController.get_score_from_column_xlsx(i, score_list),
+                            date_list[i]
+                        ))
+            except IndexError:
+                SystemConstants.UI_CONSOLE.print_to_user(
+                    "WARNING: Error parsing users at sheet: %s. Probably the document is badly formatted\n" %
+                    str(sheet),
+                    message_type=DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                )
 
         return users
