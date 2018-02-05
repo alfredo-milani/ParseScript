@@ -77,7 +77,7 @@ class User(object):
     def scores(self, value):
         if not isinstance(value, list):
             raise TypeError(
-                "Score value must be a string! Current value: %s of type: %s" %
+                "Score value must be a list of integers! Current value: %s of type: %s" %
                 (str(value), str(type(value)))
             )
 
@@ -92,13 +92,6 @@ class User(object):
     def date(self, value):
         # PyCharm inspection bug
         self.__date = value
-
-    def __score_from_list_to_string(self):
-        """
-        Per convertire la lista dei punti in stringa
-        :rtype: str
-        """
-        return "[" + ", ".join(str(x) for x in self.__scores) + "]"
 
     def __get_first_answere(self):
         """
@@ -123,7 +116,7 @@ class User(object):
             self.__surname,
             self.__ntel,
             self.__email,
-            self.__score_from_list_to_string(),
+            str(self.__scores),
             self.__get_first_answere()
         ]
 
@@ -132,7 +125,7 @@ class User(object):
                self.__surname + ", " + \
                self.__email + ", " + \
                self.__ntel + ", " + \
-               self.__score_from_list_to_string() + ", " + \
+               str(self.__scores) + ", " + \
                self.__date
 
     # Called if: User + "string"
