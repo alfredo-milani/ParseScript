@@ -10,8 +10,6 @@ TMP_PATH = ""
 APP_ABS_PATH = ""
 
 
-UI_CONSOLE = None
-
 APP_NAME = "Form Data Retrieval"
 HELP_MSG = "Con questo tool è possibile fare il parsing di file in formato: *.pdf, *.txt, *.xlsx o *.docx.\n" \
            "Si può scegliere di parsare un solo file o di parsare i files contenuti in una specifica directory"

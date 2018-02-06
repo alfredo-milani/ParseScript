@@ -5,13 +5,13 @@
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             ven 20 ott 2017, 19.36.00, CEST
 # Licenza:          MIT License
-# Versione:         2.7.2
+# Versione:         2.7.5
 # Note:             --/--
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
 import sys
 
-from constants import SystemConstants, APP_NAME
+from constants import APP_NAME
 from utils import Common
 
 if __name__ == "__main__":
@@ -31,15 +31,13 @@ if __name__ == "__main__":
         gui_view, controller = DataRetrievalGUI(None, APP_NAME), DataRetrievalGUIController()
         controller.view_instance, gui_view.controller_instance = gui_view, controller
 
-        SystemConstants.UI_CONSOLE = controller.view_instance
-        SystemConstants.UI_CONSOLE.Show(True)
+        gui_view.Show(True)
         graphic_interface.MainLoop()
     else:
         from view import DataRetrievalCLI
         from control import DataRetrievalCLIController
 
-        cli_view = DataRetrievalCLI()
-        controller = DataRetrievalCLIController()
+        cli_view, controller = DataRetrievalCLI(), DataRetrievalCLIController()
+        controller.view_instance = cli_view
 
-        SystemConstants.UI_CONSOLE = cli_view
-        controller.manage_operation(params)
+        controller.handle_start(params)

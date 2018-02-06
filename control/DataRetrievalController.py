@@ -22,7 +22,19 @@ class DataRetrievalController(object):
     """
 
     def __init__(self):
-        pass
+        # View reference
+        self.__view_instance = None
+
+    @property
+    def view_instance(self):
+        return self.__view_instance
+
+    @view_instance.setter
+    def view_instance(self, value):
+        if not isinstance(value, DataRetrievalUI):
+            raise TypeError("Incorrect instance")
+
+        self.__view_instance = value
 
     @staticmethod
     def count_users(data, user_delim):
@@ -39,8 +51,7 @@ class DataRetrievalController(object):
 
         return n
 
-    @staticmethod
-    def perform_operation(input_file, output_dir, sheet_title=""):
+    def perform_operation(self, input_file, output_dir, sheet_title=""):
         """
         Perform parsing operation of file @input_file setting sheet title as @sheet_title and
         store the result in @output_dir directory
@@ -51,7 +62,7 @@ class DataRetrievalController(object):
         """
         file_to_parse = Path(input_file)
         if not file_to_parse.is_file():
-            SystemConstants.UI_CONSOLE.print_to_user(
+            self.__view_instance.print_to_user(
                 "File '%s' not found" % file_to_parse,
                 DataRetrievalUI.Colors.TEXT_COLOR_ERROR
             )
@@ -62,30 +73,30 @@ class DataRetrievalController(object):
         content = Converter.document_to_text(input_file)
 
         if content is None:
-            SystemConstants.UI_CONSOLE.print_to_user(
+            self.__view_instance.print_to_user(
                 "!!! Unknown format for file: %s. Skipping... !!!" % input_file,
                 DataRetrievalUI.Colors.TEXT_COLOR_WARNING
             )
             return
             # sys.exit(EXIT_ERR_FILE)
         elif content == Converter.EXT_XLSX:
-            SystemConstants.UI_CONSOLE.print_to_user(
+            self.__view_instance.print_to_user(
                 "Note: *.xlsx file will be parsed with custom procedure\n",
                 DataRetrievalUI.Colors.TEXT_COLOR_WARNING
             )
 
-            list_of_users = DataRetrievalController.parse_users_list_from_xlsx(input_file)
+            list_of_users = self.parse_users_list_from_xlsx(input_file)
         else:
             # NOTE: filter returns a list in Python 2 and a generator in Python 3
             # False-ish value include: False, None, 0, '', [], () and all others empty containers
             data_list = filter(None, content.split("\n"))
 
-            raw_data_num_users = DataRetrievalController.count_users(data_list, constants.NEW_USER)
+            raw_data_num_users = self.count_users(data_list, constants.NEW_USER)
 
-            list_of_users = DataRetrievalController.parse_users_list(data_list)
+            list_of_users = self.parse_users_list(data_list)
 
             if raw_data_num_users != len(list_of_users):
-                SystemConstants.UI_CONSOLE.print_to_user(
+                self.__view_instance.print_to_user(
                     "WARNING:\tUser raw data: %d\tUser parsed: %d.\tCheck if some user missing\n" % (
                         raw_data_num_users,
                         len(list_of_users)
@@ -134,7 +145,7 @@ class DataRetrievalController(object):
         file_to_save = output_dir + default_out
 
         if Path(file_to_save).exists():
-            response = SystemConstants.UI_CONSOLE.get_user_input_bool(
+            response = self.__view_instance.get_user_input_bool(
                 "File: %s already exist.\nDo you want to override it?\n" % file_to_save,
                 "Type [Yes] / [No]"
             )
@@ -145,10 +156,9 @@ class DataRetrievalController(object):
                                str(random.randint(0, 100000)) + Converter.EXT_XLSX
 
         wb.save(file_to_save)
-        SystemConstants.UI_CONSOLE.print_to_user("<<< File parsed >>>")
+        self.__view_instance.print_to_user("<<< File parsed >>>")
 
-    @staticmethod
-    def manage_operation(input_data):
+    def manage_operation(self, input_data):
         """
         Launch operation depending on user input
         :type input_data: InputData
@@ -159,16 +169,16 @@ class DataRetrievalController(object):
         sheet_title = input_data.sheet_title
         verbose = input_data.verbose
 
-        SystemConstants.UI_CONSOLE.print_to_user(
+        self.__view_instance.print_to_user(
             "<<<--- STARTING OPERATION --->>>",
             DataRetrievalUI.Colors.TEXT_COLOR_START_OPERATION
         )
 
         if len(input_file) != 0:
-            SystemConstants.UI_CONSOLE.print_to_user("Input: " + os.path.abspath(input_file))
+            self.__view_instance.print_to_user("Input: " + os.path.abspath(input_file))
         if len(output_dir) != 0:
             if not Path(output_dir).is_dir():
-                SystemConstants.UI_CONSOLE.print_to_user(
+                self.__view_instance.print_to_user(
                     "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, SystemConstants.TMP_PATH),
                     DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                 )
@@ -177,10 +187,10 @@ class DataRetrievalController(object):
         else:
             input_data.output_dir = SystemConstants.TMP_PATH
             output_dir = input_data.output_dir
-        SystemConstants.UI_CONSOLE.print_to_user("Output directory: " + os.path.abspath(output_dir))
+        self.__view_instance.print_to_user("Output directory: " + os.path.abspath(output_dir))
 
         if not Path(input_file).exists():
-            SystemConstants.UI_CONSOLE.print_to_user(
+            self.__view_instance.print_to_user(
                 "ERROR: %s not exist!" % input_file,
                 DataRetrievalUI.Colors.TEXT_COLOR_ERROR
             )
@@ -195,33 +205,33 @@ class DataRetrievalController(object):
         elif Path(input_file).is_file():
             list_of_files = [input_file]
         else:
-            SystemConstants.UI_CONSOLE.print_to_user(
+            self.__view_instance.print_to_user(
                 "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file,
                 DataRetrievalUI.Colors.TEXT_COLOR_ERROR
             )
             sys.exit(SystemConstants.EXIT_ERR_ARG)
 
-        SystemConstants.UI_CONSOLE.print_to_user("File that will be converted:")
+        self.__view_instance.print_to_user("File that will be converted:")
         for el in list_of_files:
-            SystemConstants.UI_CONSOLE.print_to_user("\t> %s" % el)
+            self.__view_instance.print_to_user("\t> %s" % el)
 
         for el in list_of_files:
-            SystemConstants.UI_CONSOLE.print_to_user("\n>>> Parsing file: %s" % el)
+            self.__view_instance.print_to_user("\n>>> Parsing file: %s" % el)
             if verbose:
-                response = SystemConstants.UI_CONSOLE.get_user_input_bool(
+                response = self.__view_instance.get_user_input_bool(
                     "Do you want to continue?",
                     "Type [Yes] / [No]"
                 )
 
                 if response:
-                    DataRetrievalController.perform_operation(el, output_dir, sheet_title)
+                    self.perform_operation(el, output_dir, sheet_title)
                 else:
-                    SystemConstants.UI_CONSOLE.print_to_user("Skipping...")
+                    self.__view_instance.print_to_user("Skipping...")
                     continue
             else:
-                DataRetrievalController.perform_operation(el, output_dir, sheet_title)
+                self.perform_operation(el, output_dir, sheet_title)
 
-        SystemConstants.UI_CONSOLE.print_to_user(
+        self.__view_instance.print_to_user(
             "\n<<<--- OPERATION COMPLETED --->>>\n",
             DataRetrievalUI.Colors.TEXT_COLOR_SUCCESS
         )
@@ -241,8 +251,7 @@ class DataRetrievalController(object):
         return -1
 
     # noinspection PyArgumentList
-    @staticmethod
-    def parse_users_list_v1(content):
+    def parse_users_list_v1(self, content):
         """
         Crea una lista di tipo User da @content
         :param content: list
@@ -266,7 +275,7 @@ class DataRetrievalController(object):
                 score_list = [x[0] for x in constants.SCORES_LIST]
                 for _ in range(constants.SCORES_NUM):
                     while True:
-                        item_position = DataRetrievalController.check_match(content[i], score_list)
+                        item_position = self.check_match(content[i], score_list)
                         if item_position != -1 or constants.NEW_USER in content[i]:
                             break
                         i += 1
@@ -279,7 +288,7 @@ class DataRetrievalController(object):
                         if content[i] == constants.SCORE_VAL_POSITIVE:
                             scores.append(constants.SCORES_LIST[item_position][1])
                         else:
-                            SystemConstants.UI_CONSOLE.print_to_user(
+                            self.__view_instance.print_to_user(
                                 "Error parsing value of line: %s.\tValue: %s."
                                 "\tPosizione elemento della lista: %d.\n" % (
                                     content[i - 1], content[i], i),
@@ -294,7 +303,7 @@ class DataRetrievalController(object):
                 c = 0
                 for _ in range(constants.CREDENTIALS_NUM):
                     while True:
-                        item_position = DataRetrievalController.check_match(content[i], constants.CREDENTIALS_LIST)
+                        item_position = self.check_match(content[i], constants.CREDENTIALS_LIST)
                         if item_position != -1 or constants.NEW_USER in content[i]:
                             break
                         i += 1
@@ -318,7 +327,7 @@ class DataRetrievalController(object):
                 user = User(name, email, surname, ntel, scores)
                 users_list.append(user)
                 if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
-                    SystemConstants.UI_CONSOLE.print_to_user(
+                    self.__view_instance.print_to_user(
                         "WARNING: Error parsing User: " + user + "\n",
                         DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                     )
@@ -331,8 +340,7 @@ class DataRetrievalController(object):
         return users_list
 
     # noinspection PyArgumentList
-    @staticmethod
-    def parse_users_list_v2(content):
+    def parse_users_list_v2(self, content):
         """
         Crea una lista di tipo User da @content
         :type content: list
@@ -354,7 +362,7 @@ class DataRetrievalController(object):
                 while i + 1 < len(content) and constants.NEW_USER not in content[i + 1] and \
                         i + 2 < len(content) and constants.NEW_USER not in content[i + 2]:
                     i += 1
-                    item_position = DataRetrievalController.check_match(content[i], score_list)
+                    item_position = self.check_match(content[i], score_list)
                     # Item found in scores
                     if item_position != -1:
                         i += 1
@@ -365,7 +373,7 @@ class DataRetrievalController(object):
                             else:
                                 # Per far stampare anche l'utente interessato
                                 s -= 1
-                                SystemConstants.UI_CONSOLE.print_to_user(
+                                self.__view_instance.print_to_user(
                                     "Error parsing value of line: %s.\tValue: %s."
                                     "\tPosizione elemento della lista: %d." %
                                     (content[i - 1], content[i], i),
@@ -374,7 +382,7 @@ class DataRetrievalController(object):
 
                         continue
 
-                    item_position = DataRetrievalController.check_match(content[i], constants.CREDENTIALS_LIST)
+                    item_position = self.check_match(content[i], constants.CREDENTIALS_LIST)
                     # Item found in credentilas
                     if item_position != -1:
                         i += 1
@@ -392,7 +400,7 @@ class DataRetrievalController(object):
                     user = User(name, email, surname, ntel, scores)
                     users_list.append(user)
                     if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
-                        SystemConstants.UI_CONSOLE.print_to_user(
+                        self.__view_instance.print_to_user(
                             "WARNING: Error parsing User: " + user + " at position: " +
                             str(i) + " / " + str(i + 1) + "\n",
                             DataRetrievalUI.Colors.TEXT_COLOR_WARNING
@@ -402,8 +410,7 @@ class DataRetrievalController(object):
 
         return users_list
 
-    @staticmethod
-    def parse_users_list(content):
+    def parse_users_list(self, content):
         """
         Crea una lista di tipo User da @content
         :type content: list
@@ -425,14 +432,14 @@ class DataRetrievalController(object):
                 s, c = 0, 0
                 while i + 1 < len(content) and constants.NEW_USER not in content[i + 1]:
                     i += 1
-                    item_position = DataRetrievalController.check_match(content[i], score_list)
+                    item_position = self.check_match(content[i], score_list)
                     # Item found in scores
                     if item_position != -1:
                         if i + 1 >= len(content) or constants.NEW_USER in content[i + 1]:
                             break
-                        elif DataRetrievalController.check_match(content[i + 1], score_list) != -1 or \
-                                DataRetrievalController.check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
-                            SystemConstants.UI_CONSOLE.print_to_user(
+                        elif self.check_match(content[i + 1], score_list) != -1 or \
+                                self.check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
+                            self.__view_instance.print_to_user(
                                 "Unexpected parsing new value even if current is not parsed for user: " + user +
                                 "\tPosizione elemento della lista: %d." % i,
                                 DataRetrievalUI.Colors.TEXT_COLOR_WARNING
@@ -445,7 +452,7 @@ class DataRetrievalController(object):
                             if content[i] == constants.SCORE_VAL_POSITIVE:
                                 scores.append(constants.SCORES_LIST[item_position][1])
                             else:
-                                SystemConstants.UI_CONSOLE.print_to_user(
+                                self.__view_instance.print_to_user(
                                     "Error parsing score value for the line: '%s'.\tValue: '%s'.\t"
                                     "Posizione elemento della lista: %d." %
                                     (content[i - 1], content[i], i),
@@ -456,14 +463,14 @@ class DataRetrievalController(object):
                         s += 1
                         continue
 
-                    item_position = DataRetrievalController.check_match(content[i], constants.CREDENTIALS_LIST)
+                    item_position = self.check_match(content[i], constants.CREDENTIALS_LIST)
                     # Item found in credentials
                     if item_position != -1:
                         if i + 1 >= len(content) or constants.NEW_USER in content[i + 1]:
                             break
-                        elif DataRetrievalController.check_match(content[i + 1], score_list) != -1 or \
-                                DataRetrievalController.check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
-                            SystemConstants.UI_CONSOLE.print_to_user(
+                        elif self.check_match(content[i + 1], score_list) != -1 or \
+                                self.check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
+                            self.__view_instance.print_to_user(
                                 "Unexpected parsing new value even if current is not parsed for user: " + user +
                                 "\tPosizione elemento della lista: %d." % i,
                                 DataRetrievalUI.Colors.TEXT_COLOR_WARNING
@@ -492,7 +499,7 @@ class DataRetrievalController(object):
                         # (primary key as in
                         #  https://fs27.formsite.com/lnisrl/form4/fill?1=6536383b0aff580572ef85e25764f3b2)
                         if not (name and email and surname and ntel and date):
-                            SystemConstants.UI_CONSOLE.print_to_user(
+                            self.__view_instance.print_to_user(
                                 "Error parsing credential (name, email, surname, phone number empty or date) "
                                 "for User: " +
                                 user,
@@ -501,12 +508,12 @@ class DataRetrievalController(object):
                         elif s == constants.SCORES_NUM:
                             continue
 
-                        SystemConstants.UI_CONSOLE.print_to_user(
+                        self.__view_instance.print_to_user(
                             "WARNING: The user may have been converted incorrectly: " + user + "\n",
                             DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                         )
                 else:
-                    SystemConstants.UI_CONSOLE.print_to_user(
+                    self.__view_instance.print_to_user(
                         "WARNING: User with all empty entry at position: " + str(i) + " / " + str(i + 1) + "\n",
                         DataRetrievalUI.Colors.TEXT_COLOR_WARNING
                     )
@@ -564,8 +571,7 @@ class DataRetrievalController(object):
 
         return -1
 
-    @staticmethod
-    def parse_users_list_from_xlsx(filename):
+    def parse_users_list_from_xlsx(self, filename):
         """
         Crea una lista di @User da @filename in formato *.xlsx
         :type filename: str
@@ -590,66 +596,66 @@ class DataRetrievalController(object):
                     header_row.append(value.encode(Converter.ENCODE_UTF_8, "ignore"))
 
             # Get names column
-            names_list = DataRetrievalController.get_column_from_xlsx(
+            names_list = self.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_NAME)
+                self.get_column_index(header_row, FormsiteConstants.CREDENTIAL_NAME)
             )
 
             # Get surnames column
-            surnames_list = DataRetrievalController.get_column_from_xlsx(
+            surnames_list = self.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_SURNAME)
+                self.get_column_index(header_row, FormsiteConstants.CREDENTIAL_SURNAME)
             )
 
             # Get email column
-            email_list = DataRetrievalController.get_column_from_xlsx(
+            email_list = self.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_EMAIL)
+                self.get_column_index(header_row, FormsiteConstants.CREDENTIAL_EMAIL)
             )
 
             # Get ntel column
-            ntel_list = DataRetrievalController.get_column_from_xlsx(
+            ntel_list = self.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_column_index(header_row, FormsiteConstants.CREDENTIAL_NTEL)
+                self.get_column_index(header_row, FormsiteConstants.CREDENTIAL_NTEL)
             )
 
             # Get status column
-            status_list = DataRetrievalController.get_column_from_xlsx(
+            status_list = self.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY)
+                self.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY)
             )
 
             # Get end date column
-            date_list = DataRetrievalController.get_column_from_xlsx(
+            date_list = self.get_column_from_xlsx(
                 worksheet,
-                DataRetrievalController.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY_DATE)
+                self.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY_DATE)
             )
 
             # Get score column
             score_list = [
-                DataRetrievalController.get_column_from_xlsx(
+                self.get_column_from_xlsx(
                     worksheet,
-                    DataRetrievalController.check_match(FormsiteConstants.SCORE_AGE, header_row)
+                    self.check_match(FormsiteConstants.SCORE_AGE, header_row)
                 ),
-                DataRetrievalController.get_column_from_xlsx(
+                self.get_column_from_xlsx(
                     worksheet,
-                    DataRetrievalController.check_match(FormsiteConstants.SCORE_ALLERGENS, header_row)
+                    self.check_match(FormsiteConstants.SCORE_ALLERGENS, header_row)
                 ),
-                DataRetrievalController.get_column_from_xlsx(
+                self.get_column_from_xlsx(
                     worksheet,
-                    DataRetrievalController.check_match(FormsiteConstants.SCORE_DISTURBANCES, header_row)
+                    self.check_match(FormsiteConstants.SCORE_DISTURBANCES, header_row)
                 ),
-                DataRetrievalController.get_column_from_xlsx(
+                self.get_column_from_xlsx(
                     worksheet,
-                    DataRetrievalController.check_match(FormsiteConstants.SCORE_INFECTION, header_row)
+                    self.check_match(FormsiteConstants.SCORE_INFECTION, header_row)
                 ),
-                DataRetrievalController.get_column_from_xlsx(
+                self.get_column_from_xlsx(
                     worksheet,
-                    DataRetrievalController.check_match(FormsiteConstants.SCORE_PREGNANT, header_row)
+                    self.check_match(FormsiteConstants.SCORE_PREGNANT, header_row)
                 ),
-                DataRetrievalController.get_column_from_xlsx(
+                self.get_column_from_xlsx(
                     worksheet,
-                    DataRetrievalController.check_match(FormsiteConstants.SCORE_IMC, header_row)
+                    self.check_match(FormsiteConstants.SCORE_IMC, header_row)
                 )
             ]
 
@@ -662,11 +668,11 @@ class DataRetrievalController(object):
                             email_list[i],
                             surnames_list[i],
                             ntel_list[i],
-                            DataRetrievalController.get_score_from_column_xlsx(i, score_list),
+                            self.get_score_from_column_xlsx(i, score_list),
                             date_list[i]
                         ))
             except IndexError:
-                SystemConstants.UI_CONSOLE.print_to_user(
+                self.__view_instance.print_to_user(
                     "WARNING: Error parsing users at sheet: %s. Probably the document is badly formatted\n" %
                     str(sheet),
                     message_type=DataRetrievalUI.Colors.TEXT_COLOR_WARNING

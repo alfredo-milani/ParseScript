@@ -6,7 +6,6 @@ import wx
 
 from constants import SystemConstants
 from control import DataRetrievalController
-from view import DataRetrievalGUI
 
 
 class DataRetrievalGUIController(DataRetrievalController):
@@ -16,30 +15,16 @@ class DataRetrievalGUIController(DataRetrievalController):
 
     def __init__(self):
         super(DataRetrievalGUIController, self).__init__()
-        # View reference
-        self.__view_instance = None
-
-    @property
-    def view_instance(self):
-        return self.__view_instance
-
-    @view_instance.setter
-    def view_instance(self, value):
-        if not isinstance(value, DataRetrievalGUI):
-            raise TypeError("Incorrect instance")
-
-        # PyCharm inspection bug
-        self.__view_instance = value
 
     def handle_clear(self):
-        if self.__view_instance.user_console:
-            self.__view_instance.user_console.SetValue("")
+        if self.view_instance.user_console:
+            self.view_instance.user_console.SetValue("")
 
     def handle_start(self):
-        input_file = self.__view_instance.edittextfile.GetValue()
-        input_dir = self.__view_instance.edittextdirinput.GetValue()
-        output_dir = self.__view_instance.edittextdiroutput.GetValue()
-        verbose = self.__view_instance.checkboxverbose.GetValue()
+        input_file = self.view_instance.edittextfile.GetValue()
+        input_dir = self.view_instance.edittextdirinput.GetValue()
+        output_dir = self.view_instance.edittextdiroutput.GetValue()
+        verbose = self.view_instance.checkboxverbose.GetValue()
 
         # CHECK INPUT
         from pathlib import Path
@@ -74,7 +59,7 @@ class DataRetrievalGUIController(DataRetrievalController):
         self.open_file(url)
 
     def handle_quit(self):
-        self.__view_instance.Close()
+        self.view_instance.Close()
 
     @staticmethod
     def handle_help():

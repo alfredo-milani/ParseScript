@@ -26,6 +26,7 @@ class InputData(object):
         However, if you directly manipulate __input_file yourself, then your interface will not call setter
         during initialization.
         NOTE: _x = private attribute; __x = super-private attribute
+        Gli attributi super-privati non sono visibili dalle classi specializzate
         """
         self.input_file = input_file
         self.output_dir = output_dir
