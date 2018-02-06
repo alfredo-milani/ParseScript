@@ -37,7 +37,7 @@ class DataRetrievalController(object):
         self.__view_instance = value
 
     @staticmethod
-    def count_users(data, user_delim):
+    def __count_users(data, user_delim):
         """
         Count occurences' number of @user_delim in @data
         :type data: list
@@ -51,7 +51,7 @@ class DataRetrievalController(object):
 
         return n
 
-    def perform_operation(self, input_file, output_dir, sheet_title=""):
+    def __perform_operation(self, input_file, output_dir, sheet_title=""):
         """
         Perform parsing operation of file @input_file setting sheet title as @sheet_title and
         store the result in @output_dir directory
@@ -85,15 +85,15 @@ class DataRetrievalController(object):
                 DataRetrievalUI.Colors.TEXT_COLOR_WARNING
             )
 
-            list_of_users = self.parse_users_list_from_xlsx(input_file)
+            list_of_users = self.__parse_users_list_from_xlsx(input_file)
         else:
             # NOTE: filter returns a list in Python 2 and a generator in Python 3
             # False-ish value include: False, None, 0, '', [], () and all others empty containers
             data_list = filter(None, content.split("\n"))
 
-            raw_data_num_users = self.count_users(data_list, constants.NEW_USER)
+            raw_data_num_users = self.__count_users(data_list, constants.NEW_USER)
 
-            list_of_users = self.parse_users_list(data_list)
+            list_of_users = self.__parse_users_list(data_list)
 
             if raw_data_num_users != len(list_of_users):
                 self.__view_instance.print_to_user(
@@ -158,7 +158,7 @@ class DataRetrievalController(object):
         wb.save(file_to_save)
         self.__view_instance.print_to_user("<<< File parsed >>>")
 
-    def manage_operation(self, input_data):
+    def _manage_operation(self, input_data):
         """
         Launch operation depending on user input
         :type input_data: InputData
@@ -224,12 +224,12 @@ class DataRetrievalController(object):
                 )
 
                 if response:
-                    self.perform_operation(el, output_dir, sheet_title)
+                    self.__perform_operation(el, output_dir, sheet_title)
                 else:
                     self.__view_instance.print_to_user("Skipping...")
                     continue
             else:
-                self.perform_operation(el, output_dir, sheet_title)
+                self.__perform_operation(el, output_dir, sheet_title)
 
         self.__view_instance.print_to_user(
             "\n<<<--- OPERATION COMPLETED --->>>\n",
@@ -237,7 +237,7 @@ class DataRetrievalController(object):
         )
 
     @staticmethod
-    def check_match(to_match, list_to_check):
+    def __check_match(to_match, list_to_check):
         """
         Verifica, anche parziale, del matching tra l'elemento @to_match e gli elementi di @list_to_check
         :type to_match: str
@@ -251,7 +251,7 @@ class DataRetrievalController(object):
         return -1
 
     # noinspection PyArgumentList
-    def parse_users_list_v1(self, content):
+    def __parse_users_list_v1(self, content):
         """
         Crea una lista di tipo User da @content
         :param content: list
@@ -275,7 +275,7 @@ class DataRetrievalController(object):
                 score_list = [x[0] for x in constants.SCORES_LIST]
                 for _ in range(constants.SCORES_NUM):
                     while True:
-                        item_position = self.check_match(content[i], score_list)
+                        item_position = self.__check_match(content[i], score_list)
                         if item_position != -1 or constants.NEW_USER in content[i]:
                             break
                         i += 1
@@ -303,7 +303,7 @@ class DataRetrievalController(object):
                 c = 0
                 for _ in range(constants.CREDENTIALS_NUM):
                     while True:
-                        item_position = self.check_match(content[i], constants.CREDENTIALS_LIST)
+                        item_position = self.__check_match(content[i], constants.CREDENTIALS_LIST)
                         if item_position != -1 or constants.NEW_USER in content[i]:
                             break
                         i += 1
@@ -340,7 +340,7 @@ class DataRetrievalController(object):
         return users_list
 
     # noinspection PyArgumentList
-    def parse_users_list_v2(self, content):
+    def __parse_users_list_v2(self, content):
         """
         Crea una lista di tipo User da @content
         :type content: list
@@ -362,7 +362,7 @@ class DataRetrievalController(object):
                 while i + 1 < len(content) and constants.NEW_USER not in content[i + 1] and \
                         i + 2 < len(content) and constants.NEW_USER not in content[i + 2]:
                     i += 1
-                    item_position = self.check_match(content[i], score_list)
+                    item_position = self.__check_match(content[i], score_list)
                     # Item found in scores
                     if item_position != -1:
                         i += 1
@@ -382,7 +382,7 @@ class DataRetrievalController(object):
 
                         continue
 
-                    item_position = self.check_match(content[i], constants.CREDENTIALS_LIST)
+                    item_position = self.__check_match(content[i], constants.CREDENTIALS_LIST)
                     # Item found in credentilas
                     if item_position != -1:
                         i += 1
@@ -410,7 +410,7 @@ class DataRetrievalController(object):
 
         return users_list
 
-    def parse_users_list(self, content):
+    def __parse_users_list(self, content):
         """
         Crea una lista di tipo User da @content
         :type content: list
@@ -432,13 +432,13 @@ class DataRetrievalController(object):
                 s, c = 0, 0
                 while i + 1 < len(content) and constants.NEW_USER not in content[i + 1]:
                     i += 1
-                    item_position = self.check_match(content[i], score_list)
+                    item_position = self.__check_match(content[i], score_list)
                     # Item found in scores
                     if item_position != -1:
                         if i + 1 >= len(content) or constants.NEW_USER in content[i + 1]:
                             break
-                        elif self.check_match(content[i + 1], score_list) != -1 or \
-                                self.check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
+                        elif self.__check_match(content[i + 1], score_list) != -1 or \
+                                self.__check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
                             self.__view_instance.print_to_user(
                                 "Unexpected parsing new value even if current is not parsed for user: " + user +
                                 "\tPosizione elemento della lista: %d." % i,
@@ -463,13 +463,13 @@ class DataRetrievalController(object):
                         s += 1
                         continue
 
-                    item_position = self.check_match(content[i], constants.CREDENTIALS_LIST)
+                    item_position = self.__check_match(content[i], constants.CREDENTIALS_LIST)
                     # Item found in credentials
                     if item_position != -1:
                         if i + 1 >= len(content) or constants.NEW_USER in content[i + 1]:
                             break
-                        elif self.check_match(content[i + 1], score_list) != -1 or \
-                                self.check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
+                        elif self.__check_match(content[i + 1], score_list) != -1 or \
+                                self.__check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
                             self.__view_instance.print_to_user(
                                 "Unexpected parsing new value even if current is not parsed for user: " + user +
                                 "\tPosizione elemento della lista: %d." % i,
@@ -523,7 +523,7 @@ class DataRetrievalController(object):
         return users_list
 
     @staticmethod
-    def get_column_from_xlsx(worksheet, column_index):
+    def __get_column_from_xlsx(worksheet, column_index):
         """
         Ritorna i valori della colonna relativa alla lettera @column in una lista
         :type worksheet: Workbook[]
@@ -539,7 +539,7 @@ class DataRetrievalController(object):
         return column_list
 
     @staticmethod
-    def get_score_from_column_xlsx(column, score_list):
+    def __get_score_from_column_xlsx(column, score_list):
         """
         Ritorna la lista di interi contenente lo score dell'utente che occupa
         la posizione @column nelle liste contenute in @score_list
@@ -558,7 +558,7 @@ class DataRetrievalController(object):
         return score
 
     @staticmethod
-    def get_column_index(column_list, string):
+    def __get_column_index(column_list, string):
         """
         Ritorna la posizione dell'elementeo @string nella lista @column_list
         :type column_list: list
@@ -571,7 +571,7 @@ class DataRetrievalController(object):
 
         return -1
 
-    def parse_users_list_from_xlsx(self, filename):
+    def __parse_users_list_from_xlsx(self, filename):
         """
         Crea una lista di @User da @filename in formato *.xlsx
         :type filename: str
@@ -596,66 +596,66 @@ class DataRetrievalController(object):
                     header_row.append(value.encode(Converter.ENCODE_UTF_8, "ignore"))
 
             # Get names column
-            names_list = self.get_column_from_xlsx(
+            names_list = self.__get_column_from_xlsx(
                 worksheet,
-                self.get_column_index(header_row, FormsiteConstants.CREDENTIAL_NAME)
+                self.__get_column_index(header_row, FormsiteConstants.CREDENTIAL_NAME)
             )
 
             # Get surnames column
-            surnames_list = self.get_column_from_xlsx(
+            surnames_list = self.__get_column_from_xlsx(
                 worksheet,
-                self.get_column_index(header_row, FormsiteConstants.CREDENTIAL_SURNAME)
+                self.__get_column_index(header_row, FormsiteConstants.CREDENTIAL_SURNAME)
             )
 
             # Get email column
-            email_list = self.get_column_from_xlsx(
+            email_list = self.__get_column_from_xlsx(
                 worksheet,
-                self.get_column_index(header_row, FormsiteConstants.CREDENTIAL_EMAIL)
+                self.__get_column_index(header_row, FormsiteConstants.CREDENTIAL_EMAIL)
             )
 
             # Get ntel column
-            ntel_list = self.get_column_from_xlsx(
+            ntel_list = self.__get_column_from_xlsx(
                 worksheet,
-                self.get_column_index(header_row, FormsiteConstants.CREDENTIAL_NTEL)
+                self.__get_column_index(header_row, FormsiteConstants.CREDENTIAL_NTEL)
             )
 
             # Get status column
-            status_list = self.get_column_from_xlsx(
+            status_list = self.__get_column_from_xlsx(
                 worksheet,
-                self.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY)
+                self.__get_column_index(header_row, FormsiteConstants.STATUS_SURVEY)
             )
 
             # Get end date column
-            date_list = self.get_column_from_xlsx(
+            date_list = self.__get_column_from_xlsx(
                 worksheet,
-                self.get_column_index(header_row, FormsiteConstants.STATUS_SURVEY_DATE)
+                self.__get_column_index(header_row, FormsiteConstants.STATUS_SURVEY_DATE)
             )
 
             # Get score column
             score_list = [
-                self.get_column_from_xlsx(
+                self.__get_column_from_xlsx(
                     worksheet,
-                    self.check_match(FormsiteConstants.SCORE_AGE, header_row)
+                    self.__check_match(FormsiteConstants.SCORE_AGE, header_row)
                 ),
-                self.get_column_from_xlsx(
+                self.__get_column_from_xlsx(
                     worksheet,
-                    self.check_match(FormsiteConstants.SCORE_ALLERGENS, header_row)
+                    self.__check_match(FormsiteConstants.SCORE_ALLERGENS, header_row)
                 ),
-                self.get_column_from_xlsx(
+                self.__get_column_from_xlsx(
                     worksheet,
-                    self.check_match(FormsiteConstants.SCORE_DISTURBANCES, header_row)
+                    self.__check_match(FormsiteConstants.SCORE_DISTURBANCES, header_row)
                 ),
-                self.get_column_from_xlsx(
+                self.__get_column_from_xlsx(
                     worksheet,
-                    self.check_match(FormsiteConstants.SCORE_INFECTION, header_row)
+                    self.__check_match(FormsiteConstants.SCORE_INFECTION, header_row)
                 ),
-                self.get_column_from_xlsx(
+                self.__get_column_from_xlsx(
                     worksheet,
-                    self.check_match(FormsiteConstants.SCORE_PREGNANT, header_row)
+                    self.__check_match(FormsiteConstants.SCORE_PREGNANT, header_row)
                 ),
-                self.get_column_from_xlsx(
+                self.__get_column_from_xlsx(
                     worksheet,
-                    self.check_match(FormsiteConstants.SCORE_IMC, header_row)
+                    self.__check_match(FormsiteConstants.SCORE_IMC, header_row)
                 )
             ]
 
@@ -668,7 +668,7 @@ class DataRetrievalController(object):
                             email_list[i],
                             surnames_list[i],
                             ntel_list[i],
-                            self.get_score_from_column_xlsx(i, score_list),
+                            self.__get_score_from_column_xlsx(i, score_list),
                             date_list[i]
                         ))
             except IndexError:

@@ -14,6 +14,7 @@ class DataRetrievalUI(object):
         Contract which define color of user interface
         """
 
+        # Attributi di classe
         TEXT_COLOR_DEFAULT = 0
         TEXT_COLOR_WARNING = -2
         TEXT_COLOR_ERROR = -1
@@ -23,9 +24,9 @@ class DataRetrievalUI(object):
         def __init__(self):
             pass
 
-        @staticmethod
+        @classmethod
         @abstractmethod
-        def get_color_from_code(type_code):
+        def get_color_from_code(cls, type_code):
             """
             Get correct color from @color_list based on @type_code.
             In case of errors return @Color (data type based on selected UI)
@@ -34,9 +35,9 @@ class DataRetrievalUI(object):
             """
             raise NotImplementedError
 
-        @staticmethod
+        @classmethod
         @abstractmethod
-        def get_default_color():
+        def get_default_color(cls):
             """
             Get default color
             :rtype: Any

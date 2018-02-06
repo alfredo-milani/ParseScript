@@ -11,7 +11,6 @@
 # ============================================================================
 import sys
 
-from constants import APP_NAME
 from utils import Common
 
 if __name__ == "__main__":
@@ -25,19 +24,21 @@ if __name__ == "__main__":
         import wx
         from view import DataRetrievalGUI
         from control import DataRetrievalGUIController
+        from constants import APP_NAME
 
-        graphic_interface = wx.App(False)
+        graphical_interface = wx.App(False)
 
-        gui_view, controller = DataRetrievalGUI(None, APP_NAME), DataRetrievalGUIController()
-        controller.view_instance, gui_view.controller_instance = gui_view, controller
+        controller = DataRetrievalGUIController()
+        controller.view_instance = DataRetrievalGUI.build(APP_NAME)
+        controller.view_instance.controller_instance = controller
 
-        gui_view.Show(True)
-        graphic_interface.MainLoop()
+        controller.view_instance.Show(True)
+        graphical_interface.MainLoop()
     else:
         from view import DataRetrievalCLI
         from control import DataRetrievalCLIController
 
-        cli_view, controller = DataRetrievalCLI(), DataRetrievalCLIController()
-        controller.view_instance = cli_view
+        controller = DataRetrievalCLIController()
+        controller.view_instance = DataRetrievalCLI()
 
         controller.handle_start(params)

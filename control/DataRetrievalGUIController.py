@@ -10,7 +10,7 @@ from control import DataRetrievalController
 
 class DataRetrievalGUIController(DataRetrievalController):
     """
-    Controllore per le view che estendono l'interfaccia in view/DataRetrievalGUI
+    Controllore per le view che estendono l'interfaccia in view/build
     """
 
     def __init__(self):
@@ -35,7 +35,7 @@ class DataRetrievalGUIController(DataRetrievalController):
             input_dir = None
 
         if input_file is None and input_dir is None:
-            self.alert_on_error("Error loading file: check if the input file exist!", "Wrong path")
+            self.__alert_on_error("Error loading file: check if the input file exist!", "Wrong path")
             return
 
         # se esistono entrambi i path (input file e input directory), considero solo il path che punta ad una directory
@@ -47,16 +47,16 @@ class DataRetrievalGUIController(DataRetrievalController):
             output_dir = None
 
         if output_dir is None:
-            self.alert_on_error("Error: check if the output location exist!", "Wrong path")
+            self.__alert_on_error("Error: check if the output location exist!", "Wrong path")
             return
 
         # START OPERATION
         from model import InputData
         input_data = InputData(input_file, output_dir, verbose=verbose, gui=True)
-        self.manage_operation(input_data)
+        self._manage_operation(input_data)
 
     def handle_show_files(self, url):
-        self.open_file(url)
+        self.__open_file(url)
 
     def handle_quit(self):
         self.view_instance.Close()
@@ -93,12 +93,12 @@ class DataRetrievalGUIController(DataRetrievalController):
             edittext.SetValue(path)
 
     @staticmethod
-    def alert_on_error(message, windows_name):
+    def __alert_on_error(message, windows_name):
         dial = wx.MessageDialog(None, message, windows_name, wx.OK | wx.ICON_ERROR)
         dial.ShowModal()
 
     @staticmethod
-    def open_file(outputdirectory):
+    def __open_file(outputdirectory):
         """
         Open file manager with root @filename for the correct OS
         :type outputdirectory: str

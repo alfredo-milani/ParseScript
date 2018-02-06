@@ -38,6 +38,11 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         self.init_view()
         self.Centre()
 
+    # Costruttore alternativo
+    @classmethod
+    def build(cls, title):
+        return cls(None, title)
+
     @property
     def user_console(self):
         return self.__user_console
@@ -358,14 +363,14 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         def __init__(self):
             super(DataRetrievalGUI.ColorsGUI, self).__init__()
 
-        @staticmethod
-        def get_color_from_code(type_code):
-            for color in DataRetrievalGUI.ColorsGUI.CONSOLE_COLORS:
+        @classmethod
+        def get_color_from_code(cls, type_code):
+            for color in cls.CONSOLE_COLORS:
                 if color[0] == type_code:
                     return color[1]
 
-            return DataRetrievalGUI.ColorsGUI.get_default_color()
+            return cls.get_default_color()
 
-        @staticmethod
-        def get_default_color():
-            return DataRetrievalGUI.ColorsGUI.CONSOLE_DEFAULT_COLOR[1]
+        @classmethod
+        def get_default_color(cls):
+            return cls.CONSOLE_DEFAULT_COLOR[1]

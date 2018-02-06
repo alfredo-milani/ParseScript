@@ -10,4 +10,4 @@ class DataRetrievalCLIController(DataRetrievalController):
         super(DataRetrievalCLIController, self).__init__()
 
     def handle_start(self, input_data):
-        self.manage_operation(input_data)
+        self._manage_operation(input_data)

@@ -15,10 +15,10 @@ class DataRetrievalCLI(DataRetrievalUI):
         if message:
             color = DataRetrievalCLI.ColorsCLI.get_color_from_code(message_type)
             print color + message + DataRetrievalCLI.ColorsCLI.get_default_color()
-            DataRetrievalCLI.__flush_stdout_buffer__()
+            DataRetrievalCLI.__flush_stdout_buffer()
 
     def clear_console(self):
-        print DataRetrievalCLI.ColorsCLI.get_color_to_clear_console()
+        print self.ColorsCLI.get_color_to_clear_console()
         '''
         This solution not delete old chars
         osname = os.name
@@ -32,7 +32,7 @@ class DataRetrievalCLI(DataRetrievalUI):
 
     def get_user_input_bool(self, question="", format_answere=""):
         print question + " " + format_answere + "\t"
-        DataRetrievalCLI.__flush_stdout_buffer__()
+        DataRetrievalCLI.__flush_stdout_buffer()
 
         py3 = sys.version_info[0] > 2
         if py3:
@@ -43,7 +43,7 @@ class DataRetrievalCLI(DataRetrievalUI):
         return response == "Yes"
 
     @staticmethod
-    def __flush_stdout_buffer__():
+    def __flush_stdout_buffer():
         sys.stdout.flush()
 
     # noinspection PyUnresolvedReferences
@@ -94,18 +94,18 @@ class DataRetrievalCLI(DataRetrievalUI):
             TERMINAL_WARNING_COLOR
         ]
 
-        @staticmethod
-        def get_color_from_code(type_code):
-            for color in DataRetrievalCLI.ColorsCLI.TERMINAL_COLORS:
+        @classmethod
+        def get_color_from_code(cls, type_code):
+            for color in cls.TERMINAL_COLORS:
                 if color[0] == type_code:
                     return color[1]
 
-            return DataRetrievalCLI.ColorsCLI.get_default_color()
+            return cls.get_default_color()
 
-        @staticmethod
-        def get_default_color():
-            return DataRetrievalCLI.ColorsCLI.TERMINAL_DEFAULT_COLOR[1]
+        @classmethod
+        def get_default_color(cls):
+            return cls.TERMINAL_DEFAULT_COLOR[1]
 
-        @staticmethod
-        def get_color_to_clear_console():
-            return DataRetrievalCLI.ColorsCLI.CLEAR_CONSOLE
+        @classmethod
+        def get_color_to_clear_console(cls):
+            return cls.CLEAR_CONSOLE
