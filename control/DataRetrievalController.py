@@ -13,7 +13,7 @@ import constants
 from constants import SystemConstants, FormsiteConstants
 from model import *
 from utils import *
-from view import DataRetrievalUI
+from view import DataRetrievalUI, ColorsUI
 
 
 class DataRetrievalController(object):
@@ -64,7 +64,7 @@ class DataRetrievalController(object):
         if not file_to_parse.is_file():
             self.__view_instance.print_to_user(
                 "File '%s' not found" % file_to_parse,
-                DataRetrievalUI.Colors.TEXT_COLOR_ERROR
+                ColorsUI.TEXT_COLOR_ERROR
             )
             return
             # sys.exit(EXIT_ERR_FILE)
@@ -75,14 +75,14 @@ class DataRetrievalController(object):
         if content is None:
             self.__view_instance.print_to_user(
                 "!!! Unknown format for file: %s. Skipping... !!!" % input_file,
-                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                ColorsUI.TEXT_COLOR_WARNING
             )
             return
             # sys.exit(EXIT_ERR_FILE)
         elif content == Converter.EXT_XLSX:
             self.__view_instance.print_to_user(
                 "Note: *.xlsx file will be parsed with custom procedure\n",
-                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                ColorsUI.TEXT_COLOR_WARNING
             )
 
             list_of_users = self.__parse_users_list_from_xlsx(input_file)
@@ -101,7 +101,7 @@ class DataRetrievalController(object):
                         raw_data_num_users,
                         len(list_of_users)
                     ),
-                    DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                    ColorsUI.TEXT_COLOR_WARNING
                 )
 
         wb = Workbook()
@@ -171,7 +171,7 @@ class DataRetrievalController(object):
 
         self.__view_instance.print_to_user(
             "<<<--- STARTING OPERATION --->>>",
-            DataRetrievalUI.Colors.TEXT_COLOR_START_OPERATION
+            ColorsUI.TEXT_COLOR_START_OPERATION
         )
 
         if len(input_file) != 0:
@@ -180,7 +180,7 @@ class DataRetrievalController(object):
             if not Path(output_dir).is_dir():
                 self.__view_instance.print_to_user(
                     "Output directory '%s' not exist. Using: '%s' instead" % (output_dir, SystemConstants.TMP_PATH),
-                    DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                    ColorsUI.TEXT_COLOR_WARNING
                 )
                 input_data.output_dir = SystemConstants.TMP_PATH
                 output_dir = input_data.output_dir
@@ -192,7 +192,7 @@ class DataRetrievalController(object):
         if not Path(input_file).exists():
             self.__view_instance.print_to_user(
                 "ERROR: %s not exist!" % input_file,
-                DataRetrievalUI.Colors.TEXT_COLOR_ERROR
+                ColorsUI.TEXT_COLOR_ERROR
             )
             sys.exit(SystemConstants.EXIT_ERR_ARG)
 
@@ -207,7 +207,7 @@ class DataRetrievalController(object):
         else:
             self.__view_instance.print_to_user(
                 "ERROR: %s seems not to be a regular file or directory. Exiting..." % input_file,
-                DataRetrievalUI.Colors.TEXT_COLOR_ERROR
+                ColorsUI.TEXT_COLOR_ERROR
             )
             sys.exit(SystemConstants.EXIT_ERR_ARG)
 
@@ -233,7 +233,7 @@ class DataRetrievalController(object):
 
         self.__view_instance.print_to_user(
             "\n<<<--- OPERATION COMPLETED --->>>\n",
-            DataRetrievalUI.Colors.TEXT_COLOR_SUCCESS
+            ColorsUI.TEXT_COLOR_SUCCESS
         )
 
     @staticmethod
@@ -292,7 +292,7 @@ class DataRetrievalController(object):
                                 "Error parsing value of line: %s.\tValue: %s."
                                 "\tPosizione elemento della lista: %d.\n" % (
                                     content[i - 1], content[i], i),
-                                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                                ColorsUI.TEXT_COLOR_WARNING
                             )
                             continue
 
@@ -329,7 +329,7 @@ class DataRetrievalController(object):
                 if s != constants.SCORES_NUM or c != constants.CREDENTIALS_NUM:
                     self.__view_instance.print_to_user(
                         "WARNING: Error parsing User: " + user + "\n",
-                        DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                        ColorsUI.TEXT_COLOR_WARNING
                     )
 
                 if constants.NEW_USER in content[i]:
@@ -377,7 +377,7 @@ class DataRetrievalController(object):
                                     "Error parsing value of line: %s.\tValue: %s."
                                     "\tPosizione elemento della lista: %d." %
                                     (content[i - 1], content[i], i),
-                                    DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                                    ColorsUI.TEXT_COLOR_WARNING
                                 )
 
                         continue
@@ -403,7 +403,7 @@ class DataRetrievalController(object):
                         self.__view_instance.print_to_user(
                             "WARNING: Error parsing User: " + user + " at position: " +
                             str(i) + " / " + str(i + 1) + "\n",
-                            DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                            ColorsUI.TEXT_COLOR_WARNING
                         )
 
             i += 1
@@ -442,7 +442,7 @@ class DataRetrievalController(object):
                             self.__view_instance.print_to_user(
                                 "Unexpected parsing new value even if current is not parsed for user: " + user +
                                 "\tPosizione elemento della lista: %d." % i,
-                                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                                ColorsUI.TEXT_COLOR_WARNING
                             )
                             continue
 
@@ -456,7 +456,7 @@ class DataRetrievalController(object):
                                     "Error parsing score value for the line: '%s'.\tValue: '%s'.\t"
                                     "Posizione elemento della lista: %d." %
                                     (content[i - 1], content[i], i),
-                                    DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                                    ColorsUI.TEXT_COLOR_WARNING
                                 )
                                 continue
 
@@ -473,7 +473,7 @@ class DataRetrievalController(object):
                             self.__view_instance.print_to_user(
                                 "Unexpected parsing new value even if current is not parsed for user: " + user +
                                 "\tPosizione elemento della lista: %d." % i,
-                                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                                ColorsUI.TEXT_COLOR_WARNING
                             )
                             continue
 
@@ -503,19 +503,19 @@ class DataRetrievalController(object):
                                 "Error parsing credential (name, email, surname, phone number empty or date) "
                                 "for User: " +
                                 user,
-                                DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                                ColorsUI.TEXT_COLOR_WARNING
                             )
                         elif s == constants.SCORES_NUM:
                             continue
 
                         self.__view_instance.print_to_user(
                             "WARNING: The user may have been converted incorrectly: " + user + "\n",
-                            DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                            ColorsUI.TEXT_COLOR_WARNING
                         )
                 else:
                     self.__view_instance.print_to_user(
                         "WARNING: User with all empty entry at position: " + str(i) + " / " + str(i + 1) + "\n",
-                        DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                        ColorsUI.TEXT_COLOR_WARNING
                     )
 
             i += 1
@@ -675,7 +675,7 @@ class DataRetrievalController(object):
                 self.__view_instance.print_to_user(
                     "WARNING: Error parsing users at sheet: %s. Probably the document is badly formatted\n" %
                     str(sheet),
-                    message_type=DataRetrievalUI.Colors.TEXT_COLOR_WARNING
+                    message_type=ColorsUI.TEXT_COLOR_WARNING
                 )
 
         return users

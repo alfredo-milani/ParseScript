@@ -1,7 +1,7 @@
 import wx
 
 from constants import SystemConstants
-from view import DataRetrievalUI
+from view import DataRetrievalUI, ColorsUI
 
 
 class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
@@ -326,11 +326,11 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
             id=DataRetrievalGUI.APP_SELECT_INPUT_DIR
         )
 
-    def print_to_user(self, message, message_type=DataRetrievalUI.Colors.TEXT_COLOR_DEFAULT):
+    def print_to_user(self, message, message_type=ColorsUI.TEXT_COLOR_DEFAULT):
         if self.__user_console and message:
-            self.__user_console.SetForegroundColour(DataRetrievalGUI.ColorsGUI.get_color_from_code(message_type))
+            self.__user_console.SetForegroundColour(self.ColorsGUI.get_color_from_code(message_type))
             self.__user_console.AppendText(message + "\n")
-            self.__user_console.SetForegroundColour(DataRetrievalGUI.ColorsGUI.get_default_color())
+            self.__user_console.SetForegroundColour(self.ColorsGUI.get_default_color())
 
     def clear_console(self):
         self.__controller_instance.handle_clear()
@@ -341,16 +341,16 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         dlg.Destroy()
         return result
 
-    class ColorsGUI(DataRetrievalUI.Colors):
+    class ColorsGUI(ColorsUI):
         """
         Defining colors for GUI
         """
 
-        CONSOLE_DEFAULT_COLOR = (DataRetrievalUI.Colors.TEXT_COLOR_DEFAULT, wx.WHITE)
-        CONSOLE_WARNING_COLOR = (DataRetrievalUI.Colors.TEXT_COLOR_WARNING, wx.YELLOW)
-        CONSOLE_ERROR_COLOR = (DataRetrievalUI.Colors.TEXT_COLOR_ERROR, wx.RED)
-        CONSOLE_SUCCESS_COLOR = (DataRetrievalUI.Colors.TEXT_COLOR_SUCCESS, wx.GREEN)
-        CONSOLE_START_OPERATION_COLOR = (DataRetrievalUI.Colors.TEXT_COLOR_START_OPERATION, wx.CYAN)
+        CONSOLE_DEFAULT_COLOR = (ColorsUI.TEXT_COLOR_DEFAULT, wx.WHITE)
+        CONSOLE_WARNING_COLOR = (ColorsUI.TEXT_COLOR_WARNING, wx.YELLOW)
+        CONSOLE_ERROR_COLOR = (ColorsUI.TEXT_COLOR_ERROR, wx.RED)
+        CONSOLE_SUCCESS_COLOR = (ColorsUI.TEXT_COLOR_SUCCESS, wx.GREEN)
+        CONSOLE_START_OPERATION_COLOR = (ColorsUI.TEXT_COLOR_START_OPERATION, wx.CYAN)
 
         CONSOLE_COLORS = [
             CONSOLE_DEFAULT_COLOR,
