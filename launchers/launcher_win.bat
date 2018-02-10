@@ -14,8 +14,8 @@ set ui_type=1
 set abs_path=%~dp0
 set tab=
 set tool=%abs_path%..\src\Main.py
-set dir_to_convert=%abs_path%\..\DATA_TO_CONVERT
-set dir_converted=%abs_path%\..\DATA_CONVERTED
+set dir_to_convert=%abs_path%..\DATA_TO_CONVERT
+set dir_converted=%abs_path%..\DATA_CONVERTED
 
 :switch-case-start
 	:: Call and mask out invalid call targets
