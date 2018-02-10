@@ -101,13 +101,13 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         panel = wx.Panel(self)
 
         # SET ICON
-        # ON PACKAGING remove "SystemConstants.APP_ABS_PATH + split_char() + " from the following icon's path.
+        # ON PACKAGING replace "SystemConstants.APP_ABS_RES + " line with
+        #       ""resources" + Converter.split_char() + " in the following wx.Icon() function
         # ON PACKAGING on Windows system the icon must be in *.ico format;
-        # after pyinstaller is executed move the executable in the root of the project.
+        # After pyinstaller is executed move the executable in the project's root folder.
         from utils import Converter
         icon = wx.Icon(
-            SystemConstants.APP_ABS_PATH + Converter.split_char() +
-            "resources" + Converter.split_char() +
+            SystemConstants.APP_ABS_RES +
             "images" + Converter.split_char() + "icon.png",
             wx.BITMAP_TYPE_PNG,
             512,

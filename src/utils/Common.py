@@ -40,7 +40,10 @@ class Common(object):
         Setup system: init global variables, loads external modules, ecc...
         :rtype: None
         """
+        from utils import Converter
         SystemConstants.APP_ABS_PATH = Common.get_program_folder()
+        SystemConstants.APP_ABS_RES = SystemConstants.APP_ABS_PATH + Converter.split_char() + \
+                                      ".." + Converter.split_char() + "resources" + Converter.split_char()
         SystemConstants.OS_TYPE = platform.system()
         # Windows system
         if SystemConstants.OS_TYPE == SystemConstants.OS_WIN:

@@ -8,6 +8,7 @@ OS_LINUX = "Linux"
 OS_TYPE = ""
 TMP_PATH = ""
 APP_ABS_PATH = ""
+APP_ABS_RES = ""
 
 
 APP_NAME = "Form Data Retrieval"

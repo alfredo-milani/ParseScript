@@ -1,8 +1,8 @@
 [Desktop Entry]
-Version=1.0
+Version=2.7.5
 Name=Parse Script
 Comment=Parsing files
-Exec=/opt/ParseScript/Main.py --gui %f
+Exec=/opt/ParseScript/src/Main.py --gui %f
 Path=/opt/ParseScript
 Terminal=false
 Icon=/opt/ParseScript/resources/images/icon.png
