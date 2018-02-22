@@ -32,7 +32,7 @@ case ${debug} in
                 # GUI
                 echo -e "Starting $tool with GUI\n"
 
-                ${tool} --gui &> ${null}
+                ${tool} --gui &> ${null} & exit
                 ;;
         esac
         ;;
