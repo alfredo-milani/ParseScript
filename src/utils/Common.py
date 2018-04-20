@@ -45,12 +45,15 @@ class Common(object):
         SystemConstants.APP_ABS_RES = SystemConstants.APP_ABS_PATH + Converter.split_char() + \
                                       ".." + Converter.split_char() + "resources" + Converter.split_char()
         SystemConstants.OS_TYPE = platform.system()
-        # Windows system
+        # Windows systems
         if SystemConstants.OS_TYPE == SystemConstants.OS_WIN:
             SystemConstants.TMP_PATH = SystemConstants.DEFAULT_TMP_WIN
-        # Unix system
+        # Unix systems
         elif SystemConstants.OS_TYPE == SystemConstants.OS_LINUX:
             SystemConstants.TMP_PATH = SystemConstants.DEFAULT_TMP_LINUX
+        # MacOS systems
+        elif SystemConstants.OS_TYPE == SystemConstants.OS_MACOS:
+            SystemConstants.TMP_PATH = SystemConstants.DEFAULT_TMP_MACOS
 
     @staticmethod
     def parse_arg(argv):

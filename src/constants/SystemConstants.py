@@ -2,6 +2,7 @@
 LINK_TOOL_CONVERTER_DOCX_TXT = "https://document.online-convert.com/convert-to-txt"
 DEFAULT_TMP_WIN = "R:\\"
 DEFAULT_TMP_LINUX = "/dev/shm/"
+DEFAULT_TMP_MACOS = "/tmp/"
 INIT_SCRIPT_NAME = "./support/setup_scripts/linux/inst_xlsxwriter.sh"
 OS_WIN = "Windows"
 OS_LINUX = "Linux"
@@ -22,11 +23,13 @@ USAGE_MSG = "\n# Description\n" + HELP_MSG + "\n" \
             "\t-i | --I= | --ifile= )\t\tSetting input file\n" \
             "\t-o | --O= | --odir= )\t\tSetting output directory.\n" \
             "\t\t\t\t\tIf not specified, the files will be created in the default " \
-                "temp directory ('%s' -> '%s' | '%s' -> '%s')\n" % (
+                "temp directory ('%s' -> '%s' | '%s' -> '%s' | '%s' -> '%s')\n" % (
                     OS_WIN,
                     DEFAULT_TMP_WIN,
                     OS_LINUX,
-                    DEFAULT_TMP_LINUX
+                    DEFAULT_TMP_LINUX,
+                    OS_MACOS,
+                    DEFAULT_TMP_MACOS
                 ) + \
             "\t-t | --T= )\t\t\tSetting sheet title. Default behaviour: based on input filename\n" \
             "\t--not-ask )\t\t\tRiduces user interaction\n" \
