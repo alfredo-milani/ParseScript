@@ -28,7 +28,7 @@ class Converter(object):
         os = platform.system()
         if os == SystemConstants.OS_WIN:
             return '\\'
-        elif os == SystemConstants.OS_LINUX:
+        elif os == SystemConstants.OS_LINUX or os == SystemConstants.OS_MACOS:
             return '/'
 
     @classmethod

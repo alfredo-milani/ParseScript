@@ -1,0 +1,8 @@
+Packages to install:
+- docx
+- pdfminer
+- wxPython (utilizzare flag "-U"; visitare il sito wxPython per maggiori informazioni)
+- openpyxl
+- pathlib
+
+$ sudo python /usr/local/bin/pip install package
