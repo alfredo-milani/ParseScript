@@ -440,7 +440,7 @@ class DataRetrievalController(object):
                         elif self.__check_match(content[i + 1], score_list) != -1 or \
                                 self.__check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
                             self.__view_instance.print_to_user(
-                                "Unexpected parsing new value even if current is not parsed for user: " + user +
+                                "Unexpected parsing new value even if current is not parsed"
                                 "\tPosizione elemento della lista: %d." % i,
                                 ColorsUI.TEXT_COLOR_WARNING
                             )
@@ -471,7 +471,7 @@ class DataRetrievalController(object):
                         elif self.__check_match(content[i + 1], score_list) != -1 or \
                                 self.__check_match(content[i + 1], constants.CREDENTIALS_LIST) != -1:
                             self.__view_instance.print_to_user(
-                                "Unexpected parsing new value even if current is not parsed for user: " + user +
+                                "Unexpected parsing new value even if current is not parsed"
                                 "\tPosizione elemento della lista: %d." % i,
                                 ColorsUI.TEXT_COLOR_WARNING
                             )
@@ -578,7 +578,7 @@ class DataRetrievalController(object):
         :rtype: list
         """
         workbook = load_workbook(filename=filename)
-        sheet_ranges = workbook.get_sheet_names()
+        sheet_ranges = workbook.sheetnames
         # Encoding from unicode string (u'string') to utf-8 string
         for sheet in range(len(sheet_ranges)):
             sheet_ranges[sheet] = sheet_ranges[sheet].encode(Converter.ENCODE_UTF_8, "ignore")
