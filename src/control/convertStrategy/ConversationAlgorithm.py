@@ -43,7 +43,7 @@ class ConversationAlgorithm(object):
         # PyCharm inspection bug
         self.__list_of_users = value
 
-    def convertToList(self, file_to_convert):
+    def convert_to_list(self, file_to_convert):
         """
         DO NOT EDIT this function!
         This function define conversation algorithm.

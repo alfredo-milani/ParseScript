@@ -12,6 +12,7 @@ from constants import SystemConstants
 from model import *
 from utils import *
 from view import DataRetrievalUI, ColorsUI
+from control.convertStrategy import ConversationAlgorithm
 
 
 class DataRetrievalController(object):
@@ -43,7 +44,6 @@ class DataRetrievalController(object):
         :type sheet_title: str
         :rtype: None
         """
-        from control.convertStrategy import ConversationAlgorithm
 
         try:
             file_to_parse = File(input_file)
@@ -62,6 +62,8 @@ class DataRetrievalController(object):
             return
             # sys.exit(EXIT_ERR_FILE)
 
+        # In questo modo l'algoritmo, tramite la classe astratta BaseAlgorithm e ConversationAlgorithm
+        # puo' accedere all'istanza di view per comunicare eventi all'utente
         file_to_parse.conversion_algorithm.view_instance = self.__view_instance
         try:
             list_of_users = file_to_parse.get_list_from_file()

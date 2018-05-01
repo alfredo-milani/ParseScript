@@ -15,6 +15,7 @@ class XLSXAlgorithm(ConversationAlgorithm):
         super(XLSXAlgorithm, self).__init__()
 
     def do_convert(self, file_to_convert):
+        from view import ColorsUI
         workbook = load_workbook(filename=file_to_convert)
         sheet_ranges = workbook.sheetnames
         # Encoding from unicode string (u'string') to utf-8 string
@@ -116,7 +117,6 @@ class XLSXAlgorithm(ConversationAlgorithm):
                             date_list[i]
                         ))
             except IndexError:
-                from view import ColorsUI
                 self.view_instance.print_to_user(
                     "WARNING: Error parsing users at sheet: %s. Probably the document is badly formatted\n" %
                     str(sheet),
@@ -151,7 +151,12 @@ class XLSXAlgorithm(ConversationAlgorithm):
         for row in worksheet.iter_rows():
             value = row[column_index].value
             if value is not None:
-                column_list.append(value.encode(ConversationAlgorithm.ENCODE_UTF_8, "ignore"))
+                try:
+                    encoded = str(value).encode(ConversationAlgorithm.ENCODE_UTF_8, "ignore")
+                except UnicodeEncodeError:
+                    encoded = "Encode error, column index: %s" % column_index
+
+                column_list.append(encoded)
 
         return column_list
 

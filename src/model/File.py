@@ -8,7 +8,6 @@ class File(object):
 
     def __init__(self, file_to_convert_path):
         """
-
         :param file_to_convert_path: nome del file da convertire
 
         :type file_to_convert_path: str
@@ -57,20 +56,21 @@ class File(object):
         from control.convertStrategy import TXTAlgorithm, DOCAlgorithm, DOCXAlgorithm, \
             ODTAlgorithm, XLSXAlgorithm, PDFAlgorithm
         from control.convertStrategy import ConversationAlgorithm
-        if self.extension == ConversationAlgorithm.EXT_TXT:
-            return TXTAlgorithm()
-        elif self.extension == ConversationAlgorithm.EXT_DOC:
-            return DOCAlgorithm()
-        elif self.extension == ConversationAlgorithm.EXT_DOCX:
-            return DOCXAlgorithm()
-        elif self.extension == ConversationAlgorithm.EXT_ODT:
-            return ODTAlgorithm()
-        elif self.extension == ConversationAlgorithm.EXT_XLSX:
-            return XLSXAlgorithm()
-        elif self.extension == ConversationAlgorithm.EXT_PDF:
-            return PDFAlgorithm()
-        else:
+
+        if self.extension is None:
             return None
+        elif self.extension.lower() == ConversationAlgorithm.EXT_TXT.lower():
+            return TXTAlgorithm()
+        elif self.extension.lower() == ConversationAlgorithm.EXT_DOC.lower():
+            return DOCAlgorithm()
+        elif self.extension.lower() == ConversationAlgorithm.EXT_DOCX.lower():
+            return DOCXAlgorithm()
+        elif self.extension.lower() == ConversationAlgorithm.EXT_ODT.lower():
+            return ODTAlgorithm()
+        elif self.extension.lower() == ConversationAlgorithm.EXT_XLSX.lower():
+            return XLSXAlgorithm()
+        elif self.extension.lower() == ConversationAlgorithm.EXT_PDF.lower():
+            return PDFAlgorithm()
 
     @property
     def conversion_algorithm(self):
@@ -94,4 +94,4 @@ class File(object):
         :return: list of @User
         :rtype: list
         """
-        return self.conversion_algorithm.convertToList(self.file_to_convert_path)
+        return self.conversion_algorithm.convert_to_list(self.file_to_convert_path)
