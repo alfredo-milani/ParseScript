@@ -1,6 +1,7 @@
 import wx
 
 from constants import SystemConstants
+from utils import Common
 from view import DataRetrievalUI, ColorsUI
 
 
@@ -105,10 +106,9 @@ class DataRetrievalGUI(wx.Frame, DataRetrievalUI):
         #       ""resources" + Converter.split_char() + " in the following wx.Icon() function
         # ON PACKAGING on Windows system the icon must be in *.ico format;
         # After pyinstaller is executed move the executable in the project's root folder.
-        from utils import Converter
         icon = wx.Icon(
             SystemConstants.APP_ABS_RES +
-            "images" + Converter.split_char() + "icon.png",
+            "images" + Common.split_char() + "icon.png",
             wx.BITMAP_TYPE_PNG,
             512,
             512

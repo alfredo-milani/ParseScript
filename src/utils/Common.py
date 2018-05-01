@@ -16,12 +16,11 @@ class Common(object):
         So this function return the path previous to utils/ProjectPath directory
         :rtype: str
         """
-        from utils import Converter
         module_file = __file__
         module_dir = os.path.split(os.path.abspath(module_file))[0]
         program_folder = os.path.abspath(module_dir)
-        program_folder_list = program_folder.split(Converter.split_char())
-        root_project = Converter.split_char().join(
+        program_folder_list = program_folder.split(Common.split_char())
+        root_project = Common.split_char().join(
             x for x in program_folder_list[:len(program_folder_list) - 1]
         )
         return root_project
@@ -40,10 +39,9 @@ class Common(object):
         Setup system: init global variables, loads external modules, ecc...
         :rtype: None
         """
-        from utils import Converter
         SystemConstants.APP_ABS_PATH = Common.get_program_folder()
-        SystemConstants.APP_ABS_RES = SystemConstants.APP_ABS_PATH + Converter.split_char() + \
-                                      ".." + Converter.split_char() + "resources" + Converter.split_char()
+        SystemConstants.APP_ABS_RES = SystemConstants.APP_ABS_PATH + Common.split_char() + \
+                                      ".." + Common.split_char() + "resources" + Common.split_char()
         SystemConstants.OS_TYPE = platform.system()
         # Windows systems
         if SystemConstants.OS_TYPE == SystemConstants.OS_WIN:
@@ -113,3 +111,41 @@ class Common(object):
             string = string.replace(char, selected_char)
 
         return string
+
+    @staticmethod
+    def split_char():
+        from constants import SystemConstants
+        os_type = platform.system()
+        if os_type == SystemConstants.OS_WIN:
+            return '\\'
+        elif os_type == SystemConstants.OS_LINUX or os_type == SystemConstants.OS_MACOS:
+            return '/'
+
+    @staticmethod
+    def check_match(to_match, list_to_check):
+        """
+        Verifica, anche parziale, del matching tra l'elemento @to_match e gli elementi di @list_to_check
+        :type to_match: str
+        :type list_to_check: list
+        :rtype: int
+        """
+        for i in range(len(list_to_check)):
+            if list_to_check[i] in to_match:
+                return i
+
+        return -1
+
+    @staticmethod
+    def count_occurences(data, delim):
+        """
+        Count occurences' number of @user_delim in @data
+        :type data: list
+        :type delim: str
+        :rtype: int
+        """
+        n = 0
+        for el in data:
+            if el.find(delim) != -1:
+                n += 1
+
+        return n

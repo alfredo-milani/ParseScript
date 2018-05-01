@@ -12,6 +12,8 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="os.startfile" />
+          <option value="extension" />
+          <option value="conversion_algorithm" />
         </list>
       </option>
     </inspection_tool>
