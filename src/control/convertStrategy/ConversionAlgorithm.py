@@ -3,9 +3,22 @@ from abc import abstractmethod
 from view import DataRetrievalUI
 
 
-class ConversationAlgorithm(object):
+class ConversionAlgorithm(object):
     """
     Classe astratta utilizzata per gestire l'esecuzione dell'algoritmo di parsing
+
+    Note sull'eredotarieta' multipla:
+    - quando viene istanziata una classe che eredita da molteplici classi, vengono chiamati
+        i costruttori delle classi da cui eredita, da sinistra verso destra
+    - il costruttore di default invoca i costruttori di tutte le classi da cui eredita (i cosrtuttori
+        delle classi ereditate non sono oinvocati da sinistra verso destra)
+    - se una classe C eredita da A e B e queste ultime hanno un attributo con lo stesso nome,
+        allora in C quell'attributo sara' considerato come un unico oggetto (si avra' una sola referenza),
+        quindi se A ha un metodo che modifica quell'oggetto, queste modifiche saranno visibili in B
+        e viceversa
+    - se una classe C eredita da A e B e queste ultime hanno un metodo con lo stesso nome,
+        allora C considerera' solo il metodo della classe che, nella dichiarazione, sara' piu' a sinistra
+        (e.g. class C(A, B) -> verra' utilizzato il metodo di A)
     """
 
     EXT_XLSX = ".xlsx"
@@ -19,6 +32,7 @@ class ConversationAlgorithm(object):
     DECODE_FORMAT = "utf-8"
 
     def __init__(self):
+        super(ConversionAlgorithm, self).__init__()
         self.list_of_users = None
         # View reference
         self.__view_instance = None

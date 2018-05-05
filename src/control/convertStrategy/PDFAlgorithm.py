@@ -1,6 +1,8 @@
+import threading
+
 from constants import NEW_USER
 from control.convertStrategy.BaseAlgorithm import BaseAlgorithm
-from control.convertStrategy.ConversationAlgorithm import ConversationAlgorithm
+from control.convertStrategy.ConversionAlgorithm import ConversionAlgorithm
 
 from cStringIO import StringIO
 from pdfminer.converter import TextConverter
@@ -13,13 +15,29 @@ from utils import Common
 from view import ColorsUI
 
 
-class PDFAlgorithm(ConversationAlgorithm, BaseAlgorithm):
+class PDFAlgorithm(ConversionAlgorithm, BaseAlgorithm):
     """
     Classe che definisce l'algoritmo per il parsing di documenti in formato *.pdf
     """
 
+    __instance = None
+    __lock = threading.Lock()
+
     def __init__(self):
-        super(PDFAlgorithm, self).__init__()
+        if PDFAlgorithm.__instance is not None:
+            from parsing_exceptions import SingletonException
+            raise SingletonException(PDFAlgorithm)
+        else:
+            super(PDFAlgorithm, self).__init__()
+            PDFAlgorithm.__instance = self
+
+    @classmethod
+    def get_instance(cls):
+        if cls.__instance is None:
+            with cls.__lock:
+                if cls.__instance is None:
+                    PDFAlgorithm()
+        return cls.__instance
 
     def do_convert(self, file_to_convert):
         rsrcmgr = PDFResourceManager()
@@ -28,7 +46,7 @@ class PDFAlgorithm(ConversationAlgorithm, BaseAlgorithm):
         device = TextConverter(
             rsrcmgr,
             retstr,
-            codec=ConversationAlgorithm.ENCODE_UTF_8,
+            codec=ConversionAlgorithm.ENCODE_UTF_8,
             laparams=laparams
         )
 

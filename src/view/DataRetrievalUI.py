@@ -9,7 +9,7 @@ class DataRetrievalUI(object):
     """
 
     def __init__(self):
-        pass
+        super(DataRetrievalUI, self).__init__()
 
     @abstractmethod
     def print_to_user(self, message, message_type=ColorsUI.TEXT_COLOR_DEFAULT):

@@ -28,32 +28,29 @@ class DataRetrievalGUIController(DataRetrievalController):
 
         # CHECK INPUT
         from pathlib import Path
-        if input_file is None or len(input_file) == 0 or not Path(input_file).exists():
+        if len(input_file) == 0 or not Path(str(input_file)).exists():
             input_file = None
 
-        if input_dir is None or len(input_dir) == 0 or not Path(input_dir).exists():
+        if len(input_dir) == 0 or not Path(str(input_dir)).exists():
             input_dir = None
-
-        if input_file is None and input_dir is None:
-            self.__alert_on_error("Error loading file: check if the input file exist!", "Wrong path")
-            return
 
         # se esistono entrambi i path (input file e input directory), considero solo il path che punta ad una directory
         if input_dir is not None:
             input_file = input_dir
 
-        # CHECK OUTPUT
-        if output_dir is None or len(output_dir) == 0 or not Path(output_dir).exists():
-            output_dir = None
+        if input_file is None and input_dir is None:
+            self.__alert_on_error("Error loading file: check if the input file exist!", "Wrong path")
+            return
 
-        if output_dir is None:
+        # CHECK OUTPUT
+        if len(output_dir) == 0 or not Path(str(output_dir)).exists():
             self.__alert_on_error("Error: check if the output location exist!", "Wrong path")
             return
 
         # START OPERATION
-        from model import InputData
-        input_data = InputData(input_file, output_dir, verbose=verbose, gui=True)
-        self._manage_operation(input_data)
+        from model import InputParams
+        input_data = InputParams(input_file, output_dir, verbose=verbose, gui=True)
+        super(DataRetrievalGUIController, self).manage_operation(input_data)
 
     def handle_show_files(self, url):
         self.__open_file(url)

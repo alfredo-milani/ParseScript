@@ -14,7 +14,7 @@ class ColorsUI(object):
     TEXT_COLOR_START_OPERATION = 2
 
     def __init__(self):
-        pass
+        super(ColorsUI, self).__init__()
 
     @classmethod
     @abstractmethod

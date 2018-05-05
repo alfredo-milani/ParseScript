@@ -1,5 +1,4 @@
-from InputData import InputData
+from InputParams import InputParams
 from User import User
-from File import File
 
-__all__ = ["InputData", "User", "File"]
+__all__ = ["InputParams", "User"]

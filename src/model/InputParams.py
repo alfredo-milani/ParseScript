@@ -1,5 +1,5 @@
 # coding=utf-8
-class InputData(object):
+class InputParams(object):
     """
     Classe che incapsula i parametri neccessari inseriti dall'utente per parsare il file
     """
@@ -28,6 +28,7 @@ class InputData(object):
         NOTE: _x = private attribute; __x = super-private attribute
         Gli attributi super-privati non sono visibili dalle classi specializzate
         """
+        super(InputParams, self).__init__()
         self.input_file = input_file
         self.output_dir = output_dir
         self.sheet_title = sheet_title

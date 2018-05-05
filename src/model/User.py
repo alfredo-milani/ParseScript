@@ -21,6 +21,7 @@ class User(object):
         :type scores: list
         :type date: str
         """
+        super(User, self).__init__()
         self.name = name
         self.surname = surname
         self.email = email

@@ -9,6 +9,9 @@ from constants import SystemConstants
 
 class Common(object):
 
+    def __init__(self):
+        super(Common, self).__init__()
+
     @staticmethod
     def get_program_folder():
         """
@@ -95,8 +98,8 @@ class Common(object):
             elif opt in ("--gui", "--GUI"):
                 gui = True
 
-        from model import InputData
-        return InputData(input_file, output_dir, sheet_title, verbose, gui)
+        from model import InputParams
+        return InputParams(input_file, output_dir, sheet_title, verbose, gui)
 
     @staticmethod
     def replace_unsupported_char(string, chars_to_check, selected_char):
@@ -120,6 +123,14 @@ class Common(object):
             return '\\'
         elif os_type == SystemConstants.OS_LINUX or os_type == SystemConstants.OS_MACOS:
             return '/'
+
+    @staticmethod
+    def check_split_char(filename):
+        if filename[len(filename) - 1] != '/' and \
+                filename[len(filename) - 1] != '\\':
+            filename += Common.split_char()
+
+        return filename
 
     @staticmethod
     def check_match(to_match, list_to_check):

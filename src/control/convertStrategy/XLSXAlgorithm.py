@@ -1,18 +1,36 @@
+import threading
+
 from openpyxl import load_workbook
 
 from constants import FormsiteConstants
-from control.convertStrategy.ConversationAlgorithm import ConversationAlgorithm
+from control.convertStrategy.ConversionAlgorithm import ConversionAlgorithm
 from model import User
 from utils import Common
 
 
-class XLSXAlgorithm(ConversationAlgorithm):
+class XLSXAlgorithm(ConversionAlgorithm):
     """
     Classe che definisce l'algoritmo per il parsing di documenti in formato *.xlsx
     """
 
+    __instance = None
+    __lock = threading.Lock()
+
     def __init__(self):
-        super(XLSXAlgorithm, self).__init__()
+        if XLSXAlgorithm.__instance is not None:
+            from parsing_exceptions import SingletonException
+            raise SingletonException(XLSXAlgorithm)
+        else:
+            super(XLSXAlgorithm, self).__init__()
+            XLSXAlgorithm.__instance = self
+
+    @classmethod
+    def get_instance(cls):
+        if cls.__instance is None:
+            with cls.__lock:
+                if cls.__instance is None:
+                    XLSXAlgorithm()
+        return cls.__instance
 
     def do_convert(self, file_to_convert):
         from view import ColorsUI
@@ -21,7 +39,7 @@ class XLSXAlgorithm(ConversationAlgorithm):
         # Encoding from unicode string (u'string') to utf-8 string
         for sheet in range(len(sheet_ranges)):
             sheet_ranges[sheet] = sheet_ranges[sheet].encode(
-                ConversationAlgorithm.ENCODE_UTF_8,
+                ConversionAlgorithm.ENCODE_UTF_8,
                 "ignore"
             )
 
@@ -36,7 +54,7 @@ class XLSXAlgorithm(ConversationAlgorithm):
                 value = column[0].value
                 if value is not None:
                     header_row.append(value.encode(
-                        ConversationAlgorithm.ENCODE_UTF_8,
+                        ConversionAlgorithm.ENCODE_UTF_8,
                         "ignore"
                     ))
 
@@ -152,7 +170,7 @@ class XLSXAlgorithm(ConversationAlgorithm):
             value = row[column_index].value
             if value is not None:
                 try:
-                    encoded = str(value).encode(ConversationAlgorithm.ENCODE_UTF_8, "ignore")
+                    encoded = str(value).encode(ConversionAlgorithm.ENCODE_UTF_8, "ignore")
                 except UnicodeEncodeError:
                     encoded = "Encode error, column index: %s" % column_index
 

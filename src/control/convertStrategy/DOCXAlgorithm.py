@@ -1,26 +1,44 @@
+import threading
+
 from docx import opendocx, getdocumenttext
 
 from constants import NEW_USER
 from control.convertStrategy.BaseAlgorithm import BaseAlgorithm
-from control.convertStrategy.ConversationAlgorithm import ConversationAlgorithm
+from control.convertStrategy.ConversionAlgorithm import ConversionAlgorithm
 from utils import Common
 from view import ColorsUI
 
 
-class DOCXAlgorithm(ConversationAlgorithm, BaseAlgorithm):
+class DOCXAlgorithm(ConversionAlgorithm, BaseAlgorithm):
     """
     Classe che definisce l'algoritmo per il parsing di documenti in formato *.docx
     """
 
+    __instance = None
+    __lock = threading.Lock()
+
     def __init__(self):
-        super(DOCXAlgorithm, self).__init__()
+        if DOCXAlgorithm.__instance is not None:
+            from parsing_exceptions import SingletonException
+            raise SingletonException(DOCXAlgorithm)
+        else:
+            super(DOCXAlgorithm, self).__init__()
+            DOCXAlgorithm.__instance = self
+
+    @classmethod
+    def get_instance(cls):
+        if cls.__instance is None:
+            with cls.__lock:
+                if cls.__instance is None:
+                    DOCXAlgorithm()
+        return cls.__instance
 
     def do_convert(self, file_to_convert):
         document = opendocx(file_to_convert)
         paratextlist = getdocumenttext(document)
         newparatextlist = []
         for paratext in paratextlist:
-            newparatextlist.append(paratext.encode(ConversationAlgorithm.ENCODE_UTF_8))
+            newparatextlist.append(paratext.encode(ConversionAlgorithm.ENCODE_UTF_8))
         content = '\n\n'.join(newparatextlist)
 
         data_list = filter(None, content.split("\n"))

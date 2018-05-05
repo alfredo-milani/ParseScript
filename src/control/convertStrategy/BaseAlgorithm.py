@@ -10,6 +10,7 @@ class BaseAlgorithm(object):
     """
 
     def __init__(self):
+        super(BaseAlgorithm, self).__init__()
         # View reference
         self.__view_instance = None
 
