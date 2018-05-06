@@ -1,5 +1,4 @@
 import sys
-import thread
 
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -7,12 +6,14 @@ from pathlib import Path
 
 import constants
 from constants import SystemConstants
+from control.threads.ParseThread import ParseThread
 from model.BaseFileFactory.BaseFileFactory import BaseFileFactory
 from model.BaseFileFactory.Directory import Directory
 from model.BaseFileFactory.File import File
+from model import InputParams
 from parsing_exceptions import FileNotFound, FileException
-from utils import *
-from view import DataRetrievalUI, ColorsUI
+from utils import Common
+from view import ColorsUI, DataRetrievalUI
 
 
 class DataRetrievalController(object):
@@ -45,12 +46,6 @@ class DataRetrievalController(object):
         :type sheet_title: str
         :rtype: None
         """
-
-        # In questo modo l'algoritmo, tramite la classe astratta BaseAlgorithm e ConversationAlgorithm
-        # puo' accedere all'istanza di view per comunicare eventi all'utente
-        # TODO vedere se conviene levare la referenza alla view mettendo una variabile che contiene
-        # tutti gli errori sollevati durante l'esecuzione
-        file_to_parse.conversion_algorithm.view_instance = self.__view_instance
         list_of_users = file_to_parse.get_list_from_file()
 
         wb = Workbook()
@@ -92,15 +87,25 @@ class DataRetrievalController(object):
         file_to_save = output_dir.filename + file_to_parse.get_parsed_basename()
 
         if Path(file_to_save).exists():
+            ParseThread.get_lock()
             response = self.__view_instance.get_user_input_bool(
                 "File: %s already exist.\nDo you want to override it?\n" % file_to_save,
                 "Type [Yes] / [No]"
             )
+            ParseThread.release_lock()
 
             if not response:
                 file_to_save = output_dir.filename + file_to_parse.get_new_basename()
 
         wb.save(file_to_save)
+
+        ParseThread.get_lock()
+        self._file_parsed(
+            file_to_parse.filename,
+            file_to_parse.conversion_algorithm.logs.get_logs()
+        )
+        file_to_parse.conversion_algorithm.logs.clear_logs()
+        ParseThread.release_lock()
 
     def manage_operation(self, input_data):
         """
@@ -155,7 +160,7 @@ class DataRetrievalController(object):
         self.__view_instance.print_to_user("Input: %s" % input.filename)
         self.__view_instance.print_to_user("Output directory: %s" % output.filename)
 
-        self.__view_instance.print_to_user("File that will be parsed:")
+        self.__view_instance.print_to_user("Files that will be parsed:")
         for el in input.files:
             self.__view_instance.print_to_user("\t> %s" % el.filename)
 
@@ -171,24 +176,41 @@ class DataRetrievalController(object):
                     ColorsUI.TEXT_COLOR_WARNING
                 )
 
+        threads = []
         for el in input.files:
-            self.__view_instance.print_to_user("\n>>> Parsing file: %s" % el.filename)
             if verbose:
+                ParseThread.get_lock()
                 response = self.__view_instance.get_user_input_bool(
                     "Do you want to continue?",
                     "Type [Yes] / [No]"
                 )
 
                 if not response:
-                    self.__view_instance.print_to_user("Skipping...")
+                    self.__view_instance.print_to_user("File %s skipped." % el)
                     continue
+                ParseThread.release_lock()
 
-            # thread.start_new_thread(self._perform_operation, (el, output, sheet_title))
+            thread = ParseThread(
+                target=self._perform_operation,
+                target_args=(el, output, sheet_title)
+            )
+            threads.append(thread)
+            thread.start()
 
-            self._perform_operation(el, output, sheet_title)
-            self.__view_instance.print_to_user("<<< File parsed >>>")
+        # if not input_data.gui:
+        for thread in threads:
+            thread.join()
 
         self.__view_instance.print_to_user(
             "\n<<<--- OPERATION COMPLETED --->>>\n",
             ColorsUI.TEXT_COLOR_SUCCESS
         )
+
+    def _file_parsed(self, filename, logs):
+        self.__view_instance.print_to_user("\n>>> Parsing file: %s" % filename)
+        for el in logs:
+            self.__view_instance.print_to_user(
+                el[1],
+                ColorsUI.get_color_from_log_type(el[0])
+            )
+        self.__view_instance.print_to_user("<<< File parsed >>>")

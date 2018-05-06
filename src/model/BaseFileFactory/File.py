@@ -105,10 +105,8 @@ class File(BaseFile):
         conversion_algorithm = ConverterFactory().get_converter(
             File.find_extension(self.filename)
         )
-        if conversion_algorithm is None:
-            return None
-        else:
-            return conversion_algorithm.convert_to_list(self.filename)
+
+        return [] if not conversion_algorithm else conversion_algorithm.convert_to_list(self.filename)
 
     def get_basename(self):
         """

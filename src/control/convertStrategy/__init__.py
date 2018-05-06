@@ -1,3 +1,4 @@
+from Logging import Logging
 from ConversionAlgorithm import ConversionAlgorithm
 from BaseAlgorithm import BaseAlgorithm
 from XLSXAlgorithm import XLSXAlgorithm
@@ -8,6 +9,7 @@ from TXTAlgorithm import TXTAlgorithm
 from PDFAlgorithm import PDFAlgorithm
 
 __all__ = [
+    "Logging",
     "ConversionAlgorithm",
     "BaseAlgorithm",
     "DOCAlgorithm",

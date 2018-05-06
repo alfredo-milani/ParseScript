@@ -1,7 +1,7 @@
 from constants import *
+from control.convertStrategy import Logging
 from model import User
 from utils import Common
-from view import ColorsUI, DataRetrievalUI
 
 
 class BaseAlgorithm(object):
@@ -11,19 +11,11 @@ class BaseAlgorithm(object):
 
     def __init__(self):
         super(BaseAlgorithm, self).__init__()
-        # View reference
-        self.__view_instance = None
+        self.__logs = Logging()
 
     @property
-    def view_instance(self):
-        return self.__view_instance
-
-    @view_instance.setter
-    def view_instance(self, value):
-        if not isinstance(value, DataRetrievalUI):
-            raise TypeError("Incorrect instance")
-
-        self.__view_instance = value
+    def logs(self):
+        return self.__logs
 
     # noinspection PyArgumentList
     def _parse_users_list_v1(self, content):
@@ -63,11 +55,11 @@ class BaseAlgorithm(object):
                         if content[i] == SCORE_VAL_POSITIVE:
                             scores.append(SCORES_LIST[item_position][1])
                         else:
-                            self.view_instance.print_to_user(
+                            self.logs.append_logs(
+                                Logging.W,
                                 "Error parsing value of line: %s.\tValue: %s."
                                 "\tPosizione elemento della lista: %d.\n" % (
-                                    content[i - 1], content[i], i),
-                                ColorsUI.TEXT_COLOR_WARNING
+                                    content[i - 1], content[i], i)
                             )
                             continue
 
@@ -102,9 +94,9 @@ class BaseAlgorithm(object):
                 user = User(name, email, surname, ntel, scores)
                 users_list.append(user)
                 if s != SCORES_NUM or c != CREDENTIALS_NUM:
-                    self.view_instance.print_to_user(
-                        "WARNING: Error parsing User: " + user + "\n",
-                        ColorsUI.TEXT_COLOR_WARNING
+                    self.logs.append_logs(
+                        Logging.W,
+                        "WARNING: Error parsing User: " + user + "\n"
                     )
 
                 if NEW_USER in content[i]:
@@ -148,11 +140,11 @@ class BaseAlgorithm(object):
                             else:
                                 # Per far stampare anche l'utente interessato
                                 s -= 1
-                                self.view_instance.print_to_user(
+                                self.logs.append_logs(
+                                    Logging.W,
                                     "Error parsing value of line: %s.\tValue: %s."
                                     "\tPosizione elemento della lista: %d." %
-                                    (content[i - 1], content[i], i),
-                                    ColorsUI.TEXT_COLOR_WARNING
+                                    (content[i - 1], content[i], i)
                                 )
 
                         continue
@@ -175,10 +167,10 @@ class BaseAlgorithm(object):
                     user = User(name, email, surname, ntel, scores)
                     users_list.append(user)
                     if s != SCORES_NUM or c != CREDENTIALS_NUM:
-                        self.view_instance.print_to_user(
+                        self.logs.append_logs(
+                            Logging.W,
                             "WARNING: Error parsing User: " + user + " at position: " +
-                            str(i) + " / " + str(i + 1) + "\n",
-                            ColorsUI.TEXT_COLOR_WARNING
+                            str(i) + " / " + str(i + 1) + "\n"
                         )
 
             i += 1
@@ -214,10 +206,10 @@ class BaseAlgorithm(object):
                             break
                         elif Common.check_match(content[i + 1], score_list) != -1 or \
                                 Common.check_match(content[i + 1], CREDENTIALS_LIST) != -1:
-                            self.view_instance.print_to_user(
+                            self.logs.append_logs(
+                                Logging.W,
                                 "Unexpected parsing new value even if current is not parsed"
-                                "\tPosizione elemento della lista: %d." % i,
-                                ColorsUI.TEXT_COLOR_WARNING
+                                "\tPosizione elemento della lista: %d." % i
                             )
                             continue
 
@@ -227,11 +219,11 @@ class BaseAlgorithm(object):
                             if content[i] == SCORE_VAL_POSITIVE:
                                 scores.append(SCORES_LIST[item_position][1])
                             else:
-                                self.view_instance.print_to_user(
+                                self.logs.append_logs(
+                                    Logging.W,
                                     "Error parsing score value for the line: '%s'.\tValue: '%s'.\t"
                                     "Posizione elemento della lista: %d." %
-                                    (content[i - 1], content[i], i),
-                                    ColorsUI.TEXT_COLOR_WARNING
+                                    (content[i - 1], content[i], i)
                                 )
                                 continue
 
@@ -245,10 +237,10 @@ class BaseAlgorithm(object):
                             break
                         elif Common.check_match(content[i + 1], score_list) != -1 or \
                                 Common.check_match(content[i + 1], CREDENTIALS_LIST) != -1:
-                            self.view_instance.print_to_user(
+                            self.logs.append_logs(
+                                Logging.W,
                                 "Unexpected parsing new value even if current is not parsed"
-                                "\tPosizione elemento della lista: %d." % i,
-                                ColorsUI.TEXT_COLOR_WARNING
+                                "\tPosizione elemento della lista: %d." % i
                             )
                             continue
 
@@ -274,23 +266,23 @@ class BaseAlgorithm(object):
                         # (primary key as in
                         #  https://fs27.formsite.com/lnisrl/form4/fill?1=6536383b0aff580572ef85e25764f3b2)
                         if not (name and email and surname and ntel and date):
-                            self.view_instance.print_to_user(
+                            self.logs.append_logs(
+                                Logging.W,
                                 "Error parsing credential (name, email, surname, phone number empty or date) "
                                 "for User: " +
-                                user,
-                                ColorsUI.TEXT_COLOR_WARNING
+                                user
                             )
                         elif s == SCORES_NUM:
                             continue
 
-                        self.view_instance.print_to_user(
-                            "WARNING: The user may have been converted incorrectly: " + user + "\n",
-                            ColorsUI.TEXT_COLOR_WARNING
+                        self.logs.append_logs(
+                            Logging.W,
+                            "WARNING: The user may have been converted incorrectly: " + user + "\n"
                         )
                 else:
-                    self.view_instance.print_to_user(
-                        "WARNING: User with all empty entry at position: " + str(i) + " / " + str(i + 1) + "\n",
-                        ColorsUI.TEXT_COLOR_WARNING
+                    self.logs.append_logs(
+                        Logging.W,
+                        "WARNING: User with all empty entry at position: " + str(i) + " / " + str(i + 1) + "\n"
                     )
 
             i += 1

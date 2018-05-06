@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from view import DataRetrievalUI
+from control.convertStrategy import Logging
 
 
 class ConversionAlgorithm(object):
@@ -34,19 +34,11 @@ class ConversionAlgorithm(object):
     def __init__(self):
         super(ConversionAlgorithm, self).__init__()
         self.list_of_users = None
-        # View reference
-        self.__view_instance = None
+        self.__logs = Logging()
 
     @property
-    def view_instance(self):
-        return self.__view_instance
-
-    @view_instance.setter
-    def view_instance(self, value):
-        if not isinstance(value, DataRetrievalUI):
-            raise TypeError("Incorrect instance")
-
-        self.__view_instance = value
+    def logs(self):
+        return self.__logs
 
     @property
     def list_of_users(self):

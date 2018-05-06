@@ -35,3 +35,17 @@ class ColorsUI(object):
         :rtype: Any
         """
         raise NotImplementedError
+
+    @classmethod
+    def get_color_from_log_type(cls, message_type):
+        from control.convertStrategy import Logging
+        if message_type == Logging.E:
+            return cls.TEXT_COLOR_ERROR
+        elif message_type == Logging.W:
+            return cls.TEXT_COLOR_WARNING
+        elif message_type == Logging.N:
+            return cls.TEXT_COLOR_DEFAULT
+        elif message_type == Logging.S:
+            return cls.TEXT_COLOR_SUCCESS
+        else:
+            return cls.TEXT_COLOR_DEFAULT

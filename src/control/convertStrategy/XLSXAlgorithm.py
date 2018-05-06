@@ -33,7 +33,6 @@ class XLSXAlgorithm(ConversionAlgorithm):
         return cls.__instance
 
     def do_convert(self, file_to_convert):
-        from view import ColorsUI
         workbook = load_workbook(filename=file_to_convert)
         sheet_ranges = workbook.sheetnames
         # Encoding from unicode string (u'string') to utf-8 string
@@ -135,10 +134,11 @@ class XLSXAlgorithm(ConversionAlgorithm):
                             date_list[i]
                         ))
             except IndexError:
-                self.view_instance.print_to_user(
+                from control.convertStrategy import Logging
+                self.logs.append_logs(
+                    Logging.W,
                     "WARNING: Error parsing users at sheet: %s. Probably the document is badly formatted\n" %
-                    str(sheet),
-                    message_type=ColorsUI.TEXT_COLOR_WARNING
+                    str(sheet)
                 )
 
         return users

@@ -50,6 +50,7 @@ class DataRetrievalGUIController(DataRetrievalController):
         # START OPERATION
         from model import InputParams
         input_data = InputParams(input_file, output_dir, verbose=verbose, gui=True)
+        # TODO rendere GUI risponsiva -> fare chiamata che non blocchi il MainLoop della GUI
         super(DataRetrievalGUIController, self).manage_operation(input_data)
 
     def handle_show_files(self, url):

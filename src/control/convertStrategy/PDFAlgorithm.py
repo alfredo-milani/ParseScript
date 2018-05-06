@@ -12,10 +12,9 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 
 from utils import Common
-from view import ColorsUI
 
 
-class PDFAlgorithm(ConversionAlgorithm, BaseAlgorithm):
+class PDFAlgorithm(BaseAlgorithm, ConversionAlgorithm):
     """
     Classe che definisce l'algoritmo per il parsing di documenti in formato *.pdf
     """
@@ -78,12 +77,13 @@ class PDFAlgorithm(ConversionAlgorithm, BaseAlgorithm):
         list_of_users = self._parse_users_list(data_list)
 
         if raw_data_num_users != len(list_of_users):
-            self.view_instance.print_to_user(
+            from control.convertStrategy import Logging
+            self.logs.append_logs(
+                Logging.W,
                 "WARNING:\tUser raw data: %d\tUser parsed: %d.\tCheck if some user missing\n" % (
                     raw_data_num_users,
                     len(list_of_users)
-                ),
-                ColorsUI.TEXT_COLOR_WARNING
+                )
             )
 
         return list_of_users
