@@ -102,11 +102,8 @@ class File(BaseFile):
             from parsing_exceptions import DirectoryException
             raise DirectoryException("Il metodo non puo' essere invocato solo su file")
 
-        conversion_algorithm = ConverterFactory().get_converter(
-            File.find_extension(self.filename)
-        )
-
-        return [] if not conversion_algorithm else conversion_algorithm.convert_to_list(self.filename)
+        return [] if not self.conversion_algorithm \
+            else self.conversion_algorithm.convert_to_list(self.filename)
 
     def get_basename(self):
         """

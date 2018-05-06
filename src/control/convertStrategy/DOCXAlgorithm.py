@@ -1,5 +1,3 @@
-import threading
-
 from docx import opendocx, getdocumenttext
 
 from constants import NEW_USER
@@ -13,24 +11,8 @@ class DOCXAlgorithm(BaseAlgorithm, ConversionAlgorithm):
     Classe che definisce l'algoritmo per il parsing di documenti in formato *.docx
     """
 
-    __instance = None
-    __lock = threading.Lock()
-
     def __init__(self):
-        if DOCXAlgorithm.__instance is not None:
-            from parsing_exceptions import SingletonException
-            raise SingletonException(DOCXAlgorithm)
-        else:
-            super(DOCXAlgorithm, self).__init__()
-            DOCXAlgorithm.__instance = self
-
-    @classmethod
-    def get_instance(cls):
-        if cls.__instance is None:
-            with cls.__lock:
-                if cls.__instance is None:
-                    DOCXAlgorithm()
-        return cls.__instance
+        super(DOCXAlgorithm, self).__init__()
 
     def do_convert(self, file_to_convert):
         document = opendocx(file_to_convert)

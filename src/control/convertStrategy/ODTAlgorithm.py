@@ -1,4 +1,3 @@
-import threading
 from subprocess import Popen, PIPE
 
 from constants import NEW_USER
@@ -13,24 +12,9 @@ class ODTAlgorithm(BaseAlgorithm, ConversionAlgorithm):
     """
 
     CMD_ODT = "odt2txt"
-    __instance = None
-    __lock = threading.Lock()
 
     def __init__(self):
-        if ODTAlgorithm.__instance is not None:
-            from parsing_exceptions import SingletonException
-            raise SingletonException(ODTAlgorithm)
-        else:
-            super(ODTAlgorithm, self).__init__()
-            ODTAlgorithm.__instance = self
-
-    @classmethod
-    def get_instance(cls):
-        if cls.__instance is None:
-            with cls.__lock:
-                if cls.__instance is None:
-                    ODTAlgorithm()
-        return cls.__instance
+        super(ODTAlgorithm, self).__init__()
 
     def do_convert(self, file_to_convert):
         cmd = [ODTAlgorithm.CMD_ODT, file_to_convert]

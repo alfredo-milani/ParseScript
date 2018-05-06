@@ -1,5 +1,3 @@
-import threading
-
 from openpyxl import load_workbook
 
 from constants import FormsiteConstants
@@ -13,24 +11,8 @@ class XLSXAlgorithm(ConversionAlgorithm):
     Classe che definisce l'algoritmo per il parsing di documenti in formato *.xlsx
     """
 
-    __instance = None
-    __lock = threading.Lock()
-
     def __init__(self):
-        if XLSXAlgorithm.__instance is not None:
-            from parsing_exceptions import SingletonException
-            raise SingletonException(XLSXAlgorithm)
-        else:
-            super(XLSXAlgorithm, self).__init__()
-            XLSXAlgorithm.__instance = self
-
-    @classmethod
-    def get_instance(cls):
-        if cls.__instance is None:
-            with cls.__lock:
-                if cls.__instance is None:
-                    XLSXAlgorithm()
-        return cls.__instance
+        super(XLSXAlgorithm, self).__init__()
 
     def do_convert(self, file_to_convert):
         workbook = load_workbook(filename=file_to_convert)

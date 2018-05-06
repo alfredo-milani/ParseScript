@@ -1,5 +1,3 @@
-import threading
-
 from constants import NEW_USER
 from control.convertStrategy.BaseAlgorithm import BaseAlgorithm
 from control.convertStrategy.ConversionAlgorithm import ConversionAlgorithm
@@ -19,24 +17,8 @@ class PDFAlgorithm(BaseAlgorithm, ConversionAlgorithm):
     Classe che definisce l'algoritmo per il parsing di documenti in formato *.pdf
     """
 
-    __instance = None
-    __lock = threading.Lock()
-
     def __init__(self):
-        if PDFAlgorithm.__instance is not None:
-            from parsing_exceptions import SingletonException
-            raise SingletonException(PDFAlgorithm)
-        else:
-            super(PDFAlgorithm, self).__init__()
-            PDFAlgorithm.__instance = self
-
-    @classmethod
-    def get_instance(cls):
-        if cls.__instance is None:
-            with cls.__lock:
-                if cls.__instance is None:
-                    PDFAlgorithm()
-        return cls.__instance
+        super(PDFAlgorithm, self).__init__()
 
     def do_convert(self, file_to_convert):
         rsrcmgr = PDFResourceManager()

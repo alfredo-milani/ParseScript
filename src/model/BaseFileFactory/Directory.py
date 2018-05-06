@@ -85,10 +85,6 @@ class Directory(BaseFile):
         converted_files = []
 
         for f in self.files:
-            conversion_algorithm = ConverterFactory().get_converter(File.find_extension(f))
-            if conversion_algorithm is None:
-                converted_files.append(None)
-            else:
-                converted_files.append(conversion_algorithm.convert_to_list(f))
+            converted_files.append(f.get_list_from_file())
 
         return converted_files

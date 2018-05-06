@@ -1,4 +1,3 @@
-import threading
 from subprocess import Popen, PIPE
 
 from constants import NEW_USER
@@ -14,24 +13,8 @@ class DOCAlgorithm(BaseAlgorithm, ConversionAlgorithm):
 
     CMD_DOC = "antiword"
 
-    __instance = None
-    __lock = threading.Lock()
-
     def __init__(self):
-        if DOCAlgorithm.__instance is not None:
-            from parsing_exceptions import SingletonException
-            raise SingletonException(DOCAlgorithm)
-        else:
-            super(DOCAlgorithm, self).__init__()
-            DOCAlgorithm.__instance = self
-
-    @classmethod
-    def get_instance(cls):
-        if cls.__instance is None:
-            with cls.__lock:
-                if cls.__instance is None:
-                    DOCAlgorithm()
-        return cls.__instance
+        super(DOCAlgorithm, self).__init__()
 
     def do_convert(self, file_to_convert):
         cmd = [DOCAlgorithm.CMD_DOC, file_to_convert]

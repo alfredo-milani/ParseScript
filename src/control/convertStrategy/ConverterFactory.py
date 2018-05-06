@@ -32,16 +32,16 @@ class ConverterFactory(object):
         if converter_type is None:
             return None
         elif converter_type.upper() == cls.DOC.upper():
-            return DOCAlgorithm.get_instance()
+            return DOCAlgorithm()
         elif converter_type.upper() == cls.DOCX.upper():
-            return DOCXAlgorithm.get_instance()
+            return DOCXAlgorithm()
         elif converter_type.upper() == cls.ODT.upper():
-            return ODTAlgorithm.get_instance()
+            return ODTAlgorithm()
         elif converter_type.upper() == cls.PDF.upper():
-            return PDFAlgorithm.get_instance()
+            return PDFAlgorithm()
         elif converter_type.upper() == cls.TXT.upper():
-            return TXTAlgorithm.get_instance()
+            return TXTAlgorithm()
         elif converter_type.upper() == cls.XLSX.upper():
-            return XLSXAlgorithm.get_instance()
+            return XLSXAlgorithm()
         else:
             return None

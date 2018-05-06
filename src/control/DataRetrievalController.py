@@ -104,7 +104,7 @@ class DataRetrievalController(object):
             file_to_parse.filename,
             file_to_parse.conversion_algorithm.logs.get_logs()
         )
-        file_to_parse.conversion_algorithm.logs.clear_logs()
+        # file_to_parse.conversion_algorithm.logs.clear_logs()
         ParseThread.release_lock()
 
     def manage_operation(self, input_data):
