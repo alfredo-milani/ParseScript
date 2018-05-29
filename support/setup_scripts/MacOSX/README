@@ -1,0 +1,7 @@
+- Creare un Apple Script inserendo la stringa "do Shell script /path/script -args"
+- Salvare come file Applicazione
+- Selezionare Ottieni informazioni e trascinare l'icona desiderata (nota: l'icona deve essere *.icns; copiare l'icona anche dentro Resources del package *.app)
+- Spostare o copiare il file *.app nella cartella Applicazioni per lanciarla dal launcher di default
+
+NOTA: in questa directory è presente la versione 2.9.5 che è instabile. Vedere le release su GitHub per avere versioni stabili.
+ 

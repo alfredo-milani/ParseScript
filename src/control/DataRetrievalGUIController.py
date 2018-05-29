@@ -52,6 +52,9 @@ class DataRetrievalGUIController(DataRetrievalController):
         input_data = InputParams(input_file, output_dir, verbose=verbose, gui=True)
         # TODO rendere GUI risponsiva -> fare chiamata che non blocchi il MainLoop della GUI
         super(DataRetrievalGUIController, self).manage_operation(input_data)
+        # from control.threads.ParseThread import ParseThread
+        # t = ParseThread(super(DataRetrievalGUIController, self).manage_operation, (input_data,))
+        # t.start()
 
     def handle_show_files(self, url):
         self.__open_file(url)
