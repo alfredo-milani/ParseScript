@@ -87,25 +87,25 @@ class DataRetrievalController(object):
         file_to_save = output_dir.filename + file_to_parse.get_parsed_basename()
 
         if Path(file_to_save).exists():
-            ParseThread.get_lock()
+            # ParseThread.get_lock()
             response = self.__view_instance.get_user_input_bool(
                 "File: %s already exist.\nDo you want to override it?\n" % file_to_save,
                 "Type [Yes] / [No]"
             )
-            ParseThread.release_lock()
+            # ParseThread.release_lock()
 
             if not response:
                 file_to_save = output_dir.filename + file_to_parse.get_new_basename()
 
         wb.save(file_to_save)
 
-        ParseThread.get_lock()
+        # ParseThread.get_lock()
         self._file_parsed(
             file_to_parse.filename,
             file_to_parse.conversion_algorithm.logs.get_logs()
         )
         # file_to_parse.conversion_algorithm.logs.clear_logs()
-        ParseThread.release_lock()
+        # ParseThread.release_lock()
 
     def manage_operation(self, input_data):
         """
@@ -176,10 +176,34 @@ class DataRetrievalController(object):
                     ColorsUI.TEXT_COLOR_WARNING
                 )
 
-        threads = []
+        # TODO threads instabili con GUI (implementare gestione di eventi GUI)
+        # threads = []
+        # for el in input.files:
+        #     if verbose:
+        #         ParseThread.get_lock()
+        #         response = self.__view_instance.get_user_input_bool(
+        #             "Do you want to continue?",
+        #             "Type [Yes] / [No]"
+        #         )
+        #
+        #         if not response:
+        #             self.__view_instance.print_to_user("File %s skipped." % el)
+        #             continue
+        #         ParseThread.release_lock()
+        #
+        #     thread = ParseThread(
+        #         target=self._perform_operation,
+        #         target_args=(el, output, sheet_title)
+        #     )
+        #     threads.append(thread)
+        #     thread.start()
+        #
+        # # if not input_data.gui:
+        # for thread in threads:
+        #     thread.join()
+
         for el in input.files:
             if verbose:
-                ParseThread.get_lock()
                 response = self.__view_instance.get_user_input_bool(
                     "Do you want to continue?",
                     "Type [Yes] / [No]"
@@ -188,18 +212,8 @@ class DataRetrievalController(object):
                 if not response:
                     self.__view_instance.print_to_user("File %s skipped." % el)
                     continue
-                ParseThread.release_lock()
 
-            thread = ParseThread(
-                target=self._perform_operation,
-                target_args=(el, output, sheet_title)
-            )
-            threads.append(thread)
-            thread.start()
-
-        # if not input_data.gui:
-        for thread in threads:
-            thread.join()
+            self._perform_operation(el, output, sheet_title)
 
         self.__view_instance.print_to_user(
             "\n<<<--- OPERATION COMPLETED --->>>\n",

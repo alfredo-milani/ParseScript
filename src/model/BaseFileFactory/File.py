@@ -85,7 +85,7 @@ class File(BaseFile):
             raise FileNotFound(value)
         # PyCharm inspection bug
         self.__filename = abspath(value)
-        self.__extension = self.find_extension(self.filename)
+        self.__extension = File.find_extension(self.filename)
         self.conversion_algorithm = ConverterFactory().get_converter(self.extension)
 
     @property

@@ -30,6 +30,8 @@ class ConversionAlgorithm(object):
 
     ENCODE_UTF_8 = "utf-8"
     DECODE_FORMAT = "utf-8"
+    ENCODE_ERROR_POLICY_REPLACE = "replace"
+    ENCODE_ERROR_POLICY_IGNORE = "ignore"
 
     def __init__(self):
         super(ConversionAlgorithm, self).__init__()

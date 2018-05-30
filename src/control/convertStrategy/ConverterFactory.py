@@ -29,6 +29,8 @@ class ConverterFactory(object):
         :return: Classe convertitore
         :rtype: ConversionAlgorithm
         """
+        # TODO riutilizza istanze algoritmi di conversione -> mettere hashmap
+        # per discriminare logs dei vari files associati
         if converter_type is None:
             return None
         elif converter_type.upper() == cls.DOC.upper():

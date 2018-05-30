@@ -21,7 +21,7 @@ class XLSXAlgorithm(ConversionAlgorithm):
         for sheet in range(len(sheet_ranges)):
             sheet_ranges[sheet] = sheet_ranges[sheet].encode(
                 ConversionAlgorithm.ENCODE_UTF_8,
-                "ignore"
+                ConversionAlgorithm.ENCODE_ERROR_POLICY_REPLACE
             )
 
         users = []
@@ -36,7 +36,7 @@ class XLSXAlgorithm(ConversionAlgorithm):
                 if value is not None:
                     header_row.append(value.encode(
                         ConversionAlgorithm.ENCODE_UTF_8,
-                        "ignore"
+                        ConversionAlgorithm.ENCODE_ERROR_POLICY_REPLACE
                     ))
 
             # Get names column
@@ -151,12 +151,17 @@ class XLSXAlgorithm(ConversionAlgorithm):
         for row in worksheet.iter_rows():
             value = row[column_index].value
             if value is not None:
-                try:
-                    encoded = str(value).encode(ConversionAlgorithm.ENCODE_UTF_8, "ignore")
-                except UnicodeEncodeError:
-                    encoded = "Encode error, column index: %s" % column_index
+                # try:
+                #     encoded = str(value).encode(
+                #         ConversionAlgorithm.ENCODE_UTF_8,
+                #         ConversionAlgorithm.ENCODE_ERROR_POLICY_REPLACE
+                #     )
+                # except UnicodeEncodeError:
+                #     encoded = "Encode error, column index: %s" % column_index
+                #
+                # column_list.append(encoded)
 
-                column_list.append(encoded)
+                column_list.append(value)
 
         return column_list
 
